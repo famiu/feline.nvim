@@ -21,6 +21,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
     * [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/) - To configure LSP for diagnostics)
 
 ## Screenshots
+![image](https://user-images.githubusercontent.com/29580810/114544000-d3028400-9c7b-11eb-856c-2feb166334b2.png)
 
 ## How to install
 * [packer.nvim](https://github.com/wbthomason/packer.nvim/):
