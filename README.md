@@ -15,6 +15,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ## Requirements
 * Necessary
     * Neovim >= 0.5
+    * [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/)
     * [A patched font](https://github.com/ryanoasis/nerd-fonts/)
     * Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
 * Optional
@@ -373,7 +374,7 @@ properties.force_inactive.bufnames = {
 ```
 And that's it, that's how you set up the properties table
 
-#### The setup() function
+#### The setup function
 Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
 * `default_fg` - [Name](#default-colors) or RGB hex code of default foreground color.
 * `default_bg` - [Name](#default-colors) or RGB hex code of default background color.
