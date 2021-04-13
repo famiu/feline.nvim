@@ -689,6 +689,21 @@ The diagnostics providers all require the Neovim built-in LSP to be configured a
 #### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers.
 
+## Why Feline?
+Now, you might be thinking, why do we need another statusline plugin? We've already got a bunch of brilliant statusline plugins like galaxyline, airline, lualine, expressline etc. and all of them are excellent. So then, why Feline? What I'm about to say can be (and probably is) very biased and opinionated but, despite those plugins being neat, I think each have their own shortcomings, which I see as too much to ignore. Also I could be wrong about some of these things since I haven't used some of the plugins I'm about to mention.
+
+Firstly, Feline is built for customizability from the ground up. You are not limited in any way by what the plugin provides. You can control every individual component and its location, appearance, everything about it. I find that all other plugins are very limited when it comes to customizability.
+
+For example, Airline allows some customization through Vim's statusline syntax, which I find to be quite ugly and complicated. Lualine seems to give you little control over component separators, whereas Feline gives you complete control over what separator to use on what component, including the highlight of each separator. Feline also allows you to conditionally enable or disable components at any time, giving you complete control over your statusline.
+
+Galaxyline is also a great plugin, I'd say it's much more customizable than the others I've mentioned. I used galaxyline before I created Feline and galaxyline is what inspired this plugin. But I think even galaxyline has its flaws. First and foremost, while I used galaxyline, I've found that it doesn't allow using the short statusline on components based on their buffer type or buffername, which meant I couldn't use the short line list on my terminal buffers. It also only allowed separator on one side of each component, making you resort to the separator of the previous or next component if you wanted separator on both sides, which caused all sorts of visual issues like the separator from the previous or next component being there even if the component you wanted the separator for is disabled.
+
+Lastly, Feline only implements the bare minimum required for you to get started, and both expects and invites the user to make their own components and providers, because nobody understands you better than yourself. So my real intention is to make creating your own statusline as easy for you as possible, while also providing reasonable defaults that should be enough for most people.
+
+And this plugin is named after cats, you won't get that anywhere else.
+
+So yeah, those are the reasons to use Feline: minimalism, complete customizability, reasonable defaults, and cats.
+
 ## Maintenance
 While I chose to make this plugin available to others, I mainly created it for myself. So I may not go out of my way to fix a very minor niche issue that can be easily avoided unless it gets in my way. So if you have an issue that isn't very important, consider making a pull request that fixes your issue instead. But by all means if you do post an issue, I will try to see if I can fix it.
 
