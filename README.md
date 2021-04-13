@@ -608,20 +608,20 @@ components.left.inactive[1] = {
 }
 
 local vi_mode_colors = {
-    NORMAL = colors.green,
-    OP = colors.green,
-    INSERT = colors.red,
-    VISUAL = colors.skyblue,
-    BLOCK = colors.skyblue,
-    REPLACE = colors.violet,
-    ['V-REPLACE'] = colors.violet,
-    ENTER = colors.cyan,
-    MORE = colors.cyan,
-    SELECT = colors.orange,
-    COMMAND = colors.green,
-    SHELL = colors.green,
-    TERM = colors.green,
-    NONE = colors.yellow
+    NORMAL = 'green',
+    OP = 'green',
+    INSERT = 'red',
+    VISUAL = 'skyblue',
+    BLOCK = 'skyblue',
+    REPLACE = 'violet',
+    ['V-REPLACE'] = 'violet',
+    ENTER = 'cyan',
+    MORE = 'cyan',
+    SELECT = 'orange',
+    COMMAND = 'green',
+    SHELL = 'green',
+    TERM = 'green',
+    NONE = 'yellow'
 }
 
 require('feline').setup({
