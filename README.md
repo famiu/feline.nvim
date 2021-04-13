@@ -673,7 +673,7 @@ Feline is licensed under GNU GPLv3-or-later. For more info, see: [LICENSE.md](LI
 
 ## Miscellaneous
 ### Naming
-The name of this plugin is a pun based on the convention of the names statusline plugins ending with 'line', while also being a tribute to cats, and this statusline is supposed to be as quick like a cat's instincts, so I guess the name fits.
+The name of this plugin is a silly pun based on the convention of the names of statusline plugins ending with 'line', while also being named after cats. And in a way this statusline is supposed to be as quick as a cat's instincts, so I guess the name fits.
 
 ### Special thanks
 [glepnir](https://github.com/glepnir) - for creating [galaxyline](https://github.com/glepnir/galaxyline.nvim) which this plugin was inspired by.
