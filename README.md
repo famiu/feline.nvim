@@ -19,7 +19,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
     * Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
 * Optional
     * [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For git info
-    * [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/) - To configure LSP for diagnostics)
+    * [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/) - To configure LSP for diagnostics
 
 ## Screenshots
 ![image](https://user-images.githubusercontent.com/29580810/114544000-d3028400-9c7b-11eb-856c-2feb166334b2.png)
@@ -301,44 +301,44 @@ right_sep = 'slant_right'
 
 Below is a list of all the default value names and their values:
 ###### Default Colors
-```lua
-bg = '#1F1F23'
-black = '#1B1B1B'
-skyblue = '#50B0F0'
-cyan = '#009090'
-fg = '#D0D0D0'
-green = '#60A040'
-oceanblue = '#0066cc'
-magenta = '#C26BDB'
-orange = '#FF9000'
-red = '#D10000'
-violet = '#9E93E8'
-white = '#FFFFFF'
-yellow = '#E1E120'
-```
+|Name|Value|
+--|--
+|`bg`|`'#1F1F23'`|
+|`black`|`'#1B1B1B'`|
+|`skyblue`|`'#50B0F0'`|
+|`cyan`|`'#009090'`|
+|`fg`|`'#D0D0D0'`|
+|`green`|`'#60A040'`|
+|`oceanblue`|`'#0066cc'`|
+|`magenta`|`'#C26BDB'`|
+|`orange`|`'#FF9000'`|
+|`red`|`'#D10000'`|
+|`violet`|`'#9E93E8'`|
+|`white`|`'#FFFFFF'`|
+|`yellow`|`'#E1E120'`|
 
 ###### Default Separators
-```lua
-vertical_bar = '┃',
-vertical_bar_thin = '│',
-left = '',
-right = '',
-left_filled = '',
-right_filled = '',
-slant_left = '',
-slant_left_thin = '',
-slant_right = '',
-slant_right_thin = '',
-slant_left_2 = '',
-slant_left_2_thin = '',
-slant_right_2 = '',
-slant_right_2_thin = '',
-left_rounded = '',
-left_rounded_thin = '',
-right_rounded = '',
-right_rounded_thin = '',
-circle = '●'
-```
+|Name|Value|
+--|--
+|`vertical_bar`|`'┃'`
+|`vertical_bar_thin`|`'│'`
+|`left`|`''`
+|`right`|`''`
+|`left_filled`|`''`
+|`right_filled`|`''`
+|`slant_left`|`''`
+|`slant_left_thin`|`''`
+|`slant_right`|`''`
+|`slant_right_thin`|`''`
+|`slant_left_2`|`''`
+|`slant_left_2_thin`|`''`
+|`slant_right_2`|`''`
+|`slant_right_2_thin`|`''`
+|`left_rounded`|`''`
+|`left_rounded_thin`|`''`
+|`right_rounded`|`''`
+|`right_rounded_thin`|`''`
+|`circle = '●'``
 
 #### Properties
 Besides components, the generator may also have a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc. Finally, `force_inactive` needs three elements in it, `filetypes`, `buftypes` and `bufnames`, all of which are tables containing the filetypes, buffer types and buffer names respectively that will be forced to have the inactive statusline. Here's an example of how to set the properties table
