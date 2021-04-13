@@ -15,6 +15,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ## Requirements
 * Necessary
     * Neovim >= 0.5
+    * [A patched font](https://github.com/ryanoasis/nerd-fonts/)
     * Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
 * Optional
     * [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For git info
