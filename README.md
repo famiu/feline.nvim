@@ -110,7 +110,7 @@ table.insert(components.left.right.inactive, {
     -- Component info here
 })
 ```
-Alternatively you can also use Lua table indexes instead of table.index, like::
+Alternatively you can also use Lua table indexes instead of table.insert, like:
 ```lua
 -- Insert a component that will be on the right side of the statusline
 -- when the window is active:
@@ -127,7 +127,7 @@ components.right.active[2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index.
 
-Now, you can customize each component to your liking. Most values that a component requires can also use a function without arguments that Feline will automatically evaluate. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `provider` requires a string value, if you set it to a function, the function must also return a string value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments that Feline will automatically evaluate. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `provider` requires a string value, if you set it to a function, the function must also return a string value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
 * `provider` (string): Text to show
 ```lua
@@ -156,10 +156,10 @@ end
 ```
 
 * `hl` (table): Determines the highlight settings. The hl table can have three values:
-    * `hl.fg` (string): RGB hex or [name](#default-colors) of forground color. (eg: `'#FFFFFF'`).<br>By default it uses the default foreground color provided in the `setup()` function.
+    * `hl.fg` (string): RGB hex or [name](#default-colors) of foreground color. (eg: `'#FFFFFF'`).<br>By default it uses the default foreground color provided in the `setup()` function.
     * `hl.bg` (string): RGB hex or [name](#default-colors) of background color. (eg: `#000000'`).<br>By default it uses the default background color provided in the `setup()` function.
     * `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
-    * `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `'StatusComponent'` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
+    * `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `StatusComponent` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
 
 An example of using the hl group:
 ```lua
@@ -181,11 +181,11 @@ end
 ```
 
 ##### Separators
-Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left or the right side of the component, respectively.
+Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
-The value of `left_sep` and `right_sep` can just be set to a string that is displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [default seperators](#default-separators). The value of `left_sep` and `right_sep` can also be a table or a function returning a table, in which there would be two values, `str` and `hl`, where `str` would represent the separator string and `hl` would represent the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
+The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [default separators](#default-separators). The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there would be two values, `str` and `hl`, where `str` would represent the separator string and `hl` would represent the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
 
-But you can also set `left_sep` and `right_sep` to be a `table` containing multiple separator elements, you can use this if you want to have different highlights for the left or right separator of the same component or if you want to better organize your seperator components.
+But you can also set `left_sep` and `right_sep` to be a `table` containing multiple separator elements, you can use this if you want to have different highlights for different parts of the left/right separator of the same component or if you want to better organize your separator components.
 
 For example:
 ```lua
@@ -259,7 +259,7 @@ components.left.active[2] = {
 }
 
 -- Components that show current file size
-components.left.active[1] = {
+components.left.active[3] = {
     provider = 'file_size',
     enabled = function() return vim.fn.getfsize(vim.fn.expand('%:t')) > 0 end,
     right_sep = {
@@ -293,7 +293,7 @@ components.right.active[1] = {
 ```
 
 ##### Default values
-For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline').colors` and `require('feline').separators` respectively, but there is a much easier way to use them, that is to just directly assign the name of the color or separator to the value, eg:
+For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline').colors` and `require('feline').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
 ```lua
 hl = {bg = 'oceanblue'},
 right_sep = 'slant_right'
@@ -341,7 +341,9 @@ Below is a list of all the default value names and their values:
 |`circle`|`'●'`
 
 #### Properties
-Besides components, the generator may also have a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc. Finally, `force_inactive` needs three elements in it, `filetypes`, `buftypes` and `bufnames`, all of which are tables containing the filetypes, buffer types and buffer names respectively that will be forced to have the inactive statusline. Here's an example of how to set the properties table
+Besides components, the generator may also be given a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc.
+
+Finally, `force_inactive` needs three elements in it, `filetypes`, `buftypes` and `bufnames`, all of which are tables containing the filetypes, buffer types and buffer names respectively that will be forced to have the inactive statusline. Here's an example of how to set the properties table
 ```lua
 -- Initialize the properties table
 properties = {
@@ -377,23 +379,24 @@ Now that we've learned to set up both the components table and the properties ta
 * `default_bg` - [Name](#default-colors) or RGB hex code of default background color.
 * `components` - The components table
 * `properties` - The properties table
-* `vi_mode-colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. Here is a list of all possible vi_mode names used with the default color associated with them:
-```lua
-NORMAL = 'green'         -- Normal mode
-OP = 'green'             -- Operator pending mode
-INSERT = 'red'           -- Insert mode
-VISUAL = 'skyblue'       -- Visual mode
-BLOCK = 'skyblue'        -- Visual block mode
-REPLACE = 'violet'       -- Replace mode
-['V-REPLACE'] = 'violet' -- Virtual Replace mode
-ENTER = 'cyan'           -- Enter mode
-MORE = 'cyan'            -- More mode
-SELECT = 'orange'        -- Select mode
-COMMAND = 'green'        -- Command mode
-SHELL = 'green'          -- Shell mode
-TERM = 'green'           -- Terminal mode
-NONE = 'yellow'          -- None
-```
+* `vi_mode-colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
+
+|Mode|Description|Value|
+--|--|--
+|`NORMAL`|Normal mode|`'green'`|
+|`OP`|Operator pending mode|`'green'`|
+|`INSERT`|Insert mode|`'red'`|
+|`VISUAL`|Visual mode|`'skyblue'`|
+|`BLOCK`|Visual block mode|`'skyblue'`|
+|`REPLACE`|Replace mode|`'violet'`|
+|`V-REPLACE`|Virtual Replace mode|`'violet'`|
+|`ENTER`|Enter mode|`'cyan'`|
+|`MORE`|More mode|`'cyan'`|
+|`SELECT`|Select mode|`'orange'`|
+|`COMMAND`|Command mode|`'green'`|
+|`SHELL`|Shell mode|`'green'`|
+|`TERM`|Terminal mode|`'green'`|
+|`NONE`|None|`'yellow'`|
 
 #### Example config
 It's finally time to see a fully-fledged example of how to set up the statusline. Here is an example config that's actually the same as the default config, except it's set-up manually:
@@ -655,13 +658,30 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`diagnostic_info`|Diagnostics info count|
 
 ##### Vi-mode
-The vi-mode provider by itself only shows an icon, to actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config)
+The vi-mode provider by itself only shows an icon, to actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config).
+
+Here is the simplest method to make a component with proper Vi-mode indication:
+```lua
+components.left.active[2] = {
+    provider = 'vi_mode',
+    hl = function()
+        local val = {}
+
+        val.name = require('feline.providers.vi_mode').get_mode_highlight_name()
+        val.fg = require('feline.providers.vi_mode').get_mode_color()
+        val.style = 'bold'
+
+        return val
+    end,
+    right_sep = ' '
+}
+```
 
 ##### Git
-The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use this provider, otherwise it'll output nothing.
+The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll output nothing.
 
 ##### Diagnostics
-The diagnostics providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else it'll have no output.
+The diagnostics providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 #### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers.
