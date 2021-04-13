@@ -4,7 +4,7 @@ A minimal, stylish and customizable statusline for Neovim written in Lua
 Requires Neovim >= 0.5
 
 ## About
-Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/galaxyline.nvim), but being more minimal and keeping complete customizability in mind. Feline is less of a statusline unto itself but more of a framework for you to easily build your own statusline while being to tweak every tiny bit to your heart's content. But for those who want to just get stuff done, Feline also provides a default statusline which should fit the needs of most people.
+Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/galaxyline.nvim), but being more minimal and keeping complete customizability in mind. Feline is less of a statusline unto itself but more of a framework for you to easily build your own statusline on, while being able to tweak every tiny bit to your heart's content. But for those who just want to get stuff done, Feline also provides a default statusline which should fit the needs of most people.
 
 ## Features
 * Ease-of-use.
@@ -68,6 +68,7 @@ require('feline').setup({
     default_bg = '#1F1F23'
 })
 ```
+
 ### 2. Building your own statusline.
 
 If you don't mind getting your hands dirty, then I recommend making your own statusline, it's very easy to do so, but for that you have to first understand how Feline works.<br><br>Feline has a statusline generator that takes a `components` value and a `properties` value, both of them are Lua tables. The `components` table needs to contain the statusline components while the `properties` table needs to contain the statusline properties.
@@ -663,7 +664,8 @@ The vi-mode provider by itself only shows an icon, to actually indicate the curr
 
 Here is the simplest method to make a component with proper Vi-mode indication:
 ```lua
-components.left.active[2] = {
+-- Remember to change "components.left.active[1]" according to the rest of your config
+components.left.active[1] = {
     provider = 'vi_mode',
     hl = function()
         local val = {}
@@ -688,10 +690,10 @@ The diagnostics providers all require the Neovim built-in LSP to be configured a
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers.
 
 ## Maintenance
-While I chose to make this plugin available to others, I mainly created it for myself. So I may not go out of my way to fix a minor niche issue unless it gets in my way. So if you have an issue, consider making a pull request that fixes your issue instead. But by all means if you do post an issue, I will try to see if I can fix it.
+While I chose to make this plugin available to others, I mainly created it for myself. So I may not go out of my way to fix a very minor niche issue that can be easily avoided unless it gets in my way. So if you have an issue that isn't very important, consider making a pull request that fixes your issue instead. But by all means if you do post an issue, I will try to see if I can fix it.
 
 ## LICENSE
-Feline is licensed under GNU GPLv3-or-later. For more info, see: [LICENSE.md](LICENSE.md)
+Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md)
 
 ## Miscellaneous
 ### Naming
