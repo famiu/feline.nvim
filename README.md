@@ -338,7 +338,7 @@ Below is a list of all the default value names and their values:
 |`left_rounded_thin`|`''`
 |`right_rounded`|`''`
 |`right_rounded_thin`|`''`
-|`circle = '●'``
+|`circle`|`'●'`
 
 #### Properties
 Besides components, the generator may also have a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc. Finally, `force_inactive` needs three elements in it, `filetypes`, `buftypes` and `bufnames`, all of which are tables containing the filetypes, buffer types and buffer names respectively that will be forced to have the inactive statusline. Here's an example of how to set the properties table
