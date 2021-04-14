@@ -405,7 +405,7 @@ And that's it, that's how you set up the properties table
 
 #### The setup function
 Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
-* `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings.
+* `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 * `default_fg` - [Name](#default-colors) or RGB hex code of default foreground color.
 * `default_bg` - [Name](#default-colors) or RGB hex code of default background color.
 * `components` - The components table
@@ -670,8 +670,19 @@ require('feline').setup({
 })
 ```
 
-### Providers
-#### Default providers
+### 3. Modifying an existing preset
+If you like the defaults for the most part but there's some things you want to change, then you'd be glad to know that it's easy to just modify an existing preset to get the statusline configuration you want. Just do:
+```lua
+-- Substitute preset_name with the name of the preset you want to modify.
+-- eg: "default" or "noicon"
+local components = require('feline.presets')[preset_name].components
+local properties = require('feline.presets')[preset_name].properties
+```
+
+After that, you can just modify those values and call [the setup function](#the-setup-function) as you normally would.
+
+## Providers
+### Default providers
 Feline by default has some built-in providers to make your life easy. They are:
 |Name|Description|
 --|--
@@ -719,15 +730,15 @@ components.left.active[1] = {
 
 The Vi-mode provider also provides a helper function `get_mode_highlight_name()` which can be used through `require('feline.providers.vi_mode').get_mode_highlight_name()`, it returns the highlight name for the current mode, which you can then use for the provider's `hl.name` to give its highlight groups meaningful names, as shown in the [example config](#example-config)
 
-##### Git
+#### Git
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll output nothing.
 
-##### Diagnostics
+#### Diagnostics
 The diagnostics providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type)` where type represents the type of diagnostic. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`. You may use this function in the `enabled` value of a diagnostics component to disable the component if there are no diagnostics, as shown in the [example config](#example-config).
 
-#### Adding your own provider
+### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
 ## Why Feline?
