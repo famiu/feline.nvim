@@ -139,7 +139,7 @@ M.components.right.active[1] = {
 
         return val
     end,
-    icon = ''
+    icon = ' '
 }
 
 M.components.right.active[2] = {
@@ -148,7 +148,7 @@ M.components.right.active[2] = {
         fg = 'green',
         bg = 'black'
     },
-    icon = ' + '
+    icon = ' +'
 }
 
 M.components.right.active[3] = {
@@ -157,7 +157,7 @@ M.components.right.active[3] = {
         fg = 'orange',
         bg = 'black'
     },
-    icon = ' ~ '
+    icon = ' ~'
 }
 
 M.components.right.active[4] = {
@@ -172,7 +172,7 @@ M.components.right.active[4] = {
 
         return val
     end,
-    icon = ' - '
+    icon = ' -'
 }
 
 M.components.right.active[5] = {
