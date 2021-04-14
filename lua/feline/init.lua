@@ -34,6 +34,7 @@ function M.setup(config)
         preset = presets["default"]
     end
 
+    colors = parse_config(config, "colors", "table", {})
     colors.fg = parse_config(config, "default_fg", "string", colors.fg)
     colors.bg = parse_config(config, "default_bg", "string", colors.bg)
     vi_mode_colors = parse_config(config, "vi_mode_colors", "table", {})
