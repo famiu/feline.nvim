@@ -1,4 +1,5 @@
 local fn = vim.fn
+local o = vim.o
 local bo = vim.bo
 
 local M = {}
@@ -45,8 +46,7 @@ function M.file_type()
 end
 
 function M.file_encoding()
-    local fenc = vim.bo.fenc
-    local enc = fenc ~= '' and fenc or vim.o.enc
+    local enc = (bo.fenc ~= '' and bo.fenc) or o.enc
     return enc:upper()
 end
 
