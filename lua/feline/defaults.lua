@@ -22,6 +22,7 @@ M.separators = {
     vertical_bar_thin = '│',
     left = '',
     right = '',
+    block = '█',
     left_filled = '',
     right_filled = '',
     slant_left = '',

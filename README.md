@@ -353,6 +353,7 @@ Below is a list of all the default value names and their values:
 |`vertical_bar_thin`|`'│'`
 |`left`|`''`
 |`right`|`''`
+|`block`|`'█'`
 |`left_filled`|`''`
 |`right_filled`|`''`
 |`slant_left`|`''`
