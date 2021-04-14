@@ -60,10 +60,11 @@ local function parse_hl(hl)
     if colors[hl.bg] then hl.bg = colors[hl.bg] end
 
     -- Generate unique hl name from color strings if a name isn't provided
-    hl.name = hl.name or (
-        '_' .. string.gsub(hl.fg, '^#', '') ..
-        '_' .. string.gsub(hl.bg, '^#', '') ..
-        '_' .. string.gsub(hl.style, ',', '_')
+    hl.name = hl.name or string.format(
+        '_%s_%s_%s',
+        string.gsub(hl.fg, '^#', ''),
+        string.gsub(hl.bg, '^#', ''),
+        string.gsub(hl.style, ',', '_')
     )
 
     return utils.add_component_highlight(hl.name, hl.fg, hl.bg, hl.style)
@@ -96,18 +97,19 @@ end
 local function parse_sep_list(sep_list, parent_bg)
     if sep_list == nil then return '' end
 
-    local sep_str = ''
 
     if (type(sep_list) == "table" and sep_list[1] and
     (type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
-        for _,v in ipairs(sep_list) do
-            sep_str = sep_str .. parse_sep(v, parent_bg)
-        end
-    else
-        sep_str = parse_sep(sep_list, parent_bg)
-    end
+        local sep_strs = {}
 
-    return sep_str
+        for _,v in ipairs(sep_list) do
+            table.insert(sep_strs, parse_sep(v, parent_bg))
+        end
+
+        return table.concat(sep_strs)
+    else
+        return parse_sep(sep_list, parent_bg)
+    end
 end
 
 -- Parse component provider
