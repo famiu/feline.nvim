@@ -183,8 +183,8 @@ icon = function() return ' - ' end
 ```
 
 * `hl` (table): Determines the highlight settings. The hl table can have three values:
-    * `hl.fg` (string): RGB hex or [name](#default-colors) of foreground color. (eg: `'#FFFFFF'`).<br>By default it uses the default foreground color provided in the `setup()` function.
-    * `hl.bg` (string): RGB hex or [name](#default-colors) of background color. (eg: `#000000'`).<br>By default it uses the default background color provided in the `setup()` function.
+    * `hl.fg` (string): RGB hex or [name](#default-colors) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
+    * `hl.bg` (string): RGB hex or [name](#default-colors) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
     * `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
     * `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `StatusComponent` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
 
@@ -322,7 +322,7 @@ components.right.active[1] = {
 ```
 
 ##### Default values
-For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline').colors` and `require('feline').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
+For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline.defaults').colors` and `require('feline.defaults').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
 ```lua
 hl = {bg = 'oceanblue'},
 right_sep = 'slant_right'
@@ -349,26 +349,26 @@ Below is a list of all the default value names and their values:
 ###### Default Separators
 |Name|Value|
 --|--
-|`vertical_bar`|`'┃'`
-|`vertical_bar_thin`|`'│'`
-|`left`|`''`
-|`right`|`''`
-|`block`|`'█'`
-|`left_filled`|`''`
-|`right_filled`|`''`
-|`slant_left`|`''`
-|`slant_left_thin`|`''`
-|`slant_right`|`''`
-|`slant_right_thin`|`''`
-|`slant_left_2`|`''`
-|`slant_left_2_thin`|`''`
-|`slant_right_2`|`''`
-|`slant_right_2_thin`|`''`
-|`left_rounded`|`''`
-|`left_rounded_thin`|`''`
-|`right_rounded`|`''`
-|`right_rounded_thin`|`''`
-|`circle`|`'●'`
+|`vertical_bar`|`'┃'`|
+|`vertical_bar_thin`|`'│'`|
+|`left`|`''`|
+|`right`|`''`|
+|`block`|`'█'`|
+|`left_filled`|`''`|
+|`right_filled`|`''`|
+|`slant_left`|`''`|
+|`slant_left_thin`|`''`|
+|`slant_right`|`''`|
+|`slant_right_thin`|`''`|
+|`slant_left_2`|`''`|
+|`slant_left_2_thin`|`''`|
+|`slant_right_2`|`''`|
+|`slant_right_2_thin`|`''`|
+|`left_rounded`|`''`|
+|`left_rounded_thin`|`''`|
+|`right_rounded`|`''`|
+|`right_rounded_thin`|`''`|
+|`circle`|`'●'`|
 
 #### Properties
 Besides components, the generator may also be given a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc.
