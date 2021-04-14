@@ -63,8 +63,8 @@ M.components.left.active[3] = {
         bg = 'oceanblue',
         style = 'bold'
     },
-    left_sep = {' ', 'slant_left_2'},
-    right_sep = {'slant_right_2', ' '},
+    left_sep = '',
+    right_sep = ' ',
     icon = ''
 }
 
@@ -74,7 +74,7 @@ M.components.left.active[4] = {
     right_sep = {
         ' ',
         {
-            str = 'slant_left_2_thin',
+            str = 'vertical_bar_thin',
             hl = {
                 fg = 'fg',
                 bg = 'bg'
@@ -89,7 +89,7 @@ M.components.left.active[5] = {
     right_sep = {
         ' ',
         {
-            str = 'slant_right_2_thin',
+            str = 'vertical_bar_thin',
             hl = {
                 fg = 'fg',
                 bg = 'bg'
@@ -214,7 +214,7 @@ M.components.left.inactive[1] = {
                 bg = 'oceanblue'
             }
         },
-        'slant_right'
+        ' '
     }
 }
 

@@ -62,7 +62,10 @@ M.components.left.active[3] = {
         bg = 'oceanblue',
         style = 'bold'
     },
-    left_sep = {' ', 'slant_left_2'},
+    left_sep = {
+        ' ', 'slant_left_2',
+        {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
+    },
     right_sep = {'slant_right_2', ' '}
 }
 

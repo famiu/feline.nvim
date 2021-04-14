@@ -23,7 +23,7 @@ function M.file_info(component)
         modified = ''
     end
 
-    return ' ' .. icon .. ' ' .. filename .. ' ' .. modified
+    return icon .. ' ' .. filename .. ' ' .. modified
 end
 
 function M.file_size()
