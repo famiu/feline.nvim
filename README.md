@@ -17,8 +17,8 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
     * Neovim >= 0.5
     * Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
 * Optional
-    * [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) (for icon support)
-    * [A patched font](https://github.com/ryanoasis/nerd-fonts/) (for icon support)
+    * [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icon support
+    * [A patched font](https://github.com/ryanoasis/nerd-fonts/) - For icon support
     * [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For git info
     * [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/) - To configure LSP for diagnostics
 
