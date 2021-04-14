@@ -15,6 +15,7 @@ M.scroll_bar = cursor.scroll_bar
 M.file_info = file.file_info
 M.file_size = file.file_size
 M.file_type = file.file_type
+M.file_encoding = file.file_encoding
 
 M.git_branch = git.git_branch
 M.git_diff_added = git.git_diff_added

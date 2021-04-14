@@ -1,4 +1,5 @@
 local fn = vim.fn
+local o = vim.o
 local bo = vim.bo
 
 local M = {}
@@ -42,6 +43,11 @@ end
 
 function M.file_type()
     return bo[vim.api.nvim_get_current_buf()].filetype:upper()
+end
+
+function M.file_encoding()
+    local enc = (bo.fenc ~= '' and bo.fenc) or o.enc
+    return enc:upper()
 end
 
 return M
