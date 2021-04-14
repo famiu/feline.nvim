@@ -3,11 +3,17 @@ local bo = vim.bo
 
 local M = {}
 
-function M.file_info()
+function M.file_info(component)
     local filename = fn.expand('%:t')
     local extension = fn.expand('%:e')
-    local icon = require'nvim-web-devicons'.get_icon(filename, extension, { default = true })
+    local icon
     local modified
+
+    if component and component.icon then
+        icon = component.icon
+    else
+        icon = require'nvim-web-devicons'.get_icon(filename, extension, { default = true })
+    end
 
     if filename == '' then filename = 'unnamed' end
 

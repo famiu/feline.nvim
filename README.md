@@ -15,10 +15,10 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ## Requirements
 * Necessary
     * Neovim >= 0.5
-    * [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/)
-    * [A patched font](https://github.com/ryanoasis/nerd-fonts/)
     * Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
 * Optional
+    * [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) (for icon support)
+    * [A patched font](https://github.com/ryanoasis/nerd-fonts/) (for icon support)
     * [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For git info
     * [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/) - To configure LSP for diagnostics
 
@@ -59,6 +59,13 @@ Once you've installed Feline, it's very easy to start using it. Here are the fol
 If you want an opinionated statusline that "just works", then you can just use Feline's default statusline, for which you just have to add the `setup()` function to your config:
 ```lua
 require('feline').setup()
+```
+
+In case you don't have nvim-web-devicons or a patched font, or just don't like icons, there's also a default statusline configuration without icons. To use it, just do:
+```lua
+require('feline').setup({
+    preset = 'noicon'
+})
 ```
 
 You can also make minor tweaks like changing the default foreground and background color like this:
@@ -129,13 +136,22 @@ components.right.active[2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index.
 
-Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments that Feline will automatically evaluate. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `provider` requires a string value, if you set it to a function, the function must also return a string value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take one argument, more about that below. Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
-* `provider` (string): Text to show
+* `provider` (string): Text to show. If it's a function, it must evaluate to a string. The function can take either no arguments, or one argument which would contain the component itself
 ```lua
 -- Provider that shows current line in file
 provider = function()
     return string.format('%d:%d', vim.fn.line('.'), vim.fn.col('.'))
+end
+
+-- Providers can also take the component as an argument
+provider = function(component)
+    if component and component.icon then
+        return component.icon
+    else
+        return ''
+    end
 end
 
 -- Providers can also just contain a simple string, such as:
@@ -155,6 +171,15 @@ Note that you can also use your [manually added providers](#adding-your-own-prov
 enabled = function()
     return vim.fn.getfsize(vim.fn.expand('%:t')) > 0
 end
+```
+
+* `icon` (string): Some components use a glyph icon. If you either don't have a patched font or don't like the default icon that Feline provides, you may set this value to use any icon you want instead. For example:
+```lua
+-- Setting icon to a string
+icon = ' + '
+
+-- Setting icon to a function
+icon = function() return ' - ' end
 ```
 
 * `hl` (table): Determines the highlight settings. The hl table can have three values:
@@ -257,7 +282,9 @@ components.left.active[2] = {
         style = 'bold'
     },
     left_sep = {' ', 'slant_left_2'},
-    right_sep = {'slant_right_2', ' '}
+    right_sep = {'slant_right_2', ' '},
+    -- Uncomment the next line to disable file icons
+    -- icon = ''
 }
 
 -- Components that show current file size
@@ -377,6 +404,7 @@ And that's it, that's how you set up the properties table
 
 #### The setup function
 Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
+* `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings.
 * `default_fg` - [Name](#default-colors) or RGB hex code of default foreground color.
 * `default_bg` - [Name](#default-colors) or RGB hex code of default background color.
 * `components` - The components table
@@ -662,6 +690,8 @@ Feline by default has some built-in providers to make your life easy. They are:
 ##### Vi-mode
 The vi-mode provider by itself only shows an icon, to actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config).
 
+Note that this is different if you set the `icon` value of the component to `''`, in that case it'll use the name of the mode instead of an icon, which is what the `noicon` preset uses.
+
 Here is the simplest method to make a component with proper Vi-mode indication:
 ```lua
 -- Remember to change "components.left.active[1]" according to the rest of your config
@@ -676,7 +706,9 @@ components.left.active[1] = {
 
         return val
     end,
-    right_sep = ' '
+    right_sep = ' ',
+    -- Uncomment the next line to disable icons for this component and use the mode name instead
+    -- icon = ''
 }
 ```
 
@@ -687,7 +719,7 @@ The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsi
 The diagnostics providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 #### Adding your own provider
-In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers.
+In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
 ## Why Feline?
 Now, you might be thinking, why do we need another statusline plugin? We've already got a bunch of brilliant statusline plugins like galaxyline, airline, lualine, expressline etc. and all of them are excellent. So then, why Feline? What I'm about to say can be (and probably is) very biased and opinionated but, despite those plugins being neat, I think each have their own shortcomings, which I see as too much to ignore. Also I could be wrong about some of these things since I haven't used some of the plugins I'm about to mention.

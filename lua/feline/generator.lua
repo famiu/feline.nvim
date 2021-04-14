@@ -5,16 +5,9 @@ local providers = require('feline.providers')
 
 local defhl = utils.add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 
-local M = {}
-M.components = {left = {}, right = {}}
-M.components.left = {active = {}, inactive = {}}
-M.components.right = {active = {}, inactive = {}}
-M.properties = {
-    force_inactive = {
-        buftypes = {},
-        filetypes = {},
-        bufnames = {}
-    }
+local M = {
+    components = {},
+    properties = {}
 }
 
 -- Check if table has value
@@ -117,6 +110,23 @@ local function parse_sep_list(sep_list, parent_bg)
     return sep_str
 end
 
+-- Parse component provider
+local function parse_provider(provider, component)
+    if type(provider) == "string" and type(providers[provider]) == "function" then
+        provider = providers[provider](component)
+    elseif type(provider) == "function" then
+        provider = provider(component)
+    end
+
+    if type(provider) ~= "string" then
+        print(string.format(
+            "Invalid provider! Provider must evaluate to string. Got type '%s' instead."
+        ), type(provider))
+    end
+
+    return provider
+end
+
 -- Parses a component alongside its highlight
 local function parse_component(component)
     local enabled = evaluate_if_function(component.enabled, true)
@@ -124,14 +134,18 @@ local function parse_component(component)
     if not enabled then return '' end
 
     local hl = evaluate_if_function(component.hl, {})
-    local provider = evaluate_if_function(component.provider)
-
-    if type(provider) == "string" and type(providers[provider]) == "function" then
-        provider = providers[provider]()
-    end
+    local icon = evaluate_if_function(component.icon)
 
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
+
+    local provider = parse_provider(component.provider, {
+        enabled = enabled,
+        hl = hl,
+        icon = icon,
+        left_sep = component.left_sep,
+        right_sep = component.right_sep
+    })
 
     local hlname = parse_hl(hl)
 
