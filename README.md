@@ -159,7 +159,7 @@ end
 
 -- Providers can also take the component as an argument
 provider = function(component)
-    if component and component.icon then
+    if component.icon then
         return component.icon
     else
         return ''

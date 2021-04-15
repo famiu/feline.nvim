@@ -25,19 +25,19 @@ function M.diagnostics_exist(severity)
 end
 
 function M.diagnostic_errors(component)
-    return ((component and component.icon) or '  ') .. M.get_diagnostics_count('Error')
+    return (component.icon or '  ') .. M.get_diagnostics_count('Error')
 end
 
 function M.diagnostic_warnings(component)
-    return ((component and component.icon) or '  ') .. M.get_diagnostics_count('Warning')
+    return (component.icon or '  ') .. M.get_diagnostics_count('Warning')
 end
 
 function M.diagnostic_hints(component)
-    return ((component and component.icon) or '  ') .. M.get_diagnostics_count('Hint')
+    return (component.icon or '  ') .. M.get_diagnostics_count('Hint')
 end
 
 function M.diagnostic_info(component)
-    return ((component and component.icon) or '  ') .. M.get_diagnostics_count('Information')
+    return (component.icon or '  ') .. M.get_diagnostics_count('Information')
 end
 
 return M

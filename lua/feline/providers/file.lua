@@ -10,7 +10,7 @@ function M.file_info(component)
     local icon
     local modified
 
-    if component and component.icon then
+    if component.icon then
         icon = component.icon
     else
         icon = require'nvim-web-devicons'.get_icon(filename, extension, { default = true })
