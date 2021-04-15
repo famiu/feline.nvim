@@ -71,7 +71,7 @@ M.components.left.active[3] = {
 
 M.components.left.active[4] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:t')) > 0 end,
+    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
