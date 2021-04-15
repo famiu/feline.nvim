@@ -32,6 +32,8 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 **[Config by crivotz:](https://github.com/crivotz/nv-ide/blob/master/lua/plugins/feline.lua)**
 ![image](https://user-images.githubusercontent.com/3275600/114735072-1ffe5d00-9d45-11eb-81a8-a666e5f0fa94.png)
 
+**NOTE: You can add your own configuration to this list. If you're interested, see: [#5](https://github.com/Famiu/feline.nvim/issues/5)**
+
 ## How to install
 * [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 ```
