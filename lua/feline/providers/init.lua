@@ -22,6 +22,7 @@ M.git_diff_added = git.git_diff_added
 M.git_diff_removed = git.git_diff_removed
 M.git_diff_changed = git.git_diff_changed
 
+M.lsp_client_names = lsp.lsp_client_names
 M.diagnostic_errors = lsp.diagnostic_errors
 M.diagnostic_warnings = lsp.diagnostic_warnings
 M.diagnostic_hints = lsp.diagnostic_hints

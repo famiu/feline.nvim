@@ -710,6 +710,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`git_diff_added`|Git diff added count|
 |`git_diff_removed`|Git diff removed count|
 |`git_diff_changed`|Git diff changed count|
+|`lsp_client_names`|Name of LSP clients attached to current buffer|
 |`diagnostic_errors`|Diagnostics errors count|
 |`diagnostic_warnings`|Diagnostics warnings count|
 |`diagnostic_hints`|Diagnostics hints count|
@@ -746,7 +747,7 @@ The Vi-mode provider also provides a helper function `get_mode_highlight_name()`
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll output nothing.
 
 #### Diagnostics
-The diagnostics providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
+The diagnostics and LSP providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type)` where type represents the type of diagnostic. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`. You may use this function in the `enabled` value of a diagnostics component to disable the component if there are no diagnostics, as shown in the [example config](#example-config).
 

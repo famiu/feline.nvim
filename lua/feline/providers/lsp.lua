@@ -2,7 +2,7 @@ local lsp = vim.lsp
 local M = {}
 
 function M.is_lsp_attached()
-    return next(vim.lsp.buf_get_clients(0)) ~= nil
+    return next(vim.lsp.buf_get_clients()) ~= nil
 end
 
 function M.get_diagnostics_count(severity)
@@ -16,12 +16,23 @@ function M.get_diagnostics_count(severity)
         count = count + lsp.diagnostic.get_count(bufnr, severity, client.id)
     end
 
-    if count == 0 then return nil else return count end
+    return count
 end
 
 function M.diagnostics_exist(severity)
     local diagnostics_count = M.get_diagnostics_count(severity)
     return diagnostics_count and diagnostics_count > 0
+end
+
+function M.lsp_client_names(component)
+    local clients = {}
+    local icon = component.icon or ' '
+
+    for _, client in pairs(vim.lsp.buf_get_clients()) do
+        table.insert(clients, icon .. client.name)
+    end
+
+    return table.concat(clients, ' ')
 end
 
 function M.diagnostic_errors(component)
