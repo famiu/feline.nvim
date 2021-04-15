@@ -64,7 +64,7 @@ function M.get_mode_color()
 end
 
 function M.get_mode_highlight_name()
-    return 'StatusComponentVim' .. utils.title_case(M.get_vim_mode())
+    return 'Vim' .. utils.title_case(M.get_vim_mode())
 end
 
 function M.vi_mode(component)
