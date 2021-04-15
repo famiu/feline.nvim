@@ -1,3 +1,6 @@
+local bo = vim.bo
+local fn = vim.fn
+
 local utils = require('feline.utils')
 local colors = require('feline.defaults').colors
 local separators = require('feline.defaults').separators
@@ -10,29 +13,17 @@ local M = {
     properties = {}
 }
 
--- Check if table has value
-local function has_value(table, val)
-    for _,v in ipairs(table) do
-        if v == val then
-            return true
-        end
-    end
-
-    return false
-end
-
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
     local force_inactive = M.properties.force_inactive
 
-    local bufnr = vim.api.nvim_get_current_buf()
-    local buftype = vim.bo[bufnr].buftype
-    local filetype = vim.bo[bufnr].filetype
-    local bufname = vim.fn.bufname(bufnr)
+    local buftype = bo.buftype
+    local filetype = bo.filetype
+    local bufname = fn.bufname()
 
-    return has_value(force_inactive.buftypes, buftype) or
-        has_value(force_inactive.filetypes, filetype) or
-        has_value(force_inactive.bufnames, bufname)
+    return fn.index(force_inactive.buftypes, buftype) ~= -1 or
+        fn.index(force_inactive.filetypes, filetype) ~= -1 or
+        fn.index(force_inactive.bufnames, bufname) ~= -1
 end
 
 -- Evaluate a component key if it is a function, else return the value
