@@ -9,9 +9,13 @@ end
 -- Highlight function
 function M.add_component_highlight(name, fg, bg, style)
     local hlname = 'StatusComponent' .. name
-    cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', hlname, style, fg, bg))
 
-    return hlname
+    if vim.fn.hlexists(hlname) ~= 0 then
+        return hlname
+    else
+        cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', hlname, style, fg, bg))
+        return hlname
+    end
 end
 
 -- Create augroup
