@@ -1,5 +1,6 @@
 local fn = vim.fn
 local colors = require('feline.defaults').colors
+local utils = require('feline.utils')
 
 local M = {}
 
@@ -53,11 +54,6 @@ M.mode_colors = {
     NONE = colors.yellow
 }
 
--- String to title case
-local title_case = function(str)
-    return string.gsub(string.lower(str), '%a', string.upper, 1)
-end
-
 -- Functions for statusline
 function M.get_vim_mode()
     return mode_alias[fn.mode()]
@@ -68,7 +64,7 @@ function M.get_mode_color()
 end
 
 function M.get_mode_highlight_name()
-    return 'StatusComponentVim' .. title_case(M.get_vim_mode())
+    return 'StatusComponentVim' .. utils.title_case(M.get_vim_mode())
 end
 
 function M.vi_mode(component)
