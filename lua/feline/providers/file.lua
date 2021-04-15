@@ -42,7 +42,7 @@ function M.file_size()
 end
 
 function M.file_type()
-    return bo[vim.api.nvim_get_current_buf()].filetype:upper()
+    return bo.filetype:upper()
 end
 
 function M.file_encoding()

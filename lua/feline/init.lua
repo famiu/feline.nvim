@@ -1,6 +1,7 @@
 local g = vim.g
 local fn = vim.fn
 local gen = require('feline.generator')
+local utils = require('feline.utils')
 
 local M = {}
 
@@ -48,11 +49,15 @@ function M.setup(config)
     generator.components = components
     generator.properties = properties
 
-    vim.wo.statusline = '%!v:lua.statusline()'
-    vim.o.statusline = '%!v:lua.statusline()'
+    vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
+
+    utils.create_augroup({
+        {'WinEnter,BufEnter', '*', 'set statusline<'},
+        {'WinLeave,BufLeave', '*', 'lua vim.wo.statusline=require\'feline\'.statusline()'}
+    }, 'feline')
 end
 
-function _G.statusline()
+function M.statusline()
     if g.statusline_winid == fn.win_getid() then
         return gen.generate_statusline(true)
     else
