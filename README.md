@@ -30,7 +30,10 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ![image](https://user-images.githubusercontent.com/29580810/114742106-36201380-9d6d-11eb-9866-e8c0fef8a1bd.png)
 
 **[Config by crivotz:](https://github.com/crivotz/nv-ide/blob/master/lua/plugins/feline.lua)**
-![image](https://user-images.githubusercontent.com/3275600/114735072-1ffe5d00-9d45-11eb-81a8-a666e5f0fa94.png)
+![image](https://user-images.githubusercontent.com/3275600/114841377-0ce89d00-9dd8-11eb-82b4-b3ee332771c2.png)
+
+**[Config by 6cdh:](https://github.com/6cdh/dotfiles/blob/main/nvim/.config/nvim/lua/statusline.lua)**
+![image](https://user-images.githubusercontent.com/39000776/114838041-e68e2600-9e06-11eb-9334-431a627ff144.png)
 
 **NOTE: You can add your own configuration to this list. If you're interested, see: [#5](https://github.com/Famiu/feline.nvim/issues/5)**
 
