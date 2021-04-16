@@ -24,16 +24,24 @@ end
 
 function M.setup(config)
     local colors = require('feline.defaults').colors
+    local separators = require('feline.defaults').separators
     local vi_mode = require('feline.providers.vi_mode')
     local generator = require('feline.generator')
     local presets = require('feline.presets')
-    local vi_mode_colors, components, properties, preset
+    local preset, components, properties
+    local custom_colors, custom_separators, vi_mode_colors
 
     if parse_config(config, "preset", "string") then
         preset = presets[config.preset]
     else
         preset = presets["default"]
     end
+
+    custom_colors = parse_config(config, "colors", "table", {})
+    custom_separators = parse_config(config, "separators", "table", {})
+
+    for color, hex in pairs(custom_colors) do colors[color] = hex end
+    for name, str in pairs(custom_separators) do separators[name] = str end
 
     colors.fg = parse_config(config, "default_fg", "string", colors.fg)
     colors.bg = parse_config(config, "default_bg", "string", colors.bg)

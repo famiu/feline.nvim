@@ -181,7 +181,7 @@ Note that you can also use your [manually added providers](#adding-your-own-prov
 ```lua
 -- Enable if opened file has a valid size
 enabled = function()
-    return vim.fn.getfsize(vim.fn.expand('%:t')) > 0
+    return vim.fn.getfsize(vim.fn.expand('%:p')) > 0
 end
 ```
 
@@ -195,8 +195,8 @@ icon = function() return ' - ' end
 ```
 
 * `hl` (table): Determines the highlight settings. The hl table can have three values:
-    * `hl.fg` (string): RGB hex or [name](#default-colors) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
-    * `hl.bg` (string): RGB hex or [name](#default-colors) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
+    * `hl.fg` (string): RGB hex or [name](#value-presets) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
+    * `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
     * `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
     * `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `StatusComponent` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
 
@@ -222,7 +222,7 @@ end
 ##### Separators
 Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
-The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [default separators](#default-separators). The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there would be two values, `str` and `hl`, where `str` would represent the separator string and `hl` would represent the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
+The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets). The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there would be two values, `str` and `hl`, where `str` would represent the separator string and `hl` would represent the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
 
 But you can also set `left_sep` and `right_sep` to be a `table` containing multiple separator elements, you can use this if you want to have different highlights for different parts of the left/right separator of the same component or if you want to better organize your separator components.
 
@@ -231,7 +231,7 @@ For example:
 -- Setting sep to a string
 left_sep = ' '
 
--- Setting sep to a default separator
+-- Setting sep to a separator preset
 left_sep = 'slant_right'
 
 -- Setting sep to a table with highlight
@@ -302,7 +302,7 @@ components.left.active[2] = {
 -- Components that show current file size
 components.left.active[3] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:t')) > 0 end,
+    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
@@ -333,22 +333,26 @@ components.right.active[1] = {
 }
 ```
 
-##### Default values
+##### Value presets
+Value presets are names for colors and separators that you can use instead of the hex code or separator string, respectively.
+
 For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline.defaults').colors` and `require('feline.defaults').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
 ```lua
 hl = {bg = 'oceanblue'},
 right_sep = 'slant_right'
 ```
 
+Not only that, you can add your own custom colors and separators through [the setup function](#the-setup-function) which allows you to just use the name of the color or separator to refer to it.
+
 Below is a list of all the default value names and their values:
-###### Default Colors
+###### Default colors
 |Name|Value|
 --|--
+|`fg`|`'#D0D0D0'`|
 |`bg`|`'#1F1F23'`|
 |`black`|`'#1B1B1B'`|
 |`skyblue`|`'#50B0F0'`|
 |`cyan`|`'#009090'`|
-|`fg`|`'#D0D0D0'`|
 |`green`|`'#60A040'`|
 |`oceanblue`|`'#0066cc'`|
 |`magenta`|`'#C26BDB'`|
@@ -418,10 +422,12 @@ And that's it, that's how you set up the properties table
 #### The setup function
 Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
 * `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
-* `default_fg` - [Name](#default-colors) or RGB hex code of default foreground color.
-* `default_bg` - [Name](#default-colors) or RGB hex code of default background color.
-* `components` - The components table
-* `properties` - The properties table
+* `default_fg` - [Name](#value-presets) or RGB hex code of default foreground color.
+* `default_bg` - [Name](#value-presets) or RGB hex code of default background color.
+* `colors` - A table containing custom [color value presets](#value-presets).
+* `separators` - A table containing custom [separator value presets](#value-presets).
+* `components` - The components table.
+* `properties` - The properties table.
 * `vi_mode-colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
 |Mode|Description|Value|
@@ -516,7 +522,7 @@ components.left.active[3] = {
 
 components.left.active[4] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:t')) > 0 end,
+    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
@@ -656,6 +662,46 @@ components.left.inactive[1] = {
     }
 }
 
+-- This table is equal to the default colors table
+local colors = {
+    black = '#1B1B1B',
+    skyblue = '#50B0F0',
+    cyan = '#009090',
+    green = '#60A040',
+    oceanblue = '#0066cc',
+    magenta = '#C26BDB',
+    orange = '#FF9000',
+    red = '#D10000',
+    violet = '#9E93E8',
+    white = '#FFFFFF',
+    yellow = '#E1E120'
+}
+
+-- This table is equal to the default separators table
+local separators = {
+    vertical_bar = '┃',
+    vertical_bar_thin = '│',
+    left = '',
+    right = '',
+    block = '█',
+    left_filled = '',
+    right_filled = '',
+    slant_left = '',
+    slant_left_thin = '',
+    slant_right = '',
+    slant_right_thin = '',
+    slant_left_2 = '',
+    slant_left_2_thin = '',
+    slant_right_2 = '',
+    slant_right_2_thin = '',
+    left_rounded = '',
+    left_rounded_thin = '',
+    right_rounded = '',
+    right_rounded_thin = '',
+    circle = '●'
+}
+
+-- This table is equal to the default vi_mode_colors table
 local vi_mode_colors = {
     NORMAL = 'green',
     OP = 'green',
@@ -676,6 +722,8 @@ local vi_mode_colors = {
 require('feline').setup({
     default_bg = '#1F1F23',
     default_fg = '#D0D0D0',
+    colors = colors,
+    separators = separators,
     components = components,
     properties = properties,
     vi_mode_colors = vi_mode_colors
