@@ -51,18 +51,24 @@ function M.setup(config)
     generator.properties = properties
 
     utils.create_augroup({
-        {'WinEnter,BufEnter', '*', 'lua require\'feline\'.statusline(true)'},
-        {'WinLeave,BufLeave', '*', 'lua require\'feline\'.statusline(false)'}
+        {'WinEnter,BufEnter', '*', 'lua require\'feline\'.statusline()'},
+        {'WinLeave,BufLeave', '*', 'lua require\'feline\'.inactive_statusline()'}
     }, 'feline')
 end
 
-local set_statusline = uv.new_async(vim.schedule_wrap(function(is_active)
-    wo.statusline = gen.generate_statusline(is_active)
-end
-))
+local sl_timer = uv.new_timer()
 
-function M.statusline(is_active)
-    set_statusline:send(is_active)
+local set_statusline = vim.schedule_wrap(function ()
+    wo.statusline = gen.generate_statusline(true)
+end)
+
+function M.inactive_statusline()
+    wo.statusline = gen.generate_statusline(false)
+end
+ 
+function M.statusline()
+    sl_timer:stop()
+    sl_timer:start(0, 100, set_statusline)
 end
 
 return M
