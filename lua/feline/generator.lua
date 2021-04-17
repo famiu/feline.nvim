@@ -94,7 +94,7 @@ local function parse_sep_list(sep_list, parent_bg)
         local sep_strs = {}
 
         for _,v in ipairs(sep_list) do
-            table.insert(sep_strs, parse_sep(v, parent_bg))
+            sep_strs[#sep_strs+1] = parse_sep(v, parent_bg)
         end
 
         return table.concat(sep_strs)
@@ -157,16 +157,16 @@ function M.generate_statusline(is_active)
     end
 
     for _,v in ipairs(M.components.left[statusline_type]) do
-        table.insert(statusline_components, parse_component(v))
+        statusline_components[#statusline_components+1] = parse_component(v)
     end
 
-    table.insert(statusline_components, '%=')
+    statusline_components[#statusline_components+1] = '%='
 
     for _,v in ipairs(M.components.right[statusline_type]) do
-        table.insert(statusline_components, parse_component(v))
+        statusline_components[#statusline_components+1] = parse_component(v)
     end
 
-    table.insert(statusline_components, '%#' .. defhl .. '#')
+    statusline_components[#statusline_components+1] = '%#' .. defhl .. '#'
     return table.concat(statusline_components)
 end
 

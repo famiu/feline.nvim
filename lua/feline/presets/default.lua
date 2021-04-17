@@ -1,6 +1,9 @@
 local lsp = require('feline.providers.lsp')
 local vi_mode_utils = require('feline.providers.vi_mode')
 
+local b = vim.b
+local fn = vim.fn
+
 local M = {
     properties = {
         force_inactive = {
@@ -71,7 +74,7 @@ M.components.left.active[3] = {
 
 M.components.left.active[4] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
+    enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
@@ -132,7 +135,7 @@ M.components.right.active[1] = {
     },
     right_sep = function()
         local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
 
         return val
     end
@@ -162,7 +165,7 @@ M.components.right.active[4] = {
     },
     right_sep = function()
         local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
 
         return val
     end
