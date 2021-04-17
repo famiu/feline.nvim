@@ -93,23 +93,30 @@ require('feline').setup({
 If you don't mind getting your hands dirty, then I recommend making your own statusline, it's very easy to do so, but for that you have to first understand how Feline works.<br><br>Feline has a statusline generator that takes a `components` value and a `properties` value, both of them are Lua tables. The `components` table needs to contain the statusline components while the `properties` table needs to contain the statusline properties.
 
 #### Components
-Inside the `components` table, there needs to be two more tables, `left` and `right`, which will dictate if the component should be put in the left side or the right side of the statusline. And in each of the `left` and `right` tables, there needs to be two more tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in the active window or the inactive window.
+Inside the `components` table, there needs to be three more tables, `left`, `mid` and `right`, which will dictate if the component should be put in the left side, middle or the right side of the statusline. And in each of those tables, there needs to be two more tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in the active window or the inactive window.
 
 So first, in your init.lua file, you have to initialize the components table
 ```lua
 -- Initialize the components table
 local components = {
     left = {active = {}, inactive = {}},
+    mid = {active = {}, inactive = {}},
     right = {active = {}, inactive = {}}
 }
 ```
 
-You can then add new components to by adding an element to the `active` or `inactive` table inside either the `left` or `right` table. For example: 
+You can then add new components to the statusline by adding an element to the `active` or `inactive` table inside any of those three tables. For example: 
 
 ```lua
 -- Insert a component that will be on the left side of the statusline
 -- when the window is active:
 table.insert(components.left.active, {
+    -- Component info here
+})
+
+-- Insert a component that will be on the middle of the statusline
+-- when the window is active:
+table.insert(components.mid.active, {
     -- Component info here
 })
 
@@ -125,9 +132,15 @@ table.insert(components.left.inactive, {
     -- Component info here
 })
 
--- Insert a component that will be on the right side of the statusline
+--- Insert a component that will be on the middle of the statusline
 -- when the window is inactive:
-table.insert(components.left.right.inactive, {
+table.insert(components.mid.inactive, {
+    -- Component info here
+})
+
+- Insert a component that will be on the right side of the statusline
+-- when the window is inactive:
+table.insert(components.right.inactive, {
     -- Component info here
 })
 ```
@@ -146,7 +159,7 @@ components.right.active[2] = {
 }
 ```
 
-**NOTE:** If you use the index instead of table.insert, remember to put the correct index.
+**NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also remember that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
 Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take one argument, more about that below. Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
@@ -316,6 +329,11 @@ components.left.active[3] = {
     }
 }
 
+-- Component that shows file encoding
+components.mid.active[1] = {
+    provider = 'file_encoding'
+}
+
 -- Component that shows current git branch
 components.right.active[1] = {
     provider = 'git_branch',
@@ -453,6 +471,9 @@ It's finally time to see a fully-fledged example of how to set up the statusline
 local lsp = require('feline.providers.lsp')
 local vi_mode_utils = require('feline.providers.vi_mode')
 
+local b = vim.b
+local fn = vim.fn
+
 local properties = {
     force_inactive = {
         filetypes = {},
@@ -463,6 +484,10 @@ local properties = {
 
 local components = {
     left = {
+        active = {},
+        inactive = {}
+    },
+    mid = {
         active = {},
         inactive = {}
     },
@@ -522,7 +547,7 @@ components.left.active[3] = {
 
 components.left.active[4] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
+    enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
@@ -583,7 +608,7 @@ components.right.active[1] = {
     },
     right_sep = function()
         local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
 
         return val
     end
@@ -613,7 +638,7 @@ components.right.active[4] = {
     },
     right_sep = function()
         local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
 
         return val
     end
@@ -739,7 +764,7 @@ local components = require('feline.presets')[preset_name].components
 local properties = require('feline.presets')[preset_name].properties
 ```
 
-After that, you can just modify those values and call [the setup function](#the-setup-function) as you normally would.
+After that, you can just modify those values and call [the setup function](#the-setup-function) with the preset as you normally would.
 
 ## Providers
 ### Default providers
@@ -765,7 +790,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`diagnostic_info`|Diagnostics info count|
 
 ##### Vi-mode
-The vi-mode provider by itself only shows an icon, to actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config).
+The vi-mode provider by itself only shows an icon. To actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config).
 
 Note that this is different if you set the `icon` value of the component to `''`, in that case it'll use the name of the mode instead of an icon, which is what the `noicon` preset uses.
 
