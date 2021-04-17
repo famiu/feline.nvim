@@ -162,11 +162,16 @@ function M.generate_statusline(is_active)
 
     statusline_components[#statusline_components+1] = '%='
 
+    for _,v in ipairs(M.components.mid[statusline_type]) do
+        statusline_components[#statusline_components+1] = parse_component(v)
+    end
+
+    statusline_components[#statusline_components+1] = '%='
+
     for _,v in ipairs(M.components.right[statusline_type]) do
         statusline_components[#statusline_components+1] = parse_component(v)
     end
 
-    statusline_components[#statusline_components+1] = '%#' .. defhl .. '#'
     return table.concat(statusline_components)
 end
 

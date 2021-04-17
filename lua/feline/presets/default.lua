@@ -17,6 +17,10 @@ local M = {
             active = {},
             inactive = {}
         },
+        mid = {
+            active = {},
+            inactive = {}
+        },
         right = {
             active = {},
             inactive = {}
