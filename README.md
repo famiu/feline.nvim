@@ -231,7 +231,10 @@ hl = function()
     return val
 end
 ```
+<br>
 
+**NOTE:** Some providers may also have special component values unique to them, such as the `file_info` provider having a `file_modified_icon` value that you can set. For more info, see: [default providers](#default-providers).
+<br><br>
 ##### Separators
 Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
@@ -775,7 +778,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`position`|Get line and column number of cursor|
 |`line_percentage`|Current line percentage|
 |`scroll_bar`|Scroll bar that shows file progress|
-|`file_info`|Get file icon, name and modified status|
+|[`file_info`](#file-info)|Get file icon, name and modified status|
 |`file_size`|Get file size|
 |`file_type`|Get file type|
 |`file_encoding`|Get file encoding|
@@ -789,7 +792,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`diagnostic_hints`|Diagnostics hints count|
 |`diagnostic_info`|Diagnostics info count|
 
-##### Vi-mode
+#### Vi-mode
 The vi-mode provider by itself only shows an icon. To actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` as shown in the [example config](#example-config).
 
 Note that this is different if you set the `icon` value of the component to `''`, in that case it'll use the name of the mode instead of an icon, which is what the `noicon` preset uses.
@@ -815,6 +818,9 @@ components.left.active[1] = {
 ```
 
 The Vi-mode provider also provides a helper function `get_mode_highlight_name()` which can be used through `require('feline.providers.vi_mode').get_mode_highlight_name()`, it returns the highlight name for the current mode, which you can then use for the provider's `hl.name` to give its highlight groups meaningful names, as shown in the [example config](#example-config)
+
+#### File Info
+The `file_info` provider has a special `file_modified_icon` component value that you can set to change the icon that is shown when a file is modified. By default it is set to `'●'`.
 
 #### Git
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll output nothing.

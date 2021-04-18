@@ -88,7 +88,6 @@ end
 local function parse_sep_list(sep_list, parent_bg)
     if sep_list == nil then return '' end
 
-
     if (type(sep_list) == "table" and sep_list[1] and
     (type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
         local sep_strs = {}
@@ -132,13 +131,7 @@ local function parse_component(component)
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
 
-    local provider = parse_provider(component.provider, {
-        enabled = enabled,
-        hl = hl,
-        icon = icon,
-        left_sep = component.left_sep,
-        right_sep = component.right_sep
-    })
+    local provider = parse_provider(component.provider, component)
 
     local hlname = parse_hl(hl)
 

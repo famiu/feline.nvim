@@ -7,24 +7,21 @@ local M = {}
 function M.file_info(component)
     local filename = fn.expand('%:t')
     local extension = fn.expand('%:e')
-    local icon
-    local modified
+    local modified_str
 
-    if component.icon then
-        icon = component.icon
-    else
-        icon = require'nvim-web-devicons'.get_icon(filename, extension, { default = true })
-    end
+    local icon = component.icon or
+        require'nvim-web-devicons'.get_icon(filename, extension, { default = true })
 
     if filename == '' then filename = 'unnamed' end
 
     if bo.modified then
-        modified = '●' .. ' '
+        local modified_icon = component.file_modified_icon or '●'
+        modified_str = modified_icon .. ' '
     else
-        modified = ''
+        modified_str = ''
     end
 
-    return icon .. ' ' .. filename .. ' ' .. modified
+    return icon .. ' ' .. filename .. ' ' .. modified_str
 end
 
 function M.file_size()
