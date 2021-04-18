@@ -827,6 +827,49 @@ The diagnostics provider also provides a utility function `require('feline.provi
 ### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
+## Questions and Answers
+### 1. What if I don't want an inactive statusline
+In that case, you can just disable the inactive statusline by doing
+```lua
+-- Remove all inactive statusline components
+components.left.inactive = {}
+components.mid.inactive = {}
+components.right.inactive = {}
+```
+
+Alternatively, you could also use a thin line instead of the inactive statusline to separate you windows, like the vertical split seperator, except in this case it would act as a horizontal separator of sorts. You can do this through:
+```lua
+local nvim_exec = vim.api.nvim_exec
+
+-- Parse highlight of vertical split
+local VertSplitHL = {
+    fg = nvim_exec("highlight VertSplit", true):match("guifg=(#%d+)") or '#444444',
+    bg = nvim_exec("highlight VertSplit", true):match("guibg=(#%d+)") or '#1E1E1E',
+    style = nvim_exec("highlight VertSplit", true):match("gui=(#%d+)") or ''
+}
+
+-- Remove all inactive statusline components
+components.left.inactive = {}
+components.mid.inactive = {}
+components.right.inactive = {}
+
+-- Add strikethrough to vertical split highlight style
+-- in order to have a thin line instead of the statusline
+if VertSplitHL.style == '' then
+    VertSplitHL.style = 'strikethrough'
+else
+    VertSplitHL.style = VertSplitHL.style .. ',strikethrough'
+end
+
+-- Apply the vertical split's highlight to the statusline
+-- by having an empty provider with a highlight
+components.left.inactive[1] = {
+    provider = '',
+    -- Make inactive statusline have the same highlight as vertical split
+    hl = VertSplitHL
+}
+```
+
 ## Why Feline?
 Now, you might be thinking, why do we need another statusline plugin? We've already got a bunch of brilliant statusline plugins like galaxyline, airline, lualine, expressline etc. and all of them are excellent. So then, why Feline? What I'm about to say can be (and probably is) very biased and opinionated but, despite those plugins being neat, I think each have their own shortcomings, which I see as too much to ignore. Also I could be wrong about some of these things since I haven't used some of the plugins I'm about to mention.
 
