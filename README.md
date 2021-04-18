@@ -833,8 +833,11 @@ The diagnostics provider also provides a utility function `require('feline.provi
 ### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
-## Questions and Answers
-### 1. What if I don't want an inactive statusline
+## Common issues and questions
+### 1. Feline crashes or disappears for seemingly no reason
+This can be caused if you forget to remove your other statusline plugins after installing Feline. Make sure all other statusline plugins are removed before you install Feline, that should fix the issue.
+
+### 2. What if I don't want an inactive statusline?
 In that case, you can just disable the inactive statusline by doing
 ```lua
 -- Remove all inactive statusline components
