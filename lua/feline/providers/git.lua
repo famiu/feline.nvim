@@ -1,44 +1,44 @@
-local b = vim.b
 local M = {}
 
 function M.git_branch(component)
-    if not b.gitsigns_status_dict then return '' end
+    local gsd = vim.b.gitsigns_status_dict
 
-    local head = b.gitsigns_status_dict.head
-
-    if #head > 0 then
+    if gsd and gsd.head and #gsd.head > 0 then
         local icon = component.icon or '  '
-        return icon .. head
+        return icon .. gsd.head
     else
         return ''
     end
 end
 
 function M.git_diff_added(component)
-    if b.gitsigns_status_dict and b.gitsigns_status_dict['added']
-    and b.gitsigns_status_dict['added'] > 0 then
+    local gsd = vim.b.gitsigns_status_dict
+
+    if gsd and gsd['added'] and gsd['added'] > 0 then
         local icon = component.icon or '  '
-        return icon .. b.gitsigns_status_dict.added
+        return icon .. gsd.added
     else
         return ''
     end
 end
 
 function M.git_diff_removed(component)
-    if b.gitsigns_status_dict and b.gitsigns_status_dict['removed']
-    and b.gitsigns_status_dict['removed'] > 0 then
+    local gsd = vim.b.gitsigns_status_dict
+
+    if gsd and gsd['removed'] and gsd['removed'] > 0 then
         local icon = component.icon or '  '
-        return icon .. b.gitsigns_status_dict.removed
+        return icon .. gsd.removed
     else
         return ''
     end
 end
 
 function M.git_diff_changed(component)
-    if b.gitsigns_status_dict and b.gitsigns_status_dict['changed']
-    and b.gitsigns_status_dict['changed'] > 0 then
+    local gsd = vim.b.gitsigns_status_dict
+
+    if gsd and gsd['changed'] and gsd['changed'] > 0 then
         local icon = component.icon or ' 柳'
-        return icon .. b.gitsigns_status_dict.changed
+        return icon .. gsd.changed
     else
         return ''
     end
