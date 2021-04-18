@@ -833,12 +833,14 @@ The diagnostics provider also provides a utility function `require('feline.provi
 ### Adding your own provider
 In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
-## Common issues and questions
-### 1. Feline crashes or disappears for seemingly no reason
+## Help
+### Common issues
+#### 1. Feline crashes or disappears for seemingly no reason
 This can be caused if you forget to remove your other statusline plugins after installing Feline. Make sure all other statusline plugins are removed before you install Feline, that should fix the issue.
 
-### 2. What if I don't want an inactive statusline?
-In that case, you can just disable the inactive statusline by doing
+### Q&A
+#### 1. What if I don't want an inactive statusline?
+In that case, you can just disable the inactive statusline by doing:
 ```lua
 -- Remove all inactive statusline components
 components.left.inactive = {}
@@ -879,6 +881,9 @@ components.left.inactive[1] = {
 }
 ```
 
+### Reporting issues or feature requests
+If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [issue](https://github.com/famiu/feline.nvim/issues) and I will try my best to look into it.
+
 ## Why Feline?
 Now, you might be thinking, why do we need another statusline plugin? We've already got a bunch of brilliant statusline plugins like galaxyline, airline, lualine, expressline etc. and all of them are excellent. So then, why Feline? What I'm about to say can be (and probably is) very biased and opinionated but, despite those plugins being neat, I think each have their own shortcomings, which I see as too much to ignore. Also I could be wrong about some of these things since I haven't used some of the plugins I'm about to mention.
 
@@ -894,11 +899,8 @@ And this plugin is named after cats, you won't get that anywhere else.
 
 So yeah, those are the reasons to use Feline: minimalism, complete customizability, reasonable defaults, and cats.
 
-## Maintenance
-While I chose to make this plugin available to others, I mainly created it for myself. So I may not go out of my way to fix a very minor niche issue that can be easily avoided unless it gets in my way. So if you have an issue that isn't very important, consider making a pull request that fixes your issue instead. But by all means if you do post an issue, I will try to see if I can fix it.
-
 ## LICENSE
-Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md)
+Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md).
 
 ## Miscellaneous
 ### Naming
