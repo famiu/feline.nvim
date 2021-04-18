@@ -852,33 +852,35 @@ Alternatively, you could also use a thin line instead of the inactive statusline
 ```lua
 local nvim_exec = vim.api.nvim_exec
 
--- Parse highlight of vertical split
-local VertSplitHL = {
-    fg = nvim_exec("highlight VertSplit", true):match("guifg=(#%d+)") or '#444444',
-    bg = nvim_exec("highlight VertSplit", true):match("guibg=(#%d+)") or '#1E1E1E',
-    style = nvim_exec("highlight VertSplit", true):match("gui=(#%d+)") or ''
-}
-
 -- Remove all inactive statusline components
 components.left.inactive = {}
 components.mid.inactive = {}
 components.right.inactive = {}
 
--- Add strikethrough to vertical split highlight style
+-- Get highlight of inactive statusline by parsing the style, fg and bg of VertSplit
+local InactiveStatusHL = {
+    fg = nvim_exec("highlight VertSplit", true):match("guifg=(#%d+)") or '#444444',
+    bg = nvim_exec("highlight VertSplit", true):match("guibg=(#%d+)") or '#1E1E1E',
+    style = nvim_exec("highlight VertSplit", true):match("gui=(#%d+)") or ''
+}
+
+-- Add strikethrough to inactive statusline highlight style
 -- in order to have a thin line instead of the statusline
-if VertSplitHL.style == '' then
-    VertSplitHL.style = 'strikethrough'
+if InactiveStatusHL.style == '' then
+    InactiveStatusHL.style = 'strikethrough'
 else
-    VertSplitHL.style = VertSplitHL.style .. ',strikethrough'
+    InactiveStatusHL.style = InactiveStatusHL.style .. ',strikethrough'
 end
 
--- Apply the vertical split's highlight to the statusline
--- by having an empty provider with a highlight
+-- Apply the highlight to the statusline
+-- by having an empty provider with the highlight
 components.left.inactive[1] = {
     provider = '',
-    -- Make inactive statusline have the same highlight as vertical split
-    hl = VertSplitHL
+    hl = InactiveStatusHL
 }
+
+-- Setup feline.nvim
+require('feline').setup()
 ```
 
 ### Reporting issues or feature requests
