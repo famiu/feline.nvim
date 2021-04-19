@@ -1,17 +1,26 @@
 local bo = vim.bo
 local fn = vim.fn
+local cmd = vim.cmd
 
-local utils = require('feline.utils')
 local colors = require('feline.defaults').colors
 local separators = require('feline.defaults').separators
 local providers = require('feline.providers')
-
-local defhl = utils.add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 
 local M = {
     components = {},
     properties = {}
 }
+
+local highlights = {}
+
+-- Reset highlights
+function M.reset_highlights()
+    for hl,_ in pairs(highlights) do
+        cmd('hi clear ' .. hl)
+    end
+
+    highlights = {}
+end
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
@@ -38,6 +47,21 @@ local function evaluate_if_function(key, default)
     end
 end
 
+-- Add highlight of component
+local function add_component_highlight(name, fg, bg, style)
+    local hlname = 'StatusComponent' .. name
+
+    if highlights[hlname] then
+        return hlname
+    else
+        cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', hlname, style, fg, bg))
+        highlights[hlname] = true
+        return hlname
+    end
+end
+
+local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
+
 -- Parse highlight, generate default values if values are not given
 -- Also generate unique name for highlight if name is not given
 local function parse_hl(hl)
@@ -58,7 +82,7 @@ local function parse_hl(hl)
         string.gsub(hl.style, ',', '_')
     )
 
-    return utils.add_component_highlight(hl.name, hl.fg, hl.bg, hl.style)
+    return add_component_highlight(hl.name, hl.fg, hl.bg, hl.style)
 end
 
 -- Parse component seperator

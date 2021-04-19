@@ -1,9 +1,11 @@
 local g = vim.g
+local cmd = vim.cmd
 local fn = vim.fn
 local gen = require('feline.generator')
-local utils = require('feline.utils')
 
 local M = {}
+
+M.reset_highlights = gen.reset_highlights
 
 local function parse_config(config_dict, config_name, expected_type, default_value)
     if config_dict and config_dict[config_name] then
@@ -20,6 +22,18 @@ local function parse_config(config_dict, config_name, expected_type, default_val
     else
         return nil
     end
+end
+
+-- Create augroup
+local function create_augroup(autocmds, name)
+    cmd('augroup ' .. name)
+    cmd('autocmd!')
+
+    for _, autocmd in ipairs(autocmds) do
+        cmd('autocmd ' .. table.concat(autocmd, ' '))
+    end
+
+    cmd('augroup END')
 end
 
 function M.setup(config)
@@ -59,7 +73,7 @@ function M.setup(config)
 
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
-    utils.create_augroup({
+    create_augroup({
         {'WinEnter,BufEnter', '*', 'set statusline<'},
         {'WinLeave,BufLeave', '*', 'lua vim.wo.statusline=require\'feline\'.statusline()'}
     }, 'feline')

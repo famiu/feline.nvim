@@ -835,12 +835,20 @@ In case none of the default providers do what you want, it's very easy to add yo
 
 ## Help
 ### Common issues
-#### 1. Feline crashes or disappears for seemingly no reason
+#### Feline crashes or disappears for seemingly no reason
 This can be caused if you forget to remove your other statusline plugins after installing Feline. Make sure all other statusline plugins are removed before you install Feline, that should fix the issue.
 
-### Q&A
-#### 1. What if I don't want an inactive statusline?
-In that case, you can just disable the inactive statusline by doing:
+### Tips and tricks
+#### Reset highlight
+If, for some reason, you want to clear all highlights that Feline sets (useful if you want to reload your entire Neovim config which may mess up highlights), you can do:
+```lua
+require('feline').reset_highlights()
+```
+
+And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
+
+#### Disable inactive statusline
+If you want, you can just disable the inactive statusline by doing:
 ```lua
 -- Remove all inactive statusline components
 components.left.inactive = {}
