@@ -918,3 +918,7 @@ The name of this plugin is a silly pun based on the convention of the names of s
 
 ### Special thanks
 [glepnir](https://github.com/glepnir) - for creating [galaxyline](https://github.com/glepnir/galaxyline.nvim) which this plugin was inspired by.
+
+## Self-plug
+If you liked this plugin, also check out:
+* [nvim-reload](https://github.com/famiu/nvim-reload) - Plugin to easily reload your Neovim config.
