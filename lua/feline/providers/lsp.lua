@@ -10,7 +10,7 @@ function M.get_diagnostics_count(severity)
     if not M.is_lsp_attached() then return nil end
 
     local bufnr = get_current_buf()
-    local active_clients = lsp.get_active_clients()
+    local active_clients = lsp.buf_get_clients(bufnr)
     local count = 0
 
     for _, client in ipairs(active_clients) do
