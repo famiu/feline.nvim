@@ -35,6 +35,9 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 **[Config by 6cdh:](https://github.com/6cdh/dotfiles/blob/main/nvim/.config/nvim/lua/statusline.lua)**
 ![image](https://user-images.githubusercontent.com/39000776/114838041-e68e2600-9e06-11eb-9334-431a627ff144.png)
 
+**[Config by luizcoro2:](https://bitbucket.org/luizcoro/dotfiles/src/master/.config/nvim/lua/plugins/feline.lua)**
+![image](https://user-images.githubusercontent.com/70335871/115327167-dd81b980-a164-11eb-9c02-7a3a1b6a94b5.png)
+
 **NOTE: You can add your own configuration to this list. If you're interested, see: [#5](https://github.com/Famiu/feline.nvim/issues/5)**
 
 ## How to install
