@@ -13,7 +13,7 @@ function M.get_diagnostics_count(severity)
     local active_clients = lsp.buf_get_clients(bufnr)
     local count = 0
 
-    for _, client in ipairs(active_clients) do
+    for _, client in pairs(active_clients) do
         count = count + lsp.diagnostic.get_count(bufnr, severity, client.id)
     end
 
