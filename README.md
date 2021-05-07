@@ -506,7 +506,7 @@ Now that we've learned to set up both the components table and the properties ta
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `components` - The components table.
 - `properties` - The properties table.
-- `vi_mode-colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
+- `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
 | Mode        | Description           | Value       |
 | ----------- | --------------------- | ----------- |
