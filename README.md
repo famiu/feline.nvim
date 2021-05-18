@@ -63,7 +63,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 **[Config by pianocomposer321:](https://gist.github.com/pianocomposer321/6151c458132a97590d21415db67361a6)**
 ![image](https://user-images.githubusercontent.com/54072354/117869424-65d51500-b260-11eb-898c-0a0b987a6275.png)
 
-**NOTE: You can add your own configuration to this list. If you're interested, see: [#5](https://github.com/Famiu/feline.nvim/issues/5)**
+**NOTE: You can add your own configuration to this list. If you're interested, simply make a pull request and I'll add it.**
 
 ## How to install
 
