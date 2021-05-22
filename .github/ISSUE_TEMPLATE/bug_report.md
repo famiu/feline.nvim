@@ -8,7 +8,10 @@ assignees: ''
 ---
 
 **Neovim version**
-The output of `nvim --version`
+The output of `nvim --version`.
+
+**Feline version**
+`cd` to the directory containing Feline and use `git rev-parse HEAD`, and put the output of that here.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -23,11 +26,22 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Does this error occur in the minimal init file?**
+Use the following commands to download the minimal init file provided by Feline:
+```bash
+curl -fLO https://raw.githubusercontent.com/famiu/feline.nvim/master/minimal_init.lua
+```
+Modify the file to your needs (if necessary), then load Neovim using:
+```bash
+nvim -u minimal_init.lua
+```
+And check if your issue still occurs.
+
+**Provide modified minimal_init.lua**
+If you modified the minimal_init.lua that Feline provides by default in order to fit your configuration, put it here. Otherwise ignore this part.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
-
-**Minimal init file**
-Minimal init.vim or init.lua in which the issue can be reproduced.
 
 **Additional context**
 Add any other context about the problem here (eg: other plugins that may conflict with this plugin, configuration options that you think might cause the issue, etc.).
