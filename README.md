@@ -892,7 +892,22 @@ The Vi-mode provider also provides a helper function `get_mode_highlight_name()`
 
 #### File Info
 
-The `file_info` provider has a special `file_modified_icon` component value that you can set to change the icon that is shown when a file is modified. By default it is set to `'●'`.
+The `file_info` provider has two special component values:
+- `file_modified_icon` (string): The icon that is shown when a file is modified.<br>
+Default:`'●'`
+- `type` (string): Determines which parts of the filename are shown. Its value can be one of:
+    - `'full-path'`: Full path of the file (eg: `'/home/user/.config/nvim/init.lua'`)
+    - `'short-path'`: Shortened path of the file (eg: `'/h/u/.c/n/init.lua'`)
+    - `'base-only'`: Show only base filename and extension (eg: `'init.lua'`)
+    - `'relative'`: File path relative to the current directory.
+    - `'relative-short'`: Combination of `'relative'` and `'short-path'`.
+    - `'unique'`: Unique substring of the full path.<br>
+    For example: If you have three buffers with the paths `'/home/user/file.lua'`, `'/home/user/dir1/file.lua'` and `'/home/user/dir2/file.lua'`, Feline will show the names `'user/file.lua'`, `'dir1/file.lua'` and `'dir2/file.lua'` for them, respectively.<br>
+    If there's no files that share the same name, it behaves the same as `'base-only'`.
+    - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
+    
+
+    <br>Default: `'base-only'`
 
 #### Git
 
