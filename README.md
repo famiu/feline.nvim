@@ -11,7 +11,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ## Features
 
 - Ease-of-use.
-- Completely customizability over every component.
+- Complete customizability over every component.
 - Built-in providers for things like vi-mode, file info, file size, cursor position, diagnostics (using [Neovim's buiilt-in LSP](https://neovim.io/doc/user/lsp.html)), git branch and diffs (using [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/)), etc.
 - Minimalistic, only provides the bare minimum and allows the user to build their own components very easily.
 
