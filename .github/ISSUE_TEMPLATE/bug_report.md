@@ -28,13 +28,11 @@ A clear and concise description of what you expected to happen.
 
 **Does this error occur in the minimal init file?**
 Use the following commands to download the minimal init file provided by Feline:
-```bash
-curl -fLO https://raw.githubusercontent.com/famiu/feline.nvim/master/minimal_init.lua
-```
+`curl -fLO https://raw.githubusercontent.com/famiu/feline.nvim/master/minimal_init.lua`
+
 Modify the file to your needs (if necessary), then load Neovim using:
-```bash
-nvim -u minimal_init.lua
-```
+`nvim -u minimal_init.lua`
+
 And check if your issue still occurs.
 
 **Provide modified minimal_init.lua**
