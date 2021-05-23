@@ -95,8 +95,8 @@ M.components.left.active[5] = {
     provider = 'position',
     left_sep = ' ',
     right_sep = {
+        ' ',
         {
-            ' ',
             str = 'slant_right_2_thin',
             hl = {
                 fg = 'fg',
