@@ -335,7 +335,8 @@ right_sep = {
 
 Now that we know of the possible values you can set in a component, let's make some actual components to show you how it all looks like together:
 
-[**NOTE:** Remember to initialize the components table before assigning anything to it]
+<details>
+<summary>Component example</summary>
 
 ```lua
 -- Component that shows Vi mode with highlight
@@ -405,6 +406,9 @@ components.right.active[1] = {
     end
 }
 ```
+</details>
+
+[**NOTE:** Remember to initialize the components table before assigning anything to it]
 
 ##### Value presets
 
@@ -422,7 +426,6 @@ Not only that, you can add your own custom colors and separators through [the se
 Below is a list of all the default value names and their values:
 
 ###### Default colors
-
 | Name        | Value       |
 | ----------- | ----------- |
 | `fg`        | `'#D0D0D0'` |
@@ -440,7 +443,6 @@ Below is a list of all the default value names and their values:
 | `yellow`    | `'#E1E120'` |
 
 ###### Default Separators
-
 | Name                 | Value |
 | -------------------- | ----- |
 | `vertical_bar`       | `'┃'` |
@@ -533,6 +535,8 @@ Now that we've learned to set up both the components table and the properties ta
 #### Example config
 
 It's finally time to see a fully-fledged example of how to set up the statusline. Here is an example config that's actually the same as the default config, except it's set-up manually:
+
+<details>
 
 ```lua
 local lsp = require('feline.providers.lsp')
@@ -821,6 +825,7 @@ require('feline').setup({
     vi_mode_colors = vi_mode_colors
 })
 ```
+</details>
 
 ### 3. Modifying an existing preset
 
