@@ -56,7 +56,7 @@ local function get_unique_filename(filename)
         index = index + 1
     end
 
-    return string.reverse(string.sub(filename, 0, index))
+    return string.reverse(string.sub(filename, 1, index))
 
 end
 
