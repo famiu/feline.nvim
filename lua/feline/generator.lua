@@ -30,9 +30,9 @@ local function is_forced_inactive()
     local filetype = bo.filetype
     local bufname = fn.bufname()
 
-    return fn.index(force_inactive.buftypes, buftype) ~= -1 or
-        fn.index(force_inactive.filetypes, filetype) ~= -1 or
-        fn.index(force_inactive.bufnames, bufname) ~= -1
+    return vim.tbl_contains(force_inactive.buftypes, buftype) or
+        vim.tbl_contains(force_inactive.filetypes, filetype) or
+        vim.tbl_contains(force_inactive.bufnames, bufname)
 end
 
 -- Evaluate a component key if it is a function, else return the value

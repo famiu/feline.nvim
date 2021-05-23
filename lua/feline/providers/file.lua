@@ -4,55 +4,25 @@ local bo = vim.bo
 
 local M = {}
 
--- Filters out values of a table
-local function filter(tbl, func, preserve_key)
-    preserve_key = preserve_key or false
-
-    local ret = {}
-
-    if preserve_key then
-        for k, v in pairs(tbl) do
-            if func(v) then
-                ret[k] = v
-            end
-        end
-    else
-        for _, v in pairs(tbl) do
-            if func(v) then
-                ret[#ret+1] = v
-            end
-        end
-    end
-
-    return ret
-end
-
--- Map values of table to function
-local function map(tbl, func)
-    local ret = {}
-
-    for k, v in pairs(tbl) do
-        ret[k] = func(v)
-    end
-
-    return ret
-end
-
 -- Get the names of all current listed buffers
 local function get_current_filenames()
-    local listed_buffers = filter(fn.getbufinfo(), function(buffer)
-        return buffer.listed == 1
-    end)
+    local listed_buffers = vim.tbl_filter(
+        function(buffer)
+            return buffer.listed == 1
+        end,
+        fn.getbufinfo()
+    )
 
-    return map(listed_buffers, function(buffer) return buffer.name end)
+    return vim.tbl_map(function(buffer) return buffer.name end, listed_buffers)
 end
 
 -- Get unique name for the current buffer
 local function get_unique_filename(filename)
-    local filenames = filter(get_current_filenames(),
+    local filenames = vim.tbl_filter(
         function(filename_other)
             return filename_other ~= filename
-        end
+        end,
+        get_current_filenames()
     )
 
     filename = string.reverse(filename)
@@ -60,18 +30,18 @@ local function get_unique_filename(filename)
     local index
 
     if next(filenames) then
-        filenames = map(filenames, string.reverse)
+        filenames = vim.tbl_map(string.reverse, filenames)
 
-        index = math.max(unpack(map(filenames,
+        index = math.max(unpack(vim.tbl_map(
             function(filename_other)
                 for i = 1, #filename do
                     if filename:sub(i, i) ~= filename_other:sub(i, i) then
                         return i
                     end
                 end
-
                 return 1
-            end
+            end,
+            filenames
         )))
     else
         index = 1
