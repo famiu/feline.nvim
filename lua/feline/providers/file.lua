@@ -37,13 +37,16 @@ local function map(tbl, func)
     return ret
 end
 
+-- Get the names of all current listed buffers
 local function get_current_filenames()
-    local buffers = vim.fn.getbufinfo()
-    local listed_buffers = filter(buffers, function(buffer) return buffer.listed == 1 end)
+    local listed_buffers = filter(fn.getbufinfo(), function(buffer)
+        return buffer.listed == 1
+    end)
 
     return map(listed_buffers, function(buffer) return buffer.name end)
 end
 
+-- Get unique name for the current buffer
 local function get_unique_filename(filename)
     local filenames = filter(get_current_filenames(),
         function(filename_other)

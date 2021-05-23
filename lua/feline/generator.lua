@@ -150,7 +150,6 @@ local function parse_component(component)
     if not enabled then return '' end
 
     local hl = evaluate_if_function(component.hl, {})
-    local icon = evaluate_if_function(component.icon)
 
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
