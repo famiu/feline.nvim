@@ -27,6 +27,7 @@ local function filter(tbl, func, preserve_key)
     return ret
 end
 
+-- Map values of table to function
 local function map(tbl, func)
     local ret = {}
 
@@ -68,10 +69,12 @@ local function get_unique_filename(filename)
                         return i
                     end
                 end
+
+                return 1
             end
         )))
     else
-        index = 0
+        index = 1
     end
 
     while index <= #filename do
