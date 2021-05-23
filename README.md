@@ -624,12 +624,12 @@ components.left.active[4] = {
                 bg = 'bg'
             }
         },
-        ' '
     }
 }
 
 components.left.active[5] = {
     provider = 'position',
+    left_sep = ' ',
     right_sep = {
         ' ',
         {
