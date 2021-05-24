@@ -7,8 +7,27 @@ local separators = require('feline.defaults').separators
 local providers = require('feline.providers')
 
 local M = {
-    components = {},
-    properties = {}
+    components = {
+        left = {
+            active = {},
+            inactive = {}
+        },
+        mid = {
+            active = {},
+            inactive = {}
+        },
+        right = {
+            active = {},
+            inactive = {}
+        }
+    },
+    properties = {
+        force_inactive = {
+            buftypes = {},
+            filetypes = {},
+            bufnames = {}
+        }
+    }
 }
 
 local highlights = {}
@@ -161,34 +180,41 @@ local function parse_component(component)
     return left_sep_str .. '%#' .. hlname .. '#' .. provider .. right_sep_str
 end
 
+-- Parse components of a section of the statusline
+local function parse_statusline_section(section, type)
+    if M.components[section] and M.components[section][type] then
+        local section_components = {}
+
+        for _, v in ipairs(M.components[section][type]) do
+            section_components[#section_components+1] = parse_component(v)
+        end
+
+        return table.concat(section_components)
+    else
+        return ""
+    end
+end
+
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
-    local statusline_components = {}
+    if not M.components then
+        return ""
+    end
+
     local statusline_type
 
     if is_active and not is_forced_inactive() then
-        statusline_type="active"
+        statusline_type='active'
     else
-        statusline_type="inactive"
+        statusline_type='inactive'
     end
 
-    for _,v in ipairs(M.components.left[statusline_type]) do
-        statusline_components[#statusline_components+1] = parse_component(v)
-    end
-
-    statusline_components[#statusline_components+1] = '%='
-
-    for _,v in ipairs(M.components.mid[statusline_type]) do
-        statusline_components[#statusline_components+1] = parse_component(v)
-    end
-
-    statusline_components[#statusline_components+1] = '%='
-
-    for _,v in ipairs(M.components.right[statusline_type]) do
-        statusline_components[#statusline_components+1] = parse_component(v)
-    end
-
-    return table.concat(statusline_components)
+    return string.format(
+        "%s%%=%s%%=%s",
+        parse_statusline_section('left', statusline_type),
+        parse_statusline_section('mid', statusline_type),
+        parse_statusline_section('right', statusline_type)
+    )
 end
 
 return M
