@@ -30,11 +30,12 @@ local M = {
 
 M.properties.force_inactive.filetypes = {
     'NvimTree',
-    'dbui',
     'packer',
     'startify',
     'fugitive',
-    'fugitiveblame'
+    'fugitiveblame',
+    'qf',
+    'help'
 }
 
 M.properties.force_inactive.buftypes = {
