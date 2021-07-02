@@ -48,7 +48,12 @@ function M.setup(config)
     if parse_config(config, "preset", "string") then
         preset = presets[config.preset]
     else
-        preset = presets["default"]
+        local has_devicons = pcall(require,'nvim-web-devicons')
+        if has_devicons then
+            preset = presets["default"]
+        else
+            preset = presets["noicon"]
+        end
     end
 
     custom_colors = parse_config(config, "colors", "table", {})
