@@ -108,13 +108,15 @@ If you want an opinionated statusline that "just works", then you can just use F
 require('feline').setup()
 ```
 
-In case you don't have nvim-web-devicons or a patched font, or just don't like icons, there's also a default statusline configuration without icons. To use it, just do:
+In case you don't like icons and want to use the default statusline configuration without icons, just do:
 
 ```lua
 require('feline').setup({
     preset = 'noicon'
 })
 ```
+
+NOTE: This is also the configuration used by default if you don't have `nvim-web-devicons`. You don't have to specify it manually in case you don't have `nvim-web-devicons`. In that case, Feline will detect that you don't have `nvim-web-devicons` and automatically pick the `noicon` preset.
 
 You can also make minor tweaks like changing the default foreground and background color like this:
 
