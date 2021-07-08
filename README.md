@@ -1032,5 +1032,4 @@ The name of this plugin is a silly pun based on the convention of the names of s
 
 ## Self-plug
 If you liked this plugin, also check out:
-- [nvim-reload](https://github.com/famiu/nvim-reload) - Plugin to easily reload your Neovim config.
 - [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
