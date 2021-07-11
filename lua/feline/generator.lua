@@ -132,7 +132,7 @@ local function parse_sep_list(sep_list, parent_bg)
     if sep_list == nil then return '' end
 
     if (type(sep_list) == "table" and sep_list[1] and
-    (type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
+    (type(sep_list[1]) == "function" or type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
         local sep_strs = {}
 
         for _,v in ipairs(sep_list) do
