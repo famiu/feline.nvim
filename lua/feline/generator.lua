@@ -83,8 +83,10 @@ local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 
 -- Parse highlight, generate default values if values are not given
 -- Also generate unique name for highlight if name is not given
+-- If given a string, accept it as an existing external group and return it
 local function parse_hl(hl)
     if hl == {} then return defhl end
+    if type(hl) == "string" then return hl end
 
     hl.fg = hl.fg or colors.fg
     hl.bg = hl.bg or colors.bg
@@ -119,7 +121,7 @@ local function parse_sep(sep, parent_bg)
     else
         sep = evaluate_if_function(sep)
         str = sep.str or ''
-        hl = sep.hl or {fg = parent_bg, bg = colors.bg}
+        hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = colors.bg}
     end
 
     if separators[str] then str = separators[str] end
