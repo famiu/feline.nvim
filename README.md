@@ -259,6 +259,7 @@ icon = function() return ' - ' end
   - `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
   - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
   - `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `StatusComponent` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
+- `hl` (string): Use given string as component highlight group. This group must be defined elsewhere (i.e. in your colorscheme).
 
 An example of using the hl group:
 
@@ -267,6 +268,9 @@ An example of using the hl group:
 hl = {
     fg = 'skyblue'
 }
+
+-- As a string
+hl = "MyStatuslineHLGroup"
 
 -- As a function
 hl = function()
@@ -277,6 +281,14 @@ hl = function()
     val.style = 'bold'
 
     return val
+end
+
+hl = function()
+  if require("feline.providers.vi_mode).get_vim_mode() == "NORMAL" then
+    return "MyStatuslineNormal"
+  else
+    return "MyStatuslineOther"
+  end
 end
 ```
 
