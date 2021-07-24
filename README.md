@@ -254,12 +254,13 @@ icon = ' + '
 icon = function() return ' - ' end
 ```
 
-- `hl` (table): Determines the highlight settings. The hl table can have three values:
+- `hl` (table or string): Determines the highlight settings.<br>
+If a string, it'll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your nvim config).<br>
+If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have three values:
   - `hl.fg` (string): RGB hex or [name](#value-presets) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
   - `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
   - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
   - `hl.name` (string): Name of highlight group created by Feline (eg: `'VimInsert'`).<br><br>Note that `StatusComponent` is prepended to the name you provide. So if you provide the name `VimInsert`, the highlight group created will have the name `StatusComponentVimInsert`.<br><br>If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values.
-- `hl` (string): Use given string as component highlight group. This group must be defined elsewhere (i.e. in your colorscheme).
 
 An example of using the hl group:
 
@@ -272,7 +273,7 @@ hl = {
 -- As a string
 hl = "MyStatuslineHLGroup"
 
--- As a function
+-- As a function returning a table
 hl = function()
     local val = {}
 
@@ -283,6 +284,7 @@ hl = function()
     return val
 end
 
+-- As a function returning a string
 hl = function()
   if require("feline.providers.vi_mode).get_vim_mode() == "NORMAL" then
     return "MyStatuslineNormal"
