@@ -76,19 +76,6 @@ function M.setup(config)
     generator.components = components
     generator.properties = properties
 
-    -- fix for issue #23, according to:
-    -- https://github.com/powerline/powerline/issues/250
-    --  + Defining local value of &statusline option while
-    --    computing global value purges startup screen.
-    --  + Defining highlight group while computing statusline
-    --    purges startup screen.
-    -- The below calls will make sure all highlight groups
-    -- are already created and saved in `highlights` table
-    -- located at generator.lua#L33 so feline doesn't run
-    -- `highlight` commands as part of status line genration
-    gen.generate_statusline(true)
-    gen.generate_statusline(false)
-
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
