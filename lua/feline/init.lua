@@ -76,6 +76,9 @@ function M.setup(config)
     generator.components = components
     generator.properties = properties
 
+    -- Ensures custom quickfix statusline isn't loaded
+    vim.g.qf_disable_statusline = true
+    
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
