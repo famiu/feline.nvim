@@ -986,9 +986,9 @@ components.right.inactive = {}
 
 -- Get highlight of inactive statusline by parsing the style, fg and bg of VertSplit
 local InactiveStatusHL = {
-    fg = nvim_exec("highlight VertSplit", true):match("guifg=(#%d+)") or '#444444',
-    bg = nvim_exec("highlight VertSplit", true):match("guibg=(#%d+)") or '#1E1E1E',
-    style = nvim_exec("highlight VertSplit", true):match("gui=(#%d+)") or ''
+	  fg = vim.api.nvim_exec("highlight VertSplit", true):match("guifg=(#[0-9A-Fa-f]+)") or "#444444",
+	  bg = vim.api.nvim_exec("highlight VertSplit", true):match("guibg=(#[0-9A-Fa-f]+)") or "#1E1E1E",
+	  style = vim.api.nvim_exec("highlight VertSplit", true):match("gui=(#[0-9A-Fa-f]+)") or "",
 }
 
 -- Add strikethrough to inactive statusline highlight style
