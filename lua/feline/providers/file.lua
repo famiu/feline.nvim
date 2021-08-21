@@ -99,7 +99,7 @@ function M.file_info(component)
         modified_str = ''
     end
 
-    return icon .. ' ' .. filename .. ' ' .. modified_str
+    return ' ' .. filename .. ' ' .. modified_str, icon
 end
 
 function M.file_size()

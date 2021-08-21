@@ -33,23 +33,23 @@ function M.lsp_client_names(component)
         clients[#clients+1] = icon .. client.name
     end
 
-    return table.concat(clients, ' ')
+    return table.concat(clients, ' '), nil
 end
 
 function M.diagnostic_errors(component)
-    return (component.icon or '  ') .. M.get_diagnostics_count('Error')
+    return '' .. M.get_diagnostics_count('Error'), (component.icon or '  ')
 end
 
 function M.diagnostic_warnings(component)
-    return (component.icon or '  ') .. M.get_diagnostics_count('Warning')
+    return '' .. M.get_diagnostics_count('Warning'), (component.icon or '  ')
 end
 
 function M.diagnostic_hints(component)
-    return (component.icon or '  ') .. M.get_diagnostics_count('Hint')
+    return '' .. M.get_diagnostics_count('Error'), (component.icon or '  ')
 end
 
 function M.diagnostic_info(component)
-    return (component.icon or '  ') .. M.get_diagnostics_count('Information')
+    return '' .. M.get_diagnostics_count('Information'), (component.icon or '  ')
 end
 
 return M
