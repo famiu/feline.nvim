@@ -1,20 +1,18 @@
-local lsp = vim.lsp
-local get_current_buf = vim.api.nvim_get_current_buf
 local M = {}
 
 function M.is_lsp_attached()
-    return next(lsp.buf_get_clients()) ~= nil
+    return next(vim.lsp.buf_get_clients()) ~= nil
 end
 
 function M.get_diagnostics_count(severity)
     if not M.is_lsp_attached() then return nil end
 
-    local bufnr = get_current_buf()
-    local active_clients = lsp.buf_get_clients(bufnr)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local active_clients = vim.lsp.buf_get_clients(bufnr)
     local count = 0
 
     for _, client in pairs(active_clients) do
-        count = count + lsp.diagnostic.get_count(bufnr, severity, client.id)
+        count = count + vim.lsp.diagnostic.get_count(bufnr, severity, client.id)
     end
 
     return count
@@ -29,7 +27,7 @@ function M.lsp_client_names(component)
     local clients = {}
     local icon = component.icon or ' '
 
-    for _, client in pairs(lsp.buf_get_clients()) do
+    for _, client in pairs(vim.lsp.buf_get_clients()) do
         clients[#clients+1] = icon .. client.name
     end
 
