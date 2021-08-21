@@ -2,15 +2,11 @@ local lsp = vim.lsp
 local get_current_buf = vim.api.nvim_get_current_buf
 local M = {}
 
-function M.is_lsp_attached()
-    return next(lsp.buf_get_clients()) ~= nil
-end
-
 function M.get_diagnostics_count(severity)
-    if not M.is_lsp_attached() then return nil end
-
     local bufnr = get_current_buf()
     local active_clients = lsp.buf_get_clients(bufnr)
+    if not active_clients then return nil end
+
     local count = 0
 
     for _, client in pairs(active_clients) do
@@ -30,26 +26,34 @@ function M.lsp_client_names(component)
     local icon = component.icon or ' '
 
     for _, client in pairs(lsp.buf_get_clients()) do
-        clients[#clients+1] = icon .. client.name
+        clients[#clients+1] = client.name
     end
 
-    return table.concat(clients, ' '), nil
+    return table.concat(clients, ' '), icon
 end
 
 function M.diagnostic_errors(component)
-    return '' .. M.get_diagnostics_count('Error'), (component.icon or '  ')
+    local count = M.get_diagnostics_count('Error')
+    if not count or count == 0 then return '' end
+    return tostring(count), (component.icon or '  ')
 end
 
 function M.diagnostic_warnings(component)
-    return '' .. M.get_diagnostics_count('Warning'), (component.icon or '  ')
+    local count = M.get_diagnostics_count('Warning')
+    if not count or count == 0 then return '' end
+    return tostring(count), (component.icon or '  ')
 end
 
 function M.diagnostic_hints(component)
-    return '' .. M.get_diagnostics_count('Error'), (component.icon or '  ')
+    local count = M.get_diagnostics_count('Hint')
+    if not count or count == 0 then return '' end
+    return tostring(count), (component.icon or '  ')
 end
 
 function M.diagnostic_info(component)
-    return '' .. M.get_diagnostics_count('Information'), (component.icon or '  ')
+    local count = M.get_diagnostics_count('Information')
+    if not count or count == 0 then return '' end
+    return tostring(count), (component.icon or '  ')
 end
 
 return M
