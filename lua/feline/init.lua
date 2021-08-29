@@ -77,7 +77,7 @@ function M.setup(config)
     generator.properties = properties
 
     -- Ensures custom quickfix statusline isn't loaded
-    vim.g.qf_disable_statusline = true
+    g.qf_disable_statusline = true
     
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
