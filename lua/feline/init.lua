@@ -40,7 +40,6 @@ function M.setup(config)
     local colors = require('feline.defaults').colors
     local separators = require('feline.defaults').separators
     local vi_mode = require('feline.providers.vi_mode')
-    local generator = require('feline.generator')
     local presets = require('feline.presets')
     local preset, components, properties
     local custom_colors, custom_separators, vi_mode_colors
@@ -73,9 +72,12 @@ function M.setup(config)
         vi_mode.mode_colors[k] = v
     end
 
-    generator.components = components
-    generator.properties = properties
+    gen.components = components
+    gen.properties = properties
 
+    -- Ensures custom quickfix statusline isn't loaded
+    g.qf_disable_statusline = true
+    
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
