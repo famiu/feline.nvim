@@ -244,7 +244,7 @@ enabled = function()
 end
 ```
 
-- `icon` (table or string): Some inbuilt providers like `git_branch`, provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, you may set this value to use any icon you want instead. Additionally, you can also change the highlight specifically for the icon. To do this you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icons's highlight works just like the `hl` component's values. For example:
+- `icon` (table or string): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, you may set this value to use any icon you want instead. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icons's highlight works just like the `hl` component's values. For example:
 
 ```lua
 -- Setting icon to a string
