@@ -147,10 +147,31 @@ local function parse_sep_list(sep_list, parent_bg)
     end
 end
 
+-- Parse component icon
+-- By default, icon inherits component highlights
+local function parse_icon(icon, hlname)
+    if icon == nil then return '' end
+
+    local str
+    local hl
+
+    if type(icon) == "string" then
+        str = icon
+        return '%#' .. hlname .. '#' .. str
+    else
+        icon = evaluate_if_function(icon)
+        str = icon.str or ''
+        hl = evaluate_if_function(icon.hl) or hlname
+    end
+
+    return '%#' .. parse_hl(hl) .. '#' ..  str
+end
+
 -- Parse component provider
 local function parse_provider(provider, component)
+    local icon
     if type(provider) == "string" and type(providers[provider]) == "function" then
-        provider = providers[provider](component)
+        provider, icon = providers[provider](component)
     elseif type(provider) == "function" then
         provider = provider(component)
     end
@@ -161,7 +182,7 @@ local function parse_provider(provider, component)
         ), type(provider))
     end
 
-    return provider
+    return provider, icon
 end
 
 -- Parses a component alongside its highlight
@@ -170,16 +191,23 @@ local function parse_component(component)
 
     if not enabled then return '' end
 
+
     local hl = evaluate_if_function(component.hl, {})
 
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
 
-    local provider = parse_provider(component.provider, component)
+    local str, icon = parse_provider(component.provider, component)
 
     local hlname = parse_hl(hl)
 
-    return left_sep_str .. '%#' .. hlname .. '#' .. provider .. right_sep_str
+    if icon == nil and str ~= '' then
+        icon = component.icon
+    end
+
+    icon = parse_icon(evaluate_if_function(icon), hlname)
+
+    return left_sep_str .. icon .. '%#' .. hlname .. '#' .. str .. right_sep_str
 end
 
 -- Parse components of a section of the statusline
