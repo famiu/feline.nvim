@@ -49,7 +49,7 @@ function M.git_diff_changed(component)
     local str = ''
 
     if gsd and gsd['changed'] and gsd['changed'] > 0 then
-        icon = component.icon or ' 柳 '
+        icon = component.icon or ' 柳'
         str = str .. gsd.changed
     end
 
