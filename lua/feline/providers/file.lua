@@ -87,8 +87,11 @@ function M.file_info(component)
     local extension = fn.expand('%:e')
     local modified_str
 
-    local icon = component.icon or
-        require('nvim-web-devicons').get_icon(filename, extension, { default = true })
+    local icon = component.icon
+    if not icon then
+        local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
+        icon = { str = ic, hl = hl_group }
+    end
 
     if filename == '' then filename = 'unnamed' end
 
