@@ -90,7 +90,8 @@ function M.file_info(component)
     local icon = component.icon
     if not icon then
         local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
-        icon = { str = ic, hl = hl_group }
+        local fg = fn.synIDattr(fn.synIDtrans(fn.hlID(hl_group)), "fg")
+        icon = { str = ic, hl = {fg = fg} }
     end
 
     if filename == '' then filename = 'unnamed' end
