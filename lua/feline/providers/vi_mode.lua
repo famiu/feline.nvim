@@ -1,61 +1,62 @@
-local fn = vim.fn
+local api = vim.api
 local colors = require('feline.defaults').colors
 
 local M = {}
 
 local mode_alias = {
-    n = 'NORMAL',
-    no = 'OP',
-    nov = 'OP',
-    noV = 'OP',
+    ['n'] = 'NORMAL',
+    ['no'] = 'OP',
+    ['nov'] = 'OP',
+    ['noV'] = 'OP',
     ['no'] = 'OP',
-    niI = 'NORMAL',
-    niR = 'NORMAL',
-    niV = 'NORMAL',
-    v = 'VISUAL',
-    V = 'VISUAL',
+    ['niI'] = 'NORMAL',
+    ['niR'] = 'NORMAL',
+    ['niV'] = 'NORMAL',
+    ['v'] = 'VISUAL',
+    ['V'] = 'VISUAL',
     [''] = 'BLOCK',
-    s = 'SELECT',
-    S = 'SELECT',
+    ['s'] = 'SELECT',
+    ['S'] = 'SELECT',
     [''] = 'BLOCK',
-    i = 'INSERT',
-    ic = 'INSERT',
-    ix = 'INSERT',
-    R = 'REPLACE',
-    Rc = 'REPLACE',
-    Rv = 'V-REPLACE',
-    Rx = 'REPLACE',
-    c = 'COMMAND',
-    cv = 'COMMAND',
-    ce = 'COMMAND',
-    r = 'ENTER',
-    rm = 'MORE',
+    ['i'] = 'INSERT',
+    ['ic'] = 'INSERT',
+    ['ix'] = 'INSERT',
+    ['R'] = 'REPLACE',
+    ['Rc'] = 'REPLACE',
+    ['Rv'] = 'V-REPLACE',
+    ['Rx'] = 'REPLACE',
+    ['c'] = 'COMMAND',
+    ['cv'] = 'COMMAND',
+    ['ce'] = 'COMMAND',
+    ['r'] = 'ENTER',
+    ['rm'] = 'MORE',
     ['r?'] = 'CONFIRM',
     ['!'] = 'SHELL',
-    t = 'TERM',
+    ['t'] = 'TERM',
     ['null'] = 'NONE',
 }
 
 M.mode_colors = {
-    NORMAL = colors.green,
-    OP = colors.green,
-    INSERT = colors.red,
-    VISUAL = colors.skyblue,
-    BLOCK = colors.skyblue,
-    REPLACE = colors.violet,
+    ['NORMAL'] = colors.green,
+    ['OP'] = colors.green,
+    ['INSERT'] = colors.red,
+    ['VISUAL'] = colors.skyblue,
+    ['BLOCK'] = colors.skyblue,
+    ['REPLACE'] = colors.violet,
     ['V-REPLACE'] = colors.violet,
-    ENTER = colors.cyan,
-    MORE = colors.cyan,
-    SELECT = colors.orange,
-    COMMAND = colors.green,
-    SHELL = colors.green,
-    TERM = colors.green,
-    NONE = colors.yellow
+    ['ENTER'] = colors.cyan,
+    ['MORE'] = colors.cyan,
+    ['SELECT'] = colors.orange,
+    ['COMMAND'] = colors.green,
+    ['SHELL'] = colors.green,
+    ['TERM'] = colors.green,
+    ['NONE'] = colors.yellow
 }
 
 -- Functions for statusline
 function M.get_vim_mode()
-    return mode_alias[fn.mode()]
+    local mode = api.nvim_get_mode().mode
+    return mode_alias[mode]
 end
 
 function M.get_mode_color()
