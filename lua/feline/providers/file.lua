@@ -89,8 +89,11 @@ function M.file_info(component)
     local icon = component.icon
     if not icon then
         local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
-        local fg = fn.synIDattr(fn.synIDtrans(fn.hlID(hl_group)), "fg")
-        icon = { str = ic, hl = {fg = fg} }
+        local fg = vim.api.nvim_get_hl_by_name(hl_group, true)['foreground']
+        icon = { str = ic }
+        if fg then
+          icon["hl"] = { fg = string.format('#%06x', fg) }
+        end
     end
 
     if filename == '' then filename = 'unnamed' end
