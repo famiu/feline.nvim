@@ -81,15 +81,18 @@ end
 
 local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 
--- Parse highlight, generate default values if values are not given
+-- Parse highlight, inherit default/parent values if values are not given
 -- Also generate unique name for highlight if name is not given
--- If given a string, accept it as an existing external group and return it
-local function parse_hl(hl)
-    if hl == {} then return defhl end
+-- If given a string, accept it as an existing external highlight group
+local function parse_hl(hl, parent_hl)
+    parent_hl = parent_hl or colors
+
     if type(hl) == "string" then return hl end
 
-    hl.fg = hl.fg or colors.fg
-    hl.bg = hl.bg or colors.bg
+    if hl == {} then return defhl end
+
+    hl.fg = hl.fg or parent_hl.fg
+    hl.bg = hl.bg or parent_hl.bg
     hl.style = hl.style or 'NONE'
 
     if colors[hl.fg] then hl.fg = colors[hl.fg] end
@@ -98,8 +101,8 @@ local function parse_hl(hl)
     -- Generate unique hl name from color strings if a name isn't provided
     hl.name = hl.name or string.format(
         '_%s_%s_%s',
-        string.gsub(hl.fg, '^#', ''),
-        string.gsub(hl.bg, '^#', ''),
+        string.sub(hl.fg, 2),
+        string.sub(hl.bg, 2),
         string.gsub(hl.style, ',', '_')
     )
 
@@ -149,7 +152,7 @@ end
 
 -- Parse component icon
 -- By default, icon inherits component highlights
-local function parse_icon(icon, hlname)
+local function parse_icon(icon, parent_hl)
     if icon == nil then return '' end
 
     local str
@@ -157,14 +160,14 @@ local function parse_icon(icon, hlname)
 
     if type(icon) == "string" then
         str = icon
-        return '%#' .. hlname .. '#' .. str
+        hl = parent_hl
     else
         icon = evaluate_if_function(icon)
         str = icon.str or ''
-        hl = evaluate_if_function(icon.hl) or hlname
+        hl = evaluate_if_function(icon.hl) or parent_hl
     end
 
-    return '%#' .. parse_hl(hl) .. '#' ..  str
+    return '%#' .. parse_hl(hl, parent_hl) .. '#' ..  str
 end
 
 -- Parse component provider
@@ -205,7 +208,7 @@ local function parse_component(component)
         icon = component.icon
     end
 
-    icon = parse_icon(evaluate_if_function(icon), hlname)
+    icon = parse_icon(evaluate_if_function(icon), hl)
 
     return left_sep_str .. icon .. '%#' .. hlname .. '#' .. str .. right_sep_str
 end

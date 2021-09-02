@@ -89,8 +89,22 @@ function M.file_info(component)
     local icon = component.icon
     if not icon then
         local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
-        local fg = fn.synIDattr(fn.synIDtrans(fn.hlID(hl_group)), "fg")
-        icon = { str = ic, hl = {fg = fg} }
+        local colored_icon
+        
+        if component.colored_icon == nil then
+            colored_icon = true
+        else
+            colored_icon = component.colored_icon
+        end
+        
+        icon = { str = ic }
+
+        if colored_icon then
+            local fg = vim.api.nvim_get_hl_by_name(hl_group, true)['foreground']
+            if fg then
+                icon["hl"] = { fg = string.format('#%06x', fg) }
+            end
+        end
     end
 
     if filename == '' then filename = 'unnamed' end
@@ -121,7 +135,7 @@ function M.file_size()
         index = index + 1
     end
 
-    return string.format('%.2f', fsize) .. suffix[index]
+    return string.format(index == 1 and '%g' or '%.2f', fsize) .. suffix[index]
 end
 
 function M.file_type()
