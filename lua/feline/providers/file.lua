@@ -89,10 +89,21 @@ function M.file_info(component)
     local icon = component.icon
     if not icon then
         local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
-        local fg = vim.api.nvim_get_hl_by_name(hl_group, true)['foreground']
+        local colored_icon
+        
+        if component.colored_icon == nil then
+            colored_icon = true
+        else
+            colored_icon = component.colored_icon
+        end
+        
         icon = { str = ic }
-        if fg then
-          icon["hl"] = { fg = string.format('#%06x', fg) }
+
+        if colored_icon then
+            local fg = vim.api.nvim_get_hl_by_name(hl_group, true)['foreground']
+            if fg then
+                icon["hl"] = { fg = string.format('#%06x', fg) }
+            end
         end
     end
 
