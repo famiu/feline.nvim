@@ -74,7 +74,8 @@ M.components.left.active[3] = {
         ' ', 'slant_left_2',
         {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
     },
-    right_sep = {'slant_right_2', ' '}
+    right_sep = {'slant_right_2', ' '},
+    colored_icon = true,
 }
 
 M.components.left.active[4] = {
