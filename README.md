@@ -543,6 +543,7 @@ Now that we've learned to set up both the components table and the properties ta
 | `OP`        | Operator pending mode | `'green'`   |
 | `INSERT`    | Insert mode           | `'red'`     |
 | `VISUAL`    | Visual mode           | `'skyblue'` |
+| `LINES`     | Visual lines mode     | `'skyblue'` |
 | `BLOCK`     | Visual block mode     | `'skyblue'` |
 | `REPLACE`   | Replace mode          | `'violet'`  |
 | `V-REPLACE` | Virtual Replace mode  | `'violet'`  |
