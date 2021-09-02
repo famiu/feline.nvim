@@ -119,7 +119,7 @@ function M.file_size()
         index = index + 1
     end
 
-    return string.format('%.2f', fsize) .. suffix[index]
+    return string.format(index == 1 and '%g' or '%.2f', fsize) .. suffix[index]
 end
 
 function M.file_type()
