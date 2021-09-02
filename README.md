@@ -920,7 +920,7 @@ The Vi-mode provider also provides a helper function `get_mode_highlight_name()`
 
 The `file_info` provider has three special component values:
 - `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
-Default:`false`
+Default: `true`
 - `file_modified_icon` (string): The icon that is shown when a file is modified.<br>
 Default:`'●'`
 - `type` (string): Determines which parts of the filename are shown. Its value can be one of:
