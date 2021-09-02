@@ -66,13 +66,13 @@ function M.file_info(component)
     component.type = component.type or 'base-only'
 
     if component.type == 'full-path' then
-        filename = fn.expand('%:p')
+        filename = '%F'
     elseif component.type == 'short-path' then
         filename = fn.pathshorten(fn.expand('%:p'))
     elseif component.type == 'base-only' then
-        filename = fn.expand('%:t')
+        filename = '%t'
     elseif component.type == 'relative' then
-        filename = fn.fnamemodify(fn.expand("%"), ":~:.")
+        filename = '%f'
     elseif component.type == 'relative-short' then
         filename = fn.pathshorten(fn.fnamemodify(fn.expand("%"), ":~:."))
     elseif component.type == 'unique' then
@@ -82,7 +82,6 @@ function M.file_info(component)
     else
         filename = fn.expand('%:t')
     end
-
 
     local extension = fn.expand('%:e')
     local modified_str
