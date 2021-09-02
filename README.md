@@ -918,9 +918,11 @@ The Vi-mode provider also provides a helper function `get_mode_highlight_name()`
 
 #### File Info
 
-The `file_info` provider has two special component values:
+The `file_info` provider has three special component values:
 - `file_modified_icon` (string): The icon that is shown when a file is modified.<br>
 Default:`'●'`
+- `file_readonly_icon` (string): The icon that is shown when a file is read-only.<br>
+Default:`'🔒'`
 - `type` (string): Determines which parts of the filename are shown. Its value can be one of:
     - `'full-path'`: Full path of the file (eg: `'/home/user/.config/nvim/init.lua'`)
     - `'short-path'`: Shortened path of the file (eg: `'/h/u/.c/n/init.lua'`)
