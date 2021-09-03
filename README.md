@@ -1006,9 +1006,9 @@ local InactiveStatusHL = {
 -- Add strikethrough to inactive statusline highlight style
 -- in order to have a thin line instead of the statusline
 if InactiveStatusHL.style == '' then
-    InactiveStatusHL.style = 'strikethrough'
+    InactiveStatusHL.style = 'underline'
 else
-    InactiveStatusHL.style = InactiveStatusHL.style .. ',strikethrough'
+    InactiveStatusHL.style = InactiveStatusHL.style .. ',underline'
 end
 
 -- Apply the highlight to the statusline
