@@ -84,7 +84,7 @@ function M.file_info(component)
     end
 
     local extension = fn.expand('%:e')
-    local modified_str
+    local readonly_str, modified_str
 
     local icon = component.icon
     if not icon then
@@ -109,14 +109,19 @@ function M.file_info(component)
 
     if filename == '' then filename = 'unnamed' end
 
+    if bo.readonly then
+        readonly_str = component.file_readonly_icon or '🔒'
+    else
+        readonly_str = ''
+    end
+
     if bo.modified then
-        local modified_icon = component.file_modified_icon or '●'
-        modified_str = modified_icon .. ' '
+        modified_str = (component.file_modified_icon or '●') .. ' '
     else
         modified_str = ''
     end
 
-    return ' ' .. filename .. ' ' .. modified_str, icon
+    return ' ' .. readonly_str .. filename .. ' ' .. modified_str, icon
 end
 
 function M.file_size()
