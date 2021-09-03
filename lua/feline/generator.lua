@@ -176,7 +176,7 @@ local function parse_provider(provider, component)
     if type(provider) == "string" and type(providers[provider]) == "function" then
         provider, icon = providers[provider](component)
     elseif type(provider) == "function" then
-        provider = provider(component)
+        provider, icon = provider(component)
     end
 
     if type(provider) ~= "string" then

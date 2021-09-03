@@ -206,7 +206,7 @@ components.right.active[2] = {
 
 Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take one argument, more about that below. Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
-- `provider` (string): Text to show. If it's a function, it must evaluate to a string. The function can take either no arguments, or one argument which would contain the component itself
+- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself.
 
 ```lua
 -- Provider that shows current line in file
