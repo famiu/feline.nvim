@@ -15,7 +15,7 @@ function M.line_percentage()
     elseif curr_line == lines then
         return "Bot"
     else
-        return "%3p%%"
+        return "%2p%%"
     end
 end
 
