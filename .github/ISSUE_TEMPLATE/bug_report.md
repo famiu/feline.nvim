@@ -31,7 +31,7 @@ Use the following commands to download the minimal init file provided by Feline:
 `curl -fLO https://raw.githubusercontent.com/famiu/feline.nvim/master/minimal_init.lua`
 
 Modify the file to your needs (if necessary), then load Neovim using:
-`nvim -u minimal_init.lua`
+`nvim --noplugin -u minimal_init.lua`
 
 And check if your issue still occurs.
 
