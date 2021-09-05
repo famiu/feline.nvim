@@ -1,32 +1,32 @@
-local M = {}
-
 local vi_mode = require('feline.providers.vi_mode')
 local cursor = require('feline.providers.cursor')
 local file = require('feline.providers.file')
 local lsp = require('feline.providers.lsp')
 local git = require('feline.providers.git')
 
-M.vi_mode = vi_mode.vi_mode
+local M = {
+    vi_mode = vi_mode.vi_mode,
 
-M.position = cursor.position
-M.line_percentage = cursor.line_percentage
-M.scroll_bar = cursor.scroll_bar
+    position = cursor.position,
+    line_percentage = cursor.line_percentage,
+    scroll_bar = cursor.scroll_bar,
 
-M.file_info = file.file_info
-M.file_size = file.file_size
-M.file_type = file.file_type
-M.file_encoding = file.file_encoding
+    file_info = file.file_info,
+    file_size = file.file_size,
+    file_type = file.file_type,
+    file_encoding = file.file_encoding,
 
-M.git_branch = git.git_branch
-M.git_diff_added = git.git_diff_added
-M.git_diff_removed = git.git_diff_removed
-M.git_diff_changed = git.git_diff_changed
+    git_branch = git.git_branch,
+    git_diff_added = git.git_diff_added,
+    git_diff_removed = git.git_diff_removed,
+    git_diff_changed = git.git_diff_changed,
 
-M.lsp_client_names = lsp.lsp_client_names
-M.diagnostic_errors = lsp.diagnostic_errors
-M.diagnostic_warnings = lsp.diagnostic_warnings
-M.diagnostic_hints = lsp.diagnostic_hints
-M.diagnostic_info = lsp.diagnostic_info
+    lsp_client_names = lsp.lsp_client_names,
+    diagnostic_errors = lsp.diagnostic_errors,
+    diagnostic_warnings = lsp.diagnostic_warnings,
+    diagnostic_hints = lsp.diagnostic_hints,
+    diagnostic_info = lsp.diagnostic_info,
+}
 
 function M.add_provider(name, provider)
     if M[name] then
