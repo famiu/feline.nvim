@@ -7,7 +7,7 @@ end
 function M.get_diagnostics_count(severity)
     local bufnr = vim.api.nvim_get_current_buf()
     local active_clients = vim.lsp.buf_get_clients(bufnr)
-    
+
     if not active_clients then return nil end
 
     local count = 0

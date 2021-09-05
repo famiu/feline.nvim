@@ -1,3 +1,8 @@
+if vim.fn.has('nvim-0.5') ~= 1 then
+    vim.api.nvim_err_writeln("Feline is only available for Neovim versions 0.5 and above")
+    return
+end
+
 local g = vim.g
 local cmd = vim.cmd
 local fn = vim.fn
@@ -77,7 +82,7 @@ function M.setup(config)
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
-    
+
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
