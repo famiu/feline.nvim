@@ -214,7 +214,8 @@ local function parse_component(component)
 end
 
 -- Parse components of a section of the statusline
-local function parse_statusline_section(section, type)
+-- (For old component table format)
+local function parse_statusline_section_old(section, type)
     if M.components[section] and M.components[section][type] then
         local section_components = {}
 
@@ -226,6 +227,17 @@ local function parse_statusline_section(section, type)
     else
         return ""
     end
+end
+
+-- Parse components of a section of the statusline
+local function parse_statusline_section(section)
+    local components = {}
+
+    for _, component in ipairs(section) do
+        components[#components+1] = parse_component(component)
+    end
+
+    return table.concat(components)
 end
 
 -- Generate statusline by parsing all components and return a string
@@ -242,12 +254,24 @@ function M.generate_statusline(is_active)
         statusline_type='inactive'
     end
 
-    return string.format(
-        "%s%%=%s%%=%s",
-        parse_statusline_section('left', statusline_type),
-        parse_statusline_section('mid', statusline_type),
-        parse_statusline_section('right', statusline_type)
-    )
+    -- Determine if the component table uses the old format or new format
+    -- and parse it accordingly
+    if(M.components.active and M.components.inactive) then
+        local sections = {}
+
+        for _, section in ipairs(M.components[statusline_type]) do
+            sections[#sections+1] = parse_statusline_section(section)
+        end
+
+        return table.concat(sections, '%=')
+    else
+        return string.format(
+            "%s%%=%s%%=%s",
+            parse_statusline_section_old('left', statusline_type),
+            parse_statusline_section_old('mid', statusline_type),
+            parse_statusline_section_old('right', statusline_type)
+        )
+    end
 end
 
 return M
