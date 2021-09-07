@@ -77,6 +77,21 @@ function M.setup(config)
         vi_mode.mode_colors[k] = v
     end
 
+    -- Deprecation warning for old component format
+    if not (components.active and components.inactive) then
+        vim.api.nvim_echo(
+            {{
+                "\nDeprecation warning:\n" ..
+                "This format for defining Feline components has been deprecated and will soon " ..
+                "become unsupported. Please check the docs and switch your statusline " ..
+                "configuration to the new format as soon as possible.\n",
+
+                "WarningMsg"
+            }},
+            true, {}
+        )
+    end
+
     gen.components = components
     gen.properties = properties
 

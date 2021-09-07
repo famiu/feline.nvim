@@ -133,76 +133,89 @@ If you don't mind getting your hands dirty, then I recommend making your own sta
 
 #### Components
 
-Inside the `components` table, there needs to be three more tables, `left`, `mid` and `right`, which will dictate if the component should be put in the left side, middle or the right side of the statusline. And in each of those tables, there needs to be two more tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in the active window or the inactive window.
+Inside the `components` table, there needs to be two tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in an active window or an inactive window. And inside each of the `active` and `inactive` tables, you can put any amount of tables, each of which will indicate a section of the statusline. For example, if you want two sections (left and right), you can put two tables inside each of the `active` and `inactive` tables. If you want three sections (left, mid and right), you can put three tables inside each of the `active` and `inactive` tables. There is no limit to the amount of sections you can have. It's also possible to have a different amount of sections for the `active` and `inactive` statuslines. 
 
 So first, in your init.lua file, you have to initialize the components table
 
 ```lua
 -- Initialize the components table
 local components = {
-    left = {active = {}, inactive = {}},
-    mid = {active = {}, inactive = {}},
-    right = {active = {}, inactive = {}}
+    active = {},
+    inactive = {}
 }
 ```
 
-You can then add new components to the statusline by adding an element to the `active` or `inactive` table inside any of those three tables. For example:
+You can then add new sections to the statusline by adding an element to the `active` or `inactive` tables. For example:
+
+```lua
+-- Insert three sections (left, mid and right) for the active statusline
+table.insert(components.active, {})
+table.insert(components.active, {})
+table.insert(components.active, {})
+
+-- Insert two sections (left and right) for the inactive statusline
+table.insert(components.inactive, {})
+table.insert(components.inactive, {})
+```
+
+Now you can add statusline components to each of those sections by adding elements to the sections.
+For example:
 
 ```lua
 -- Insert a component that will be on the left side of the statusline
 -- when the window is active:
-table.insert(components.left.active, {
+table.insert(components.active[1], {
+    -- Component info here
+})
+
+-- Insert another component that will be on the left side of the statusline
+-- when the window is active:
+table.insert(components.active[1], {
     -- Component info here
 })
 
 -- Insert a component that will be on the middle of the statusline
 -- when the window is active:
-table.insert(components.mid.active, {
+table.insert(components.active[2], {
     -- Component info here
 })
 
 -- Insert a component that will be on the right side of the statusline
 -- when the window is active:
-table.insert(components.right.active, {
+table.insert(components.active[3], {
     -- Component info here
 })
 
 -- Insert a component that will be on the left side of the statusline
 -- when the window is inactive:
-table.insert(components.left.inactive, {
+table.insert(components.inactive[1], {
     -- Component info here
 })
 
---- Insert a component that will be on the middle of the statusline
+-- Insert a component that will be on the right side of the statusline
 -- when the window is inactive:
-table.insert(components.mid.inactive, {
-    -- Component info here
-})
-
-- Insert a component that will be on the right side of the statusline
--- when the window is inactive:
-table.insert(components.right.inactive, {
+table.insert(components.inactive[2], {
     -- Component info here
 })
 ```
 
-Alternatively you can also use Lua table indexes instead of table.insert, like:
+Alternatively you can also use Lua table indices instead of table.insert, like:
 
 ```lua
 -- Insert a component that will be on the right side of the statusline
 -- when the window is active:
-components.right.active[1] = {
+components.active[3][1] = {
     -- Component info here
 }
 
 -- Insert another component that will be on the right side of the statusline
 -- when the window is active:
-components.right.active[2] = {
+components.active[3][2] = {
     -- Component info here
 }
 ```
 
-**NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also remember that unlike most other programming languages, Lua indices start at `1` instead of `0`.
+**NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also keep in mind that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
 Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take one argument, more about that below. Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
@@ -281,13 +294,11 @@ hl = "MyStatuslineHLGroup"
 
 -- As a function returning a table
 hl = function()
-    local val = {}
-
-    val.name = require('feline.providers.vi_mode').get_mode_highlight_name()
-    val.fg = require('feline.providers.vi_mode').get_mode_color()
-    val.style = 'bold'
-
-    return val
+    return {
+        name = require('feline.providers.vi_mode').get_mode_highlight_name(),
+        fg = require('feline.providers.vi_mode').get_mode_color(),
+        style = 'bold'
+    }
 end
 
 -- As a function returning a string
@@ -362,22 +373,20 @@ Now that we know of the possible values you can set in a component, let's make s
 
 ```lua
 -- Component that shows Vi mode with highlight
-components.left.active[1] = {
+components.active[1][1] = {
     provider = 'vi_mode',
     hl = function()
-        local val = {}
-
-        val.name = vi_mode_utils.get_mode_highlight_name()
-        val.fg = vi_mode_utils.get_mode_color()
-        val.style = 'bold'
-
-        return val
+        return {
+            name = require('feline.providers.vi_mode').get_mode_highlight_name(),
+            fg = require('feline.providers.vi_mode').get_mode_color(),
+            style = 'bold'
+        }
     end,
     right_sep = ' '
 }
 
 -- Component that shows file info
-components.left.active[2] = {
+components.active[1][2] = {
     provider = 'file_info',
     hl = {
         fg = 'white',
@@ -391,7 +400,7 @@ components.left.active[2] = {
 }
 
 -- Components that show current file size
-components.left.active[3] = {
+components.active[1][3] = {
     provider = 'file_size',
     enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
     right_sep = {
@@ -408,12 +417,12 @@ components.left.active[3] = {
 }
 
 -- Component that shows file encoding
-components.mid.active[1] = {
+components.active[2][1] = {
     provider = 'file_encoding'
 }
 
 -- Component that shows current git branch
-components.right.active[1] = {
+components.active[3][1] = {
     provider = 'git_branch',
     hl = {
         fg = 'white',
@@ -570,214 +579,190 @@ local fn = vim.fn
 
 local properties = {
     force_inactive = {
-        filetypes = {},
-        buftypes = {},
+        filetypes = {
+            'NvimTree',
+            'packer',
+            'startify',
+            'fugitive',
+            'fugitiveblame',
+            'qf',
+            'help'
+        },
+        buftypes = {
+            'terminal'
+        },
         bufnames = {}
     }
 }
 
 local components = {
-    left = {
-        active = {},
-        inactive = {}
-    },
-    mid = {
-        active = {},
-        inactive = {}
-    },
-    right = {
-        active = {},
-        inactive = {}
-    }
+    active = {},
+    inactive = {}
 }
 
-properties.force_inactive.filetypes = {
-    'NvimTree',
-    'dbui',
-    'packer',
-    'startify',
-    'fugitive',
-    'fugitiveblame'
-}
-
-properties.force_inactive.buftypes = {
-    'terminal'
-}
-
-components.left.active[1] = {
-    provider = '▊ ',
-    hl = {
-        fg = 'skyblue'
-    }
-}
-
-components.left.active[2] = {
-    provider = 'vi_mode',
-    hl = function()
-        local val = {}
-
-        val.name = vi_mode_utils.get_mode_highlight_name()
-        val.fg = vi_mode_utils.get_mode_color()
-        val.style = 'bold'
-
-        return val
-    end,
-    right_sep = ' '
-}
-
-components.left.active[3] = {
-    provider = 'file_info',
-    hl = {
-        fg = 'white',
-        bg = 'oceanblue',
-        style = 'bold'
-    },
-    left_sep = {
-        ' ', 'slant_left_2',
-        {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
-    },
-    right_sep = {'slant_right_2', ' '}
-}
-
-components.left.active[4] = {
-    provider = 'file_size',
-    enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
-    right_sep = {
-        ' ',
-        {
-            str = 'slant_left_2_thin',
-            hl = {
-                fg = 'fg',
-                bg = 'bg'
-            }
-        },
-    }
-}
-
-components.left.active[5] = {
-    provider = 'position',
-    left_sep = ' ',
-    right_sep = {
-        ' ',
-        {
-            str = 'slant_right_2_thin',
-            hl = {
-                fg = 'fg',
-                bg = 'bg'
-            }
-        }
-    }
-}
-
-components.left.active[6] = {
-    provider = 'diagnostic_errors',
-    enabled = function() return lsp.diagnostics_exist('Error') end,
-    hl = { fg = 'red' }
-}
-
-components.left.active[7] = {
-    provider = 'diagnostic_warnings',
-    enabled = function() return lsp.diagnostics_exist('Warning') end,
-    hl = { fg = 'yellow' }
-}
-
-components.left.active[8] = {
-    provider = 'diagnostic_hints',
-    enabled = function() return lsp.diagnostics_exist('Hint') end,
-    hl = { fg = 'cyan' }
-}
-
-components.left.active[9] = {
-    provider = 'diagnostic_info',
-    enabled = function() return lsp.diagnostics_exist('Information') end,
-    hl = { fg = 'skyblue' }
-}
-
-components.right.active[1] = {
-    provider = 'git_branch',
-    hl = {
-        fg = 'white',
-        bg = 'black',
-        style = 'bold'
-    },
-    right_sep = function()
-        local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-
-        return val
-    end
-}
-
-components.right.active[2] = {
-    provider = 'git_diff_added',
-    hl = {
-        fg = 'green',
-        bg = 'black'
-    }
-}
-
-components.right.active[3] = {
-    provider = 'git_diff_changed',
-    hl = {
-        fg = 'orange',
-        bg = 'black'
-    }
-}
-
-components.right.active[4] = {
-    provider = 'git_diff_removed',
-    hl = {
-        fg = 'red',
-        bg = 'black'
-    },
-    right_sep = function()
-        local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-
-        return val
-    end
-}
-
-components.right.active[5] = {
-    provider = 'line_percentage',
-    hl = {
-        style = 'bold'
-    },
-    left_sep = '  ',
-    right_sep = ' '
-}
-
-components.right.active[6] = {
-    provider = 'scroll_bar',
-    hl = {
-        fg = 'skyblue',
-        style = 'bold'
-    }
-}
-
-components.left.inactive[1] = {
-    provider = 'file_type',
-    hl = {
-        fg = 'white',
-        bg = 'oceanblue',
-        style = 'bold'
-    },
-    left_sep = {
-        str = ' ',
+components.active[1] = {
+    {
+        provider = '▊ ',
         hl = {
-            fg = 'NONE',
-            bg = 'oceanblue'
+            fg = 'skyblue'
         }
     },
-    right_sep = {
-        {
+    {
+        provider = 'vi_mode',
+        hl = function()
+            return {
+                name = vi_mode_utils.get_mode_highlight_name(),
+                fg = vi_mode_utils.get_mode_color(),
+                style = 'bold'
+            }
+        end,
+        right_sep = ' '
+    },
+    {
+        provider = 'file_info',
+        hl = {
+            fg = 'white',
+            bg = 'oceanblue',
+            style = 'bold'
+        },
+        left_sep = {
+            ' ', 'slant_left_2',
+            {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
+        },
+        right_sep = {'slant_right_2', ' '}
+    },
+    {
+        provider = 'file_size',
+        enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
+        right_sep = {
+            ' ',
+            {
+                str = 'slant_left_2_thin',
+                hl = {
+                    fg = 'fg',
+                    bg = 'bg'
+                }
+            },
+        }
+    },
+    {
+        provider = 'position',
+        left_sep = ' ',
+        right_sep = {
+            ' ',
+            {
+                str = 'slant_right_2_thin',
+                hl = {
+                    fg = 'fg',
+                    bg = 'bg'
+                }
+            }
+        }
+    },
+    {
+        provider = 'diagnostic_errors',
+        enabled = function() return lsp.diagnostics_exist('Error') end,
+        hl = { fg = 'red' }
+    },
+    {
+        provider = 'diagnostic_warnings',
+        enabled = function() return lsp.diagnostics_exist('Warning') end,
+        hl = { fg = 'yellow' }
+    },
+    {
+        provider = 'diagnostic_hints',
+        enabled = function() return lsp.diagnostics_exist('Hint') end,
+        hl = { fg = 'cyan' }
+    },
+    {
+        provider = 'diagnostic_info',
+        enabled = function() return lsp.diagnostics_exist('Information') end,
+        hl = { fg = 'skyblue' }
+    }
+}
+
+components.active[2] = {
+    {
+        provider = 'git_branch',
+        hl = {
+            fg = 'white',
+            bg = 'black',
+            style = 'bold'
+        },
+        right_sep = function()
+            local val = {hl = {fg = 'NONE', bg = 'black'}}
+            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+            return val
+        end
+    },
+    {
+        provider = 'git_diff_added',
+        hl = {
+            fg = 'green',
+            bg = 'black'
+        }
+    },
+    {
+        provider = 'git_diff_changed',
+        hl = {
+            fg = 'orange',
+            bg = 'black'
+        }
+    },
+    {
+        provider = 'git_diff_removed',
+        hl = {
+            fg = 'red',
+            bg = 'black'
+        },
+        right_sep = function()
+            local val = {hl = {fg = 'NONE', bg = 'black'}}
+            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
+            return val
+        end
+    },
+    {
+        provider = 'line_percentage',
+        hl = {
+            style = 'bold'
+        },
+        left_sep = '  ',
+        right_sep = ' '
+    },
+    {
+        provider = 'scroll_bar',
+        hl = {
+            fg = 'skyblue',
+            style = 'bold'
+        }
+    }
+}
+
+components.inactive[1] = {
+    {
+        provider = 'file_type',
+        hl = {
+            fg = 'white',
+            bg = 'oceanblue',
+            style = 'bold'
+        },
+        left_sep = {
             str = ' ',
             hl = {
                 fg = 'NONE',
                 bg = 'oceanblue'
             }
         },
-        'slant_right'
+        right_sep = {
+            {
+                str = ' ',
+                hl = {
+                    fg = 'NONE',
+                    bg = 'oceanblue'
+                }
+            },
+            'slant_right'
+        }
     }
 }
 
@@ -897,17 +882,15 @@ Note that this is different if you set the `icon` value of the component to `''`
 Here is the simplest method to make a component with proper Vi-mode indication:
 
 ```lua
--- Remember to change "components.left.active[1]" according to the rest of your config
-components.left.active[1] = {
+-- Remember to change "components.active[1][1]" according to the rest of your config
+components.active[1][1] = {
     provider = 'vi_mode',
     hl = function()
-        local val = {}
-
-        val.name = require('feline.providers.vi_mode').get_mode_highlight_name()
-        val.fg = require('feline.providers.vi_mode').get_mode_color()
-        val.style = 'bold'
-
-        return val
+        return {
+            name = require('feline.providers.vi_mode').get_mode_highlight_name(),
+            fg = require('feline.providers.vi_mode').get_mode_color(),
+            style = 'bold'
+        }
     end,
     right_sep = ' ',
     -- Uncomment the next line to disable icons for this component and use the mode name instead
@@ -981,20 +964,13 @@ If you want, you can just disable the inactive statusline by doing:
 
 ```lua
 -- Remove all inactive statusline components
-components.left.inactive = {}
-components.mid.inactive = {}
-components.right.inactive = {}
+components.inactive = {}
 ```
 
 Alternatively, you could also use a thin line instead of the inactive statusline to separate you windows, like the vertical split seperator, except in this case it would act as a horizontal separator of sorts. You can do this through:
 
 ```lua
 local nvim_exec = vim.api.nvim_exec
-
--- Remove all inactive statusline components
-components.left.inactive = {}
-components.mid.inactive = {}
-components.right.inactive = {}
 
 -- Get highlight of inactive statusline by parsing the style, fg and bg of VertSplit
 local InactiveStatusHL = {
@@ -1013,13 +989,14 @@ end
 
 -- Apply the highlight to the statusline
 -- by having an empty provider with the highlight
-components.left.inactive[1] = {
-    provider = '',
-    hl = InactiveStatusHL
+components.inactive = {
+    {
+        {
+            provider = '',
+            hl = InactiveStatusHL
+        }
+    }
 }
-
--- Setup feline.nvim
-require('feline').setup()
 ```
 
 ### Reporting issues or feature requests
