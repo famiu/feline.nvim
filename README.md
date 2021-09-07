@@ -140,8 +140,8 @@ So first, in your init.lua file, you have to initialize the components table
 ```lua
 -- Initialize the components table
 local components = {
-    active = {},
-    inactive = {}
+    active = {{}, {}, {}},
+    inactive = {{}, {}, {}}
 }
 ```
 
