@@ -5,7 +5,7 @@ function M.git_branch(component)
     local str = ''
     local head = vim.b.gitsigns_head or vim.g.gitsigns_head or ''
 
-    if head ~= "" then
+    if head ~= '' then
         icon = component.icon or ' '
         str = str .. head
     end
