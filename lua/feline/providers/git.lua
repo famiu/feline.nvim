@@ -1,14 +1,13 @@
 local M = {}
 
 function M.git_branch(component)
-    local gsd = vim.b.gitsigns_status_dict
-
     local icon
     local str = ''
+    local head = vim.b.gitsigns_head or vim.g.gitsigns_head or ''
 
-    if gsd and gsd.head and #gsd.head > 0 then
+    if head ~= "" then
         icon = component.icon or ' '
-        str = str .. gsd.head
+        str = str .. head
     end
 
     return str, icon
