@@ -134,8 +134,9 @@ function M.setup(config)
     }, 'feline')
 end
 
-function M.statusline()
-    return require('feline.generator').generate_statusline(g.statusline_winid == fn.win_getid())
+function M.statusline(winnr)
+    winnr = winnr or vim.api.nvim_get_current_win()
+    return require('feline.generator').generate_statusline(winnr)
 end
 
 return M
