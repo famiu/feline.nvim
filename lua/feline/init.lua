@@ -109,12 +109,8 @@ function M.setup(config)
     }, 'feline')
 end
 
-function M.statusline()
-    if g.statusline_winid == fn.win_getid() then
-        return gen.generate_statusline(true)
-    else
-        return gen.generate_statusline(false)
-    end
+function M.statusline(winnr)
+    return gen.generate_statusline(winnr)
 end
 
 return M
