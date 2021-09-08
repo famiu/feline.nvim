@@ -103,13 +103,26 @@ function M.setup(config)
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
-        {'WinEnter,BufEnter', '*', 'set statusline<'},
-        {'WinLeave,BufLeave', '*', 'lua vim.wo.statusline=require\'feline\'.statusline()'},
-        {'ColorScheme', '*', 'lua require\'feline\'.reset_highlights()'}
+        {
+            'WinEnter,BufEnter',
+            '*',
+            'set statusline<'
+        },
+        {
+            'WinLeave,BufLeave',
+            '*',
+            'lua vim.wo.statusline=require("feline").statusline()'
+        },
+        {
+            'ColorScheme',
+            '*',
+            'lua require("feline").reset_highlights()'
+        }
     }, 'feline')
 end
 
 function M.statusline(winnr)
+    winnr = winnr or vim.api.nvim_get_current_win()
     return gen.generate_statusline(winnr)
 end
 
