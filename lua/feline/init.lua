@@ -1,11 +1,7 @@
-if vim.fn.has('nvim-0.5') ~= 1 then
-    vim.api.nvim_err_writeln("Feline is only available for Neovim versions 0.5 and above")
-    return
-end
-
 local g = vim.g
 local cmd = vim.cmd
 local fn = vim.fn
+local api = vim.api
 local gen = require('feline.generator')
 
 local M = {}
@@ -42,6 +38,12 @@ local function create_augroup(autocmds, name)
 end
 
 function M.setup(config)
+    -- Check if Neovim version is 0.5 or greater
+    if fn.has('nvim-0.5') ~= 1 then
+        api.nvim_err_writeln("Feline is only available for Neovim versions 0.5 and above")
+        return
+    end
+
     local colors = require('feline.defaults').colors
     local separators = require('feline.defaults').separators
     local vi_mode = require('feline.providers.vi_mode')
@@ -79,7 +81,7 @@ function M.setup(config)
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
-        vim.api.nvim_echo(
+        api.nvim_echo(
             {{
                 "\nDeprecation warning:\n" ..
                 "This format for defining Feline components has been deprecated and will soon " ..
