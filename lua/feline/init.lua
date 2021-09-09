@@ -8,6 +8,19 @@ local M = {}
 
 M.reset_highlights = gen.reset_highlights
 
+function M.update_all_windows()
+    for _, winid in ipairs(api.nvim_list_wins()) do
+        vim.wo[winid].statusline = api.nvim_win_call(winid,
+            function()
+                return require('feline').statusline(winid)
+            end
+        )
+    end
+
+    -- Reset local statusline of current window to use the global statusline for it
+    vim.wo.statusline = nil
+end
+
 local function parse_config(config_dict, config_name, expected_type, default_value)
     if config_dict and config_dict[config_name] then
         if type(config_dict[config_name]) == expected_type then
@@ -103,9 +116,16 @@ function M.setup(config)
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
-        {'WinEnter,BufEnter', '*', 'set statusline<'},
-        {'WinLeave,BufLeave', '*', 'lua vim.wo.statusline=require\'feline\'.statusline()'},
-        {'ColorScheme', '*', 'lua require\'feline\'.reset_highlights()'}
+        {
+            'WinEnter,BufEnter,WinLeave,BufLeave,SessionLoadPost,FileChangedShellPost',
+            '*',
+            'lua require("feline").update_all_windows()'
+        },
+        {
+            'SessionLoadPost,ColorScheme',
+            '*',
+            'lua require("feline").reset_highlights()'
+        }
     }, 'feline')
 end
 
