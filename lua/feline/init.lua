@@ -25,7 +25,7 @@ local function parse_config(config_dict, config_name, expected_type, default_val
     end
 end
 
--- Create augroup
+-- Utility function to create augroups
 local function create_augroup(autocmds, name)
     cmd('augroup ' .. name)
     cmd('autocmd!')
@@ -40,7 +40,7 @@ end
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
     if fn.has('nvim-0.5') ~= 1 then
-        api.nvim_err_writeln("Feline is only available for Neovim versions 0.5 and above")
+        api.nvim_err_writeln('Feline is only available for Neovim versions 0.5 and above')
         return
     end
 
@@ -51,28 +51,28 @@ function M.setup(config)
     local preset, components, properties
     local custom_colors, custom_separators, vi_mode_colors
 
-    if parse_config(config, "preset", "string") then
+    if parse_config(config, 'preset', 'string') then
         preset = presets[config.preset]
     else
         local has_devicons = pcall(require,'nvim-web-devicons')
         if has_devicons then
-            preset = presets["default"]
+            preset = presets['default']
         else
-            preset = presets["noicon"]
+            preset = presets['noicon']
         end
     end
 
-    custom_colors = parse_config(config, "colors", "table", {})
-    custom_separators = parse_config(config, "separators", "table", {})
+    custom_colors = parse_config(config, 'colors', 'table', {})
+    custom_separators = parse_config(config, 'separators', 'table', {})
 
     for color, hex in pairs(custom_colors) do colors[color] = hex end
     for name, str in pairs(custom_separators) do separators[name] = str end
 
-    colors.fg = parse_config(config, "default_fg", "string", colors.fg)
-    colors.bg = parse_config(config, "default_bg", "string", colors.bg)
-    vi_mode_colors = parse_config(config, "vi_mode_colors", "table", {})
-    components = parse_config(config, "components", "table", preset.components)
-    properties = parse_config(config, "properties", "table", preset.properties)
+    colors.fg = parse_config(config, 'default_fg', 'string', colors.fg)
+    colors.bg = parse_config(config, 'default_bg', 'string', colors.bg)
+    vi_mode_colors = parse_config(config, 'vi_mode_colors', 'table', {})
+    components = parse_config(config, 'components', 'table', preset.components)
+    properties = parse_config(config, 'properties', 'table', preset.properties)
 
     for k,v in pairs(vi_mode_colors) do
         if colors[v] then v = colors[v] end
