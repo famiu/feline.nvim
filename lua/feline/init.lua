@@ -9,12 +9,14 @@ local M = {}
 M.reset_highlights = gen.reset_highlights
 
 function M.update_all_windows()
-    for _, winid in ipairs(api.nvim_list_wins()) do
-        vim.wo[winid].statusline = api.nvim_win_call(winid,
-            function()
-                return require('feline').statusline(winid)
-            end
-        )
+    for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
+        if api.nvim_win_get_config(winid).relative == '' then
+            vim.wo[winid].statusline = api.nvim_win_call(winid,
+                function()
+                    return require('feline').statusline(winid)
+                end
+            )
+        end
     end
 
     -- Reset local statusline of current window to use the global statusline for it
@@ -129,8 +131,9 @@ function M.setup(config)
     }, 'feline')
 end
 
-function M.statusline()
-    if g.statusline_winid == fn.win_getid() then
+function M.statusline(winid)
+    winid = winid or fn.win_getid()
+    if g.statusline_winid == winid then
         return gen.generate_statusline(true)
     else
         return gen.generate_statusline(false)
