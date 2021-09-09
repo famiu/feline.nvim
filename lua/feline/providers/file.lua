@@ -1,23 +1,23 @@
 local fn = vim.fn
-local o = vim.o
 local bo = vim.bo
+local api = vim.api
 
 local M = {}
 
 -- Get the names of all current listed buffers
 local function get_current_filenames()
     local listed_buffers = vim.tbl_filter(
-        function(buffer)
-            return buffer.listed == 1
+        function(bufnr)
+            return bo[bufnr].buflisted and api.nvim_buf_is_loaded(bufnr)
         end,
-        fn.getbufinfo()
+        api.nvim_list_bufs()
     )
 
-    return vim.tbl_map(function(buffer) return buffer.name end, listed_buffers)
+    return vim.tbl_map(api.nvim_buf_get_name, listed_buffers)
 end
 
 -- Get unique name for the current buffer
-local function get_unique_filename(filename)
+local function get_unique_filename(filename, shorten)
     local filenames = vim.tbl_filter(
         function(filename_other)
             return filename_other ~= filename
@@ -25,16 +25,25 @@ local function get_unique_filename(filename)
         get_current_filenames()
     )
 
+    if shorten then
+        filename = fn.pathshorten(filename)
+        filenames = vim.tbl_map(fn.pathshorten, filenames)
+    end
+
+    -- Reverse filenames in order to compare their names
     filename = string.reverse(filename)
+    filenames = vim.tbl_map(string.reverse, filenames)
 
     local index
 
+    -- For every other filename, compare it with the name of the current file char-by-char to
+    -- find the minimum index `i` where the i-th character is different for the two filenames
+    -- After doing it for every filename, get the maximum value of `i`
     if next(filenames) then
-        filenames = vim.tbl_map(string.reverse, filenames)
-
         index = math.max(unpack(vim.tbl_map(
             function(filename_other)
                 for i = 1, #filename do
+                    -- Compare i-th character of both names until they aren't equal
                     if filename:sub(i, i) ~= filename_other:sub(i, i) then
                         return i
                     end
@@ -47,6 +56,8 @@ local function get_unique_filename(filename)
         index = 1
     end
 
+    -- Iterate backwards (since filename is reversed) until a "/" is found
+    -- in order to show a valid file path
     while index <= #filename do
         if filename:sub(index, index) == "/" then
             index = index - 1
@@ -57,50 +68,51 @@ local function get_unique_filename(filename)
     end
 
     return string.reverse(string.sub(filename, 1, index))
-
 end
 
 function M.file_info(component)
-    local filename
+    local filename = api.nvim_buf_get_name(0)
 
     component.type = component.type or 'base-only'
 
-    if component.type == 'full-path' then
-        filename = '%F'
-    elseif component.type == 'short-path' then
-        filename = fn.pathshorten(fn.expand('%:p'))
+    if component.type == 'short-path' then
+        filename = fn.pathshorten(filename)
     elseif component.type == 'base-only' then
-        filename = '%t'
+        filename = fn.fnamemodify(filename, ':t')
     elseif component.type == 'relative' then
-        filename = '%f'
+        filename = fn.fnamemodify(filename, ":~:.")
     elseif component.type == 'relative-short' then
-        filename = fn.pathshorten(fn.fnamemodify(fn.expand("%"), ":~:."))
+        filename = fn.pathshorten(fn.fnamemodify(filename, ":~:."))
     elseif component.type == 'unique' then
-        filename = get_unique_filename(fn.expand('%:p'))
+        filename = get_unique_filename(filename)
     elseif component.type == 'unique-short' then
-        filename = get_unique_filename(fn.pathshorten(fn.expand('%:p')))
-    else
-        filename = fn.expand('%:t')
+        filename = get_unique_filename(filename, true)
+    elseif component.type ~= 'full-path' then
+        filename = fn.fnamemodify(filename, ':t')
     end
 
-    local extension = fn.expand('%:e')
+    local extension = fn.fnamemodify(filename, ':e')
     local readonly_str, modified_str
 
     local icon = component.icon
+
     if not icon then
-        local ic, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
+        local ic, hl_group = require("nvim-web-devicons").get_icon(
+            filename, extension, { default = true }
+        )
+
         local colored_icon
-        
+
         if component.colored_icon == nil then
             colored_icon = true
         else
             colored_icon = component.colored_icon
         end
-        
+
         icon = { str = ic }
 
         if colored_icon then
-            local fg = vim.api.nvim_get_hl_by_name(hl_group, true)['foreground']
+            local fg = api.nvim_get_hl_by_name(hl_group, true)['foreground']
             if fg then
                 icon["hl"] = { fg = string.format('#%06x', fg) }
             end
@@ -143,7 +155,7 @@ function M.file_type()
 end
 
 function M.file_encoding()
-    local enc = (bo.fenc ~= '' and bo.fenc) or o.enc
+    local enc = (bo.fenc ~= '' and bo.fenc) or vim.o.enc
     return enc:upper()
 end
 
