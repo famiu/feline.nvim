@@ -45,9 +45,14 @@ local function create_augroup(autocmds, name)
     cmd('augroup END')
 end
 
-function M.update_all_windows()
-    for _, winid in ipairs(api.nvim_list_wins()) do
-        vim.wo[winid].statusline = require('feline').statusline(winid)
+function M.update_inactive_windows()
+    local current_win = api.nvim_get_current_win()
+
+    for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
+        if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
+        then
+            vim.wo[winid].statusline = require('feline').statusline(winid)
+        end
     end
 
     -- Reset local statusline of current window to use the global statusline for it
@@ -140,7 +145,7 @@ function M.setup(config)
         {
             'WinEnter,BufEnter,WinLeave,BufLeave,SessionLoadPost,FileChangedShellPost',
             '*',
-            'lua require("feline").update_all_windows()'
+            'lua require("feline").update_inactive_windows()'
         },
         {
             'SessionLoadPost,ColorScheme',
