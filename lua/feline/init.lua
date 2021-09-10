@@ -143,7 +143,7 @@ function M.setup(config)
 
     create_augroup({
         {
-            'VimEnter,WinEnter,FileChangedShellPost',
+            'VimEnter,WinEnter,WinClosed,FileChangedShellPost',
             '*',
             'lua require("feline").update_inactive_windows()'
         },
