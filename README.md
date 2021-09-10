@@ -221,7 +221,7 @@ components.active[3][2] = {
 
 Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take arguments (more about that below). Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
-- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window number of the window for which the statusline is being generated.
+- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
 
 ```lua
 -- Provider that shows current line in file
@@ -238,14 +238,14 @@ provider = function(component)
     end
 end
 
--- Providers can also take the window number as an argument
-provider = function(component, winnr)
-    return (component.icon or '') .. tostring(vim.api.nvim_win_get_buf(winnr))
+-- Providers can also take the window handler as an argument
+provider = function(component, winid)
+    return (component.icon or '') .. tostring(vim.api.nvim_win_get_buf(winid))
 end
 
--- If you only need the window number, you can not avoid using the component value
-provider = function(_, winnr)
-    return vim.api.nvim_win_get_cursor(winnr)[1]
+-- If you only need the window handler, you can avoid using the component value like this:
+provider = function(_, winid)
+    return vim.api.nvim_win_get_cursor(winid)[1]
 end
 
 -- Providers can also simply just contain a string, such as:

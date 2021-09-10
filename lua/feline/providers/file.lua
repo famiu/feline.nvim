@@ -70,8 +70,8 @@ local function get_unique_filename(filename, shorten)
     return string.reverse(string.sub(filename, 1, index))
 end
 
-function M.file_info(component, winnr)
-    local filename = api.nvim_buf_get_name(api.nvim_win_get_buf(winnr))
+function M.file_info(component, winid)
+    local filename = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
 
     component.type = component.type or 'base-only'
 
@@ -121,7 +121,7 @@ function M.file_info(component, winnr)
 
     if filename == '' then filename = 'unnamed' end
 
-    local bufnr = api.nvim_win_get_buf(winnr)
+    local bufnr = api.nvim_win_get_buf(winid)
 
     if bo[bufnr].readonly then
         readonly_str = component.file_readonly_icon or '🔒'
@@ -152,12 +152,12 @@ function M.file_size()
     return string.format(index == 1 and '%g' or '%.2f', fsize) .. suffix[index]
 end
 
-function M.file_type(_, winnr)
-    return bo[api.nvim_win_get_buf(winnr)].filetype:upper()
+function M.file_type(_, winid)
+    return bo[api.nvim_win_get_buf(winid)].filetype:upper()
 end
 
-function M.file_encoding(_, winnr)
-    local bufnr = api.nvim_win_get_buf(winnr)
+function M.file_encoding(_, winid)
+    local bufnr = api.nvim_win_get_buf(winid)
     local enc = (bo[bufnr].fenc ~= '' and bo[bufnr].fenc) or vim.o.enc
     return enc:upper()
 end

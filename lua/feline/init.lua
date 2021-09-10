@@ -46,8 +46,8 @@ local function create_augroup(autocmds, name)
 end
 
 function M.update_all_windows()
-    for _, winnr in ipairs(api.nvim_list_wins()) do
-        vim.wo[winnr].statusline = require('feline').statusline(winnr)
+    for _, winid in ipairs(api.nvim_list_wins()) do
+        vim.wo[winid].statusline = require('feline').statusline(winid)
     end
 
     -- Reset local statusline of current window to use the global statusline for it
@@ -150,9 +150,9 @@ function M.setup(config)
     }, 'feline')
 end
 
-function M.statusline(winnr)
-    winnr = winnr or vim.api.nvim_get_current_win()
-    return require('feline.generator').generate_statusline(winnr)
+function M.statusline(winid)
+    winid = winid or vim.api.nvim_get_current_win()
+    return require('feline.generator').generate_statusline(winid)
 end
 
 return M
