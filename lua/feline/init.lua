@@ -8,7 +8,7 @@ local M = {}
 -- Reset highlights
 function M.reset_highlights()
     for hl, _ in pairs(require('feline.generator').highlights) do
-        cmd('hi clear ' .. hl)
+        cmd('highlight clear ' .. hl)
     end
 
     require('feline.generator').highlights = {}

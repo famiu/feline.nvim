@@ -50,15 +50,9 @@ end
 
 -- Add highlight of component
 local function add_component_highlight(name, fg, bg, style)
-    local hlname = 'StatusComponent' .. name
-
-    if M.highlights[hlname] then
-        return hlname
-    else
-        cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', hlname, style, fg, bg))
-        M.highlights[hlname] = true
-        return hlname
-    end
+    cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', name, style, fg, bg))
+    M.highlights[name] = true
+    return name
 end
 
 local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
@@ -67,11 +61,20 @@ local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 -- Also generate unique name for highlight if name is not given
 -- If given a string, accept it as an existing external highlight group
 local function parse_hl(hl, parent_hl)
-    parent_hl = parent_hl or {}
-
     if type(hl) == "string" then return hl end
 
     if hl == {} then return defhl end
+
+    if hl.name then
+        if M.highlights[hl.name] then
+            return hl.name
+        elseif pcall(api.nvim_get_hl_id_by_name(hl.name)) then
+            M.highlights[hl.name] = true
+            return hl.name
+        end
+    end
+
+    parent_hl = parent_hl or {}
 
     hl.fg = hl.fg or parent_hl.fg or colors.fg
     hl.bg = hl.bg or parent_hl.bg or colors.bg
@@ -82,7 +85,7 @@ local function parse_hl(hl, parent_hl)
 
     -- Generate unique hl name from color strings if a name isn't provided
     hl.name = hl.name or string.format(
-        '_%s_%s_%s',
+        'StatusComponent_%s_%s_%s',
         string.sub(hl.fg, 2),
         string.sub(hl.bg, 2),
         string.gsub(hl.style, ',', '_')

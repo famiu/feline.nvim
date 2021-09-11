@@ -51,7 +51,7 @@ local function title_case(str)
 end
 
 function M.get_mode_highlight_name()
-    return 'Vim' .. title_case(M.get_vim_mode())
+    return 'StatusComponentVim' .. title_case(M.get_vim_mode())
 end
 
 function M.vi_mode(component)
