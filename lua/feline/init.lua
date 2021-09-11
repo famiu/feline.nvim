@@ -2,11 +2,19 @@ local g = vim.g
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
-local gen = require('feline.generator')
 
 local M = {}
 
-M.reset_highlights = gen.reset_highlights
+-- Reset highlights
+function M.reset_highlights()
+    local highlights = require('feline.generator').highlights
+
+    for hl, _ in pairs(highlights) do
+        cmd('hi clear ' .. hl)
+    end
+
+    highlights = {}
+end
 
 local function parse_config(config_dict, config_name, expected_type, default_value)
     if config_dict and config_dict[config_name] then

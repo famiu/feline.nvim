@@ -6,40 +6,8 @@ local colors = require('feline.defaults').colors
 local separators = require('feline.defaults').separators
 local providers = require('feline.providers')
 
-local M = {
-    components = {
-        left = {
-            active = {},
-            inactive = {}
-        },
-        mid = {
-            active = {},
-            inactive = {}
-        },
-        right = {
-            active = {},
-            inactive = {}
-        }
-    },
-    properties = {
-        force_inactive = {
-            buftypes = {},
-            filetypes = {},
-            bufnames = {}
-        }
-    }
-}
-
-local highlights = {}
-
--- Reset highlights
-function M.reset_highlights()
-    for hl,_ in pairs(highlights) do
-        cmd('hi clear ' .. hl)
-    end
-
-    highlights = {}
-end
+local M ={}
+M.highlights = {}
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
@@ -70,11 +38,11 @@ end
 local function add_component_highlight(name, fg, bg, style)
     local hlname = 'StatusComponent' .. name
 
-    if highlights[hlname] then
+    if M.highlights[hlname] then
         return hlname
     else
         cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', hlname, style, fg, bg))
-        highlights[hlname] = true
+        M.highlights[hlname] = true
         return hlname
     end
 end
