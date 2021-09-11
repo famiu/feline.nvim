@@ -45,18 +45,24 @@ local function create_augroup(autocmds, name)
     cmd('augroup END')
 end
 
+-- Update statusline of inactive windows on the current tabpage
 function M.update_inactive_windows()
-    local current_win = api.nvim_get_current_win()
+    -- Uses vim.schedule to defer executing the function until after
+    -- all other autocommands have run. This will ensure that inactive windows
+    -- are updated after any changes.
+    vim.schedule(function()
+        local current_win = api.nvim_get_current_win()
 
-    for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
-        if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
-        then
-            vim.wo[winid].statusline = require('feline').statusline(winid)
+        for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
+            if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
+            then
+                vim.wo[winid].statusline = M.statusline(winid)
+            end
         end
-    end
 
-    -- Reset local statusline of current window to use the global statusline for it
-    vim.wo.statusline = nil
+        -- Reset local statusline of current window to use the global statusline for it
+        vim.wo.statusline = nil
+    end)
 end
 
 function M.setup(config)
