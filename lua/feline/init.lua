@@ -24,10 +24,8 @@ local function parse_config(config_dict, config_name, expected_type, default_val
                 expected_type, config_name, type(config_dict[config_name])
             )
         end
-    elseif default_value then
-        return default_value
     else
-        return nil
+        return default_value
     end
 end
 
@@ -71,8 +69,6 @@ function M.setup(config)
     end
 
     local defaults = require('feline.defaults')
-    local presets = require('feline.presets')
-    local preset, components
 
     -- Configuration options
     local config_opts = {
@@ -94,52 +90,59 @@ function M.setup(config)
         end
     end
 
-    if config.properties then
-        -- Deprecation warning for the `properties` table
-        api.nvim_echo(
-            {{
-                '\nDeprecation warning:\n' ..
-                'The `properties` table for Feline has been deprecated and support for it ' ..
-                'will be removed soon. Please put the `force_inactive` table directly ' ..
-                'inside the setup function instead',
+    local components = parse_config(config, 'components', 'table')
 
-                'WarningMsg'
-            }},
-            true, {}
-        )
+    if config then
+        local properties = parse_config(config, 'properties', 'table')
 
-        local properties = parse_config(config, 'properties', 'table', {})
-        M.force_inactive = properties.force_inactive
-    end
+        if properties then
+            -- Deprecation warning for the `properties` table
+            api.nvim_echo(
+                {{
+                    '\nDeprecation warning:\n' ..
+                    'The `properties` table for Feline has been deprecated and support for it ' ..
+                    'will be removed soon. Please put the `force_inactive` table directly ' ..
+                    'inside the setup function instead',
 
-    -- Deprecation warning for `default_fg` and `default_bg`
-    if config.default_fg or config.default_bg then
-        api.nvim_echo(
-            {{
-                '\nDeprecation warning:\n' ..
-                'The setup options `default_fg` and `default_bg` for Feline have been ' ..
-                'removed and no longer work. Please use the `fg` and `bg` values ' ..
-                'of the `colors` table instead.\n',
+                    'WarningMsg'
+                }},
+                true, {}
+            )
 
-                'WarningMsg'
-            }},
-            true, {}
-        )
-    end
+            M.force_inactive = properties.force_inactive
+        end
 
-    if parse_config(config, 'preset', 'string') then
-        preset = presets[config.preset]
-    else
-        local has_devicons = pcall(require,'nvim-web-devicons')
+        -- Deprecation warning for `default_fg` and `default_bg`
+        if config.default_fg or config.default_bg then
+            api.nvim_echo(
+                {{
+                    '\nDeprecation warning:\n' ..
+                    'The setup options `default_fg` and `default_bg` for Feline have been ' ..
+                    'removed and no longer work. Please use the `fg` and `bg` values ' ..
+                    'of the `colors` table instead.\n',
 
-        if has_devicons then
-            preset = presets['default']
-        else
-            preset = presets['noicon']
+                    'WarningMsg'
+                }},
+                true, {}
+            )
         end
     end
 
-    components = parse_config(config, 'components', 'table', preset.components)
+    if not components then
+        local presets = require('feline.presets')
+
+        if parse_config(config, 'preset', 'string') and presets[config.preset] then
+            components = presets[config.preset].components
+        else
+            local has_devicons = pcall(require,'nvim-web-devicons')
+
+            if has_devicons then
+                components = presets['default'].components
+            else
+                components = presets['noicon'].components
+            end
+        end
+    end
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
