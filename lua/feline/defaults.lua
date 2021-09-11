@@ -58,4 +58,11 @@ M.vi_mode_colors = {
     ['NONE'] = 'yellow'
 }
 
+M.update_triggers = {
+    'VimEnter',
+    'WinEnter',
+    'WinClosed',
+    'FileChangedShellPost'
+}
+
 return M

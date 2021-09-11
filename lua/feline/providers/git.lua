@@ -1,9 +1,17 @@
+local api = vim.api
+
 local M = {}
 
-function M.git_branch(component)
+function M.git_branch(component, winid)
     local icon
     local str = ''
-    local head = vim.b.gitsigns_head or vim.g.gitsigns_head or ''
+    local ok, head = pcall(
+        api.nvim_buf_get_var,
+        api.nvim_win_get_buf(winid),
+        'gitsigns_head'
+    )
+
+    if not ok then head = vim.g.gitsigns_head or '' end
 
     if head ~= '' then
         icon = component.icon or ' '
@@ -13,13 +21,17 @@ function M.git_branch(component)
     return str, icon
 end
 
-function M.git_diff_added(component)
-    local gsd = vim.b.gitsigns_status_dict
+function M.git_diff_added(component, winid)
+    local ok, gsd = pcall(
+        api.nvim_buf_get_var,
+        api.nvim_win_get_buf(winid),
+        'gitsigns_status_dict'
+    )
 
     local icon
     local str = ''
 
-    if gsd and gsd['added'] and gsd['added'] > 0 then
+    if ok and gsd['added'] and gsd['added'] > 0 then
         icon = component.icon or '  '
         str = str .. gsd.added
     end
@@ -27,13 +39,17 @@ function M.git_diff_added(component)
     return str, icon
 end
 
-function M.git_diff_removed(component)
-    local gsd = vim.b.gitsigns_status_dict
+function M.git_diff_removed(component, winid)
+    local ok, gsd = pcall(
+        api.nvim_buf_get_var,
+        api.nvim_win_get_buf(winid),
+        'gitsigns_status_dict'
+    )
 
     local icon
     local str = ''
 
-    if gsd and gsd['removed'] and gsd['removed'] > 0 then
+    if ok and gsd['removed'] and gsd['removed'] > 0 then
         icon = component.icon or '  '
         str = str .. gsd.removed
     end
@@ -41,13 +57,17 @@ function M.git_diff_removed(component)
     return str, icon
 end
 
-function M.git_diff_changed(component)
-    local gsd = vim.b.gitsigns_status_dict
+function M.git_diff_changed(component, winid)
+    local ok, gsd = pcall(
+        api.nvim_buf_get_var,
+        api.nvim_win_get_buf(winid),
+        'gitsigns_status_dict'
+    )
 
     local icon
     local str = ''
 
-    if gsd and gsd['changed'] and gsd['changed'] > 0 then
+    if ok and gsd['changed'] and gsd['changed'] > 0 then
         icon = component.icon or ' 柳'
         str = str .. gsd.changed
     end

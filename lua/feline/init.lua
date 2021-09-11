@@ -45,6 +45,26 @@ local function create_augroup(autocmds, name)
     cmd('augroup END')
 end
 
+-- Update statusline of inactive windows on the current tabpage
+function M.update_inactive_windows()
+    -- Uses vim.schedule to defer executing the function until after
+    -- all other autocommands have run. This will ensure that inactive windows
+    -- are updated after any changes.
+    vim.schedule(function()
+        local current_win = api.nvim_get_current_win()
+
+        for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
+            if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
+            then
+                vim.wo[winid].statusline = M.statusline(winid)
+            end
+        end
+
+        -- Reset local statusline of current window to use the global statusline for it
+        vim.wo.statusline = nil
+    end)
+end
+
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
     if fn.has('nvim-0.5') ~= 1 then
@@ -60,7 +80,8 @@ function M.setup(config)
     local config_opts = {
         'colors',
         'separators',
-        'vi_mode_colors'
+        'vi_mode_colors',
+        'update_triggers'
     }
 
     -- Parse the opts in config_opts by getting the default values and
@@ -128,14 +149,22 @@ function M.setup(config)
     vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
 
     create_augroup({
-        {'WinEnter,BufEnter', '*', 'set statusline<'},
-        {'WinLeave,BufLeave', '*', 'lua vim.wo.statusline=require\'feline\'.statusline()'},
-        {'ColorScheme', '*', 'lua require\'feline\'.reset_highlights()'}
+        {
+            table.concat(M.update_triggers, ','),
+            '*',
+            'lua require("feline").update_inactive_windows()'
+        },
+        {
+            'SessionLoadPost,ColorScheme',
+            '*',
+            'lua require("feline").reset_highlights()'
+        }
     }, 'feline')
 end
 
-function M.statusline()
-    return require('feline.generator').generate_statusline(g.statusline_winid == fn.win_getid())
+function M.statusline(winid)
+    winid = winid or vim.api.nvim_get_current_win()
+    return require('feline.generator').generate_statusline(winid)
 end
 
 return M

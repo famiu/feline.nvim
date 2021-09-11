@@ -140,12 +140,12 @@ local function parse_icon(icon, parent_hl)
 end
 
 -- Parse component provider
-local function parse_provider(provider, component)
+local function parse_provider(provider, component, winid)
     local icon
     if type(provider) == "string" and type(providers[provider]) == "function" then
-        provider, icon = providers[provider](component)
+        provider, icon = providers[provider](component, winid)
     elseif type(provider) == "function" then
-        provider, icon = provider(component)
+        provider, icon = provider(component, winid)
     end
 
     if type(provider) ~= "string" then
@@ -158,18 +158,17 @@ local function parse_provider(provider, component)
 end
 
 -- Parses a component alongside its highlight
-local function parse_component(component)
+local function parse_component(component, winid)
     local enabled = evaluate_if_function(component.enabled, true)
 
     if not enabled then return '' end
-
 
     local hl = evaluate_if_function(component.hl, {})
 
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
 
-    local str, icon = parse_provider(component.provider, component)
+    local str, icon = parse_provider(component.provider, component, winid)
 
     local hlname = parse_hl(hl)
 
@@ -184,12 +183,12 @@ end
 
 -- Parse components of a section of the statusline
 -- (For old component table format)
-local function parse_statusline_section_old(section, type)
+local function parse_statusline_section_old(section, type, winid)
     if feline.components[section] and feline.components[section][type] then
         local section_components = {}
 
         for _, v in ipairs(feline.components[section][type]) do
-            section_components[#section_components+1] = parse_component(v)
+            section_components[#section_components+1] = parse_component(v, winid)
         end
 
         return table.concat(section_components)
@@ -199,25 +198,25 @@ local function parse_statusline_section_old(section, type)
 end
 
 -- Parse components of a section of the statusline
-local function parse_statusline_section(section)
+local function parse_statusline_section(section, winid)
     local components = {}
 
     for _, component in ipairs(section) do
-        components[#components+1] = parse_component(component)
+        components[#components+1] = parse_component(component, winid)
     end
 
     return table.concat(components)
 end
 
 -- Generate statusline by parsing all components and return a string
-function M.generate_statusline(is_active)
+function M.generate_statusline(winid)
     if not feline.components then
         return ''
     end
 
     local statusline_type
 
-    if is_active and not is_forced_inactive() then
+    if winid == vim.api.nvim_get_current_win() and not is_forced_inactive() then
         statusline_type='active'
     else
         statusline_type='inactive'
@@ -229,16 +228,16 @@ function M.generate_statusline(is_active)
         local sections = {}
 
         for _, section in ipairs(feline.components[statusline_type]) do
-            sections[#sections+1] = parse_statusline_section(section)
+            sections[#sections+1] = parse_statusline_section(section, winid)
         end
 
         return table.concat(sections, '%=')
     else
         return string.format(
             "%s%%=%s%%=%s",
-            parse_statusline_section_old('left', statusline_type),
-            parse_statusline_section_old('mid', statusline_type),
-            parse_statusline_section_old('right', statusline_type)
+            parse_statusline_section_old('left', statusline_type, winid),
+            parse_statusline_section_old('mid', statusline_type, winid),
+            parse_statusline_section_old('right', statusline_type, winid)
         )
     end
 end

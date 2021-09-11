@@ -219,9 +219,9 @@ components.active[3][2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also keep in mind that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
-Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take one argument, more about that below. Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take arguments (more about that below). Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
-- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself.
+- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
 
 ```lua
 -- Provider that shows current line in file
@@ -238,7 +238,17 @@ provider = function(component)
     end
 end
 
--- Providers can also just contain a simple string, such as:
+-- Providers can also take the window handler as an argument
+provider = function(component, winid)
+    return (component.icon or '') .. tostring(vim.api.nvim_win_get_buf(winid))
+end
+
+-- If you only need the window handler, you can avoid using the component value like this:
+provider = function(_, winid)
+    return vim.api.nvim_win_get_cursor(winid)[1]
+end
+
+-- Providers can also simply just contain a string, such as:
 provider = 'some text here'
 ```
 
@@ -542,6 +552,8 @@ Now that we've learned to set up both the components table and the properties ta
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
+- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
+Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `components` - The components table.
 - `properties` - The properties table.
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
