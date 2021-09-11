@@ -74,6 +74,12 @@ M.force_inactive = {
     bufnames = {}
 }
 
+M.disable = {
+    filetypes = {},
+    buftypes = {},
+    bufnames = {}
+}
+
 M.update_triggers = {
     'VimEnter',
     'WinEnter',

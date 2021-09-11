@@ -89,6 +89,7 @@ function M.setup(config)
     end
 
     M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
+    M.disable = parse_config(config, 'force_inactive', 'table', defaults.disable)
     M.update_triggers = defaults.update_triggers
 
     for _, trigger in ipairs(parse_config(config, 'update_triggers', 'table', {})) do

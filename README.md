@@ -538,6 +538,7 @@ Default:
     bufnames = {}
 }
 ```
+- `disable` - Similar to `force_inactive`, except the statusline is disabled completely. Configured the same way as `force_inactive`
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
 | Mode        | Description           | Value       |
@@ -819,6 +820,13 @@ local force_inactive = {
     bufnames = {}
 }
 
+-- This table is equal to the default disable table
+local disable = {
+    filetypes = {},
+    buftypes = {},
+    bufnames = {}
+}
+
 -- This table is equal to the default update_triggers table
 local update_triggers = {
     'VimEnter',
@@ -832,6 +840,7 @@ require('feline').setup({
     separators = separators,
     vi_mode_colors = vi_mode_colors,
     force_inactive = force_inactive,
+    disable = disable,
     update_triggers = update_triggers,
     components = components
 })

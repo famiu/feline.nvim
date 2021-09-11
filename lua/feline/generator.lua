@@ -23,7 +23,7 @@ local function is_forced_inactive()
         vim.tbl_contains(force_inactive.bufnames, bufname)
 end
 
--- Check if buffer contained in current window is configured to have statusline disabled
+-- Check if buffer contained in window is configured to have statusline disabled
 local function is_disabled(winid)
     local disable = {buftypes = {}, filetypes = {}, bufnames = {}}
 
