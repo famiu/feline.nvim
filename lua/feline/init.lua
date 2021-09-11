@@ -70,24 +70,29 @@ function M.setup(config)
 
     local defaults = require('feline.defaults')
 
-    -- Configuration options
-    local config_opts = {
+    -- Value presets
+    local value_presets = {
         'colors',
         'separators',
-        'force_inactive',
         'vi_mode_colors',
-        'update_triggers'
     }
 
     -- Parse the opts in config_opts by getting the default values and
     -- appending the custom values on top of them
-    for _, opt in ipairs(config_opts) do
+    for _, opt in ipairs(value_presets) do
         local custom_val = parse_config(config, opt, 'table', {})
         M[opt] = defaults[opt]
 
         for k, v in pairs(custom_val) do
             M[opt][k] = v
         end
+    end
+
+    M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
+    M.update_triggers = defaults.update_triggers
+
+    for _, trigger in ipairs(parse_config(config, 'update_triggers', 'table', {})) do
+        M.update_triggers[#M.update_triggers+1] = trigger
     end
 
     local components = parse_config(config, 'components', 'table')
