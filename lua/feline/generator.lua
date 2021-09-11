@@ -23,6 +23,19 @@ local function is_forced_inactive()
         vim.tbl_contains(force_inactive.bufnames, bufname)
 end
 
+-- Check if buffer contained in current window is configured to have statusline disabled
+local function is_disabled(winid)
+    local disable = {buftypes = {}, filetypes = {}, bufnames = {}}
+
+    local buftype = bo.buftype
+    local filetype = bo.filetype
+    local bufname = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+
+    return vim.tbl_contains(disable.buftypes, buftype) or
+        vim.tbl_contains(disable.filetypes, filetype) or
+        vim.tbl_contains(disable.bufnames, bufname)
+end
+
 -- Evaluate a component key if it is a function, else return the value
 -- Also returns specified default value if value is nil
 local function evaluate_if_function(key, default)
@@ -54,14 +67,14 @@ local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 -- Also generate unique name for highlight if name is not given
 -- If given a string, accept it as an existing external highlight group
 local function parse_hl(hl, parent_hl)
-    parent_hl = parent_hl or colors
+    parent_hl = parent_hl or {}
 
     if type(hl) == "string" then return hl end
 
     if hl == {} then return defhl end
 
-    hl.fg = hl.fg or parent_hl.fg
-    hl.bg = hl.bg or parent_hl.bg
+    hl.fg = hl.fg or parent_hl.fg or colors.fg
+    hl.bg = hl.bg or parent_hl.bg or colors.bg
     hl.style = hl.style or 'NONE'
 
     if colors[hl.fg] then hl.fg = colors[hl.fg] end
@@ -210,7 +223,7 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
-    if not feline.components then
+    if not feline.components or is_disabled(winid) then
         return ''
     end
 
