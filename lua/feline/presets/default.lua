@@ -5,23 +5,6 @@ local b = vim.b
 local fn = vim.fn
 
 local M = {
-    properties = {
-        force_inactive = {
-            filetypes = {
-                'NvimTree',
-                'packer',
-                'startify',
-                'fugitive',
-                'fugitiveblame',
-                'qf',
-                'help'
-            },
-            buftypes = {
-                'terminal'
-            },
-            bufnames = {}
-        }
-    },
     components = {
         active = {},
         inactive = {}

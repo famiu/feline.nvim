@@ -1,6 +1,6 @@
 local bo = vim.bo
-local fn = vim.fn
 local cmd = vim.cmd
+local api = vim.api
 
 local feline = require('feline')
 local colors = feline.colors
@@ -12,11 +12,11 @@ M.highlights = {}
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
-    local force_inactive = feline.properties.force_inactive
+    local force_inactive = feline.force_inactive
 
     local buftype = bo.buftype
     local filetype = bo.filetype
-    local bufname = fn.bufname()
+    local bufname = api.nvim_buf_get_name(0)
 
     return vim.tbl_contains(force_inactive.buftypes, buftype) or
         vim.tbl_contains(force_inactive.filetypes, filetype) or
@@ -216,7 +216,7 @@ function M.generate_statusline(winid)
 
     local statusline_type
 
-    if winid == vim.api.nvim_get_current_win() and not is_forced_inactive() then
+    if winid == api.nvim_get_current_win() and not is_forced_inactive() then
         statusline_type='active'
     else
         statusline_type='inactive'

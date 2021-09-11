@@ -74,12 +74,13 @@ function M.setup(config)
 
     local defaults = require('feline.defaults')
     local presets = require('feline.presets')
-    local preset, components, properties
+    local preset, components
 
-    -- Configuration options that aren't defined in a preset
+    -- Configuration options
     local config_opts = {
         'colors',
         'separators',
+        'force_inactive',
         'vi_mode_colors',
         'update_triggers'
     }
@@ -93,6 +94,24 @@ function M.setup(config)
         for k, v in pairs(custom_val) do
             M[opt][k] = v
         end
+    end
+
+    if config.properties then
+        -- Deprecation warning for the `properties` table
+        api.nvim_echo(
+            {{
+                '\nDeprecation warning:\n' ..
+                'The `properties` table for Feline has been deprecated and support for it ' ..
+                'will be removed soon. Please put the `force_inactive` table directly ' ..
+                'inside the setup function instead',
+
+                'WarningMsg'
+            }},
+            true, {}
+        )
+
+        local properties = parse_config(config, 'properties', 'table', {})
+        M.force_inactive = properties.force_inactive
     end
 
     -- Deprecation warning for `default_fg` and `default_bg`
@@ -123,7 +142,6 @@ function M.setup(config)
     end
 
     components = parse_config(config, 'components', 'table', preset.components)
-    properties = parse_config(config, 'properties', 'table', preset.properties)
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
@@ -141,7 +159,6 @@ function M.setup(config)
     end
 
     M.components = components
-    M.properties = properties
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true

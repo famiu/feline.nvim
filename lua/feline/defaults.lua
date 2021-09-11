@@ -58,6 +58,22 @@ M.vi_mode_colors = {
     ['NONE'] = 'yellow'
 }
 
+M.force_inactive = {
+    filetypes = {
+        'NvimTree',
+        'packer',
+        'startify',
+        'fugitive',
+        'fugitiveblame',
+        'qf',
+        'help'
+    },
+    buftypes = {
+        'terminal'
+    },
+    bufnames = {}
+}
+
 M.update_triggers = {
     'VimEnter',
     'WinEnter',
