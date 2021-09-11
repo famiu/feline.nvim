@@ -57,10 +57,10 @@ function M.update_inactive_windows()
                 vim.wo[winid].statusline = M.statusline(winid)
             end
         end
-
-        -- Reset local statusline of current window to use the global statusline for it
-        vim.wo.statusline = nil
     end)
+
+    -- Reset local statusline of current window to use the global statusline for it
+    vim.wo.statusline = nil
 end
 
 function M.setup(config)
