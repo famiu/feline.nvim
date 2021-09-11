@@ -59,10 +59,26 @@ function M.setup(config)
     local preset, components, properties
     local custom_colors, custom_separators, vi_mode_colors
 
+    -- Deprecation warning for `default_fg` and `default_bg`
+    if config.default_fg or config.default_bg then
+        api.nvim_echo(
+            {{
+                '\nDeprecation warning:\n' ..
+                'The setup options `default_fg` and `default_bg` for Feline have been ' ..
+                'removed and no longer work. Please use the `fg` and `bg` values ' ..
+                'of the `colors` table instead.\n',
+
+                'WarningMsg'
+            }},
+            true, {}
+        )
+    end
+
     if parse_config(config, 'preset', 'string') then
         preset = presets[config.preset]
     else
         local has_devicons = pcall(require,'nvim-web-devicons')
+
         if has_devicons then
             preset = presets['default']
         else
@@ -76,8 +92,6 @@ function M.setup(config)
     for color, hex in pairs(custom_colors) do colors[color] = hex end
     for name, str in pairs(custom_separators) do separators[name] = str end
 
-    colors.fg = parse_config(config, 'default_fg', 'string', colors.fg)
-    colors.bg = parse_config(config, 'default_bg', 'string', colors.bg)
     vi_mode_colors = parse_config(config, 'vi_mode_colors', 'table', {})
     components = parse_config(config, 'components', 'table', preset.components)
     properties = parse_config(config, 'properties', 'table', preset.properties)
@@ -91,12 +105,12 @@ function M.setup(config)
     if not (components.active and components.inactive) then
         api.nvim_echo(
             {{
-                "\nDeprecation warning:\n" ..
-                "This format for defining Feline components has been deprecated and will soon " ..
-                "become unsupported. Please check the docs and switch your statusline " ..
-                "configuration to the new format as soon as possible.\n",
+                '\nDeprecation warning:\n' ..
+                'This format for defining Feline components has been deprecated and will soon ' ..
+                'become unsupported. Please check the docs and switch your statusline ' ..
+                'configuration to the new format as soon as possible.\n',
 
-                "WarningMsg"
+                'WarningMsg'
             }},
             true, {}
         )

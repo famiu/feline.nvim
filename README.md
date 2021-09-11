@@ -121,10 +121,12 @@ NOTE: This is also the configuration used by default if you don't have `nvim-web
 You can also make minor tweaks like changing the default foreground and background color like this:
 
 ```lua
-require('feline').setup({
-    default_fg = '#D0D0D0',
-    default_bg = '#1F1F23'
-})
+require('feline').setup {
+    colors = {
+        fg = '#D0D0D0',
+        bg = '#1F1F23'
+    }
+}
 ```
 
 ### 2. Building your own statusline.
@@ -538,8 +540,6 @@ And that's it, that's how you set up the properties table
 Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
-- `default_fg` - [Name](#value-presets) or RGB hex code of default foreground color.
-- `default_bg` - [Name](#value-presets) or RGB hex code of default background color.
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `components` - The components table.
@@ -768,6 +768,8 @@ components.inactive[1] = {
 
 -- This table is equal to the default colors table
 local colors = {
+    fg = '#D0D0D0',
+    bg = '#1F1F23',
     black = '#1B1B1B',
     skyblue = '#50B0F0',
     cyan = '#009090',
@@ -824,8 +826,6 @@ local vi_mode_colors = {
 }
 
 require('feline').setup({
-    default_bg = '#1F1F23',
-    default_fg = '#D0D0D0',
     colors = colors,
     separators = separators,
     components = components,
