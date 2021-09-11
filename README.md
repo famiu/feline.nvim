@@ -131,7 +131,7 @@ require('feline').setup {
 
 ### 2. Building your own statusline.
 
-If you don't mind getting your hands dirty, then I recommend making your own statusline, it's very easy to do so, but for that you have to first understand how Feline works.<br><br>Feline has a statusline generator that takes a `components` value and a `properties` value, both of them are Lua tables. The `components` table needs to contain the statusline components while the `properties` table needs to contain the statusline properties.
+If you don't mind getting your hands dirty, then I recommend making your own statusline, it's very easy to do so, but for that you have to first understand how Feline works.<br><br>Feline has a statusline generator that takes a `components` value, which is a Lua table that needs to contain the statusline components.
 
 #### Components
 
@@ -509,53 +509,35 @@ Below is a list of all the default value names and their values:
 | `right_rounded_thin` | `''` |
 | `circle`             | `'●'` |
 
-#### Properties
-
-Besides components, the generator may also be given a `properties` table. The `properties` table only needs one element, which is the table `force_inactive`, it represents which buffer types, filetypes or buffer names will always have the inactive statusline, regardless of whether they're active or inactive. You may need that in order to prevent irrelevant or unneeded information from being shown on buffers like the file tree, terminal, etc.
-
-Finally, `force_inactive` needs three elements in it, `filetypes`, `buftypes` and `bufnames`, all of which are tables containing the filetypes, buffer types and buffer names respectively that will be forced to have the inactive statusline. Here's an example of how to set the properties table
-
-```lua
--- Initialize the properties table
-properties = {
-    force_inactive = {
-        filetypes = {},
-        buftypes = {},
-        bufnames = {}
-    }
-}
-
-properties.force_inactive.filetypes = {
-    'NvimTree',
-    'dbui',
-    'packer',
-    'startify',
-    'fugitive',
-    'fugitiveblame'
-}
-
-properties.force_inactive.buftypes = {
-    'terminal'
-}
-
-properties.force_inactive.bufnames = {
-    'some_buffer_name'
-}
-```
-
-And that's it, that's how you set up the properties table
-
 #### The setup function
 
-Now that we've learned to set up both the components table and the properties table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
+Now that we've learned to set up both the components table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
+- `components` - The components table.
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
-- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
+- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br><br>
 Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
-- `components` - The components table.
-- `properties` - The properties table.
+- `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain file types, buffer types and buffer names respectively.<br><br>
+Default:
+```lua
+{
+    filetypes = {
+        'NvimTree',
+        'packer',
+        'startify',
+        'fugitive',
+        'fugitiveblame',
+        'qf',
+        'help'
+    },
+    buftypes = {
+        'terminal'
+    },
+    bufnames = {}
+}
+```
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
 | Mode        | Description           | Value       |
@@ -588,24 +570,6 @@ local vi_mode_utils = require('feline.providers.vi_mode')
 
 local b = vim.b
 local fn = vim.fn
-
-local properties = {
-    force_inactive = {
-        filetypes = {
-            'NvimTree',
-            'packer',
-            'startify',
-            'fugitive',
-            'fugitiveblame',
-            'qf',
-            'help'
-        },
-        buftypes = {
-            'terminal'
-        },
-        bufnames = {}
-    }
-}
 
 local components = {
     active = {},
@@ -837,12 +801,38 @@ local vi_mode_colors = {
     NONE = 'yellow'
 }
 
+-- This table is equal to the default force_inactive table
+local force_inactive = {
+    filetypes = {
+        'NvimTree',
+        'packer',
+        'startify',
+        'fugitive',
+        'fugitiveblame',
+        'qf',
+        'help'
+    },
+    buftypes = {
+        'terminal'
+    },
+    bufnames = {}
+}
+
+-- This table is equal to the default update_triggers table
+local update_triggers = {
+    'VimEnter',
+    'WinEnter',
+    'WinClosed',
+    'FileChangedShellPost'
+}
+
 require('feline').setup({
     colors = colors,
     separators = separators,
-    components = components,
-    properties = properties,
-    vi_mode_colors = vi_mode_colors
+    vi_mode_colors = vi_mode_colors,
+    force_inactive = force_inactive,
+    update_triggers = update_triggers,
+    components = components
 })
 ```
 </details>
@@ -855,10 +845,9 @@ If you like the defaults for the most part but there's some things you want to c
 -- Substitute preset_name with the name of the preset you want to modify.
 -- eg: "default" or "noicon"
 local components = require('feline.presets')[preset_name].components
-local properties = require('feline.presets')[preset_name].properties
 ```
 
-After that, you can just modify those values and call [the setup function](#the-setup-function) with the preset as you normally would.
+After that, you can just modify the components and call [the setup function](#the-setup-function) with the preset as you normally would.
 
 ## Providers
 
@@ -875,15 +864,15 @@ Feline by default has some built-in providers to make your life easy. They are:
 |`file_size`|Get file size|
 |`file_type`|Get file type|
 |`file_encoding`|Get file encoding|
-|`git_branch`|Shows current git branch|
-|`git_diff_added`|Git diff added count|
-|`git_diff_removed`|Git diff removed count|
-|`git_diff_changed`|Git diff changed count|
+|[`git_branch`](#git)|Shows current git branch|
+|[`git_diff_added`](#git)|Git diff added count|
+|[`git_diff_removed`](#git)|Git diff removed count|
+|[`git_diff_changed`](#git)|Git diff changed count|
 |`lsp_client_names`|Name of LSP clients attached to current buffer|
-|`diagnostic_errors`|Diagnostics errors count|
-|`diagnostic_warnings`|Diagnostics warnings count|
-|`diagnostic_hints`|Diagnostics hints count|
-|`diagnostic_info`|Diagnostics info count|
+|[`diagnostic_errors`](#diagnostics)|Diagnostics errors count|
+|[`diagnostic_warnings`](#diagnostics)|Diagnostics warnings count|
+|[`diagnostic_hints`](#diagnostics)|Diagnostics hints count|
+|[`diagnostic_info`](#diagnostics)|Diagnostics info count|
 
 #### Vi-mode
 
