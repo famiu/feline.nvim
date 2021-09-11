@@ -552,6 +552,8 @@ Now that we've learned to set up both the components table and the properties ta
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
+- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
+Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `components` - The components table.
 - `properties` - The properties table.
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:

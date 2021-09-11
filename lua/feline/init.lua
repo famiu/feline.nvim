@@ -80,7 +80,8 @@ function M.setup(config)
     local config_opts = {
         'colors',
         'separators',
-        'vi_mode_colors'
+        'vi_mode_colors',
+        'update_triggers'
     }
 
     -- Parse the opts in config_opts by getting the default values and
@@ -149,7 +150,7 @@ function M.setup(config)
 
     create_augroup({
         {
-            'VimEnter,WinEnter,WinClosed,FileChangedShellPost',
+            table.concat(M.update_triggers, ','),
             '*',
             'lua require("feline").update_inactive_windows()'
         },
