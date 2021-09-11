@@ -204,7 +204,7 @@ local function parse_statusline_section_old(section, type, winid)
 
         return table.concat(section_components)
     else
-        return ""
+        return ''
     end
 end
 

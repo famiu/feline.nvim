@@ -517,7 +517,7 @@ Now that we've learned to set up both the components table, it's finally time to
 - `components` - The components table.
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
-- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br><br>
+- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
 Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain file types, buffer types and buffer names respectively.<br><br>
 Default:
@@ -538,7 +538,7 @@ Default:
     bufnames = {}
 }
 ```
-- `disable` - Similar to `force_inactive`, except the statusline is disabled completely. Configured the same way as `force_inactive`
+- `disable` - Similar to `force_inactive`, except the statusline is disabled completely. Configured the same way as `force_inactive`. Feline doesn't disable the statusline on anything by default.
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
 | Mode        | Description           | Value       |
