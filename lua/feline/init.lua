@@ -71,8 +71,6 @@ function M.setup(config)
     end
 
     local defaults = require('feline.defaults')
-    local presets = require('feline.presets')
-    local preset, components
 
     -- Configuration options
     local config_opts = {
@@ -94,52 +92,58 @@ function M.setup(config)
         end
     end
 
-    if config.properties then
-        -- Deprecation warning for the `properties` table
-        api.nvim_echo(
-            {{
-                '\nDeprecation warning:\n' ..
-                'The `properties` table for Feline has been deprecated and support for it ' ..
-                'will be removed soon. Please put the `force_inactive` table directly ' ..
-                'inside the setup function instead',
 
-                'WarningMsg'
-            }},
-            true, {}
-        )
+    local preset
+    if config and parse_config(config, 'components', 'table') then
+        local properties = parse_config(config, 'properties', 'table')
+        if properties then
+            -- Deprecation warning for the `properties` table
+            api.nvim_echo(
+                {{
+                    '\nDeprecation warning:\n' ..
+                    'The `properties` table for Feline has been deprecated and support for it ' ..
+                    'will be removed soon. Please put the `force_inactive` table directly ' ..
+                    'inside the setup function instead',
 
-        local properties = parse_config(config, 'properties', 'table', {})
-        M.force_inactive = properties.force_inactive
-    end
+                    'WarningMsg'
+                }},
+                true, {}
+            )
 
-    -- Deprecation warning for `default_fg` and `default_bg`
-    if config.default_fg or config.default_bg then
-        api.nvim_echo(
-            {{
-                '\nDeprecation warning:\n' ..
-                'The setup options `default_fg` and `default_bg` for Feline have been ' ..
-                'removed and no longer work. Please use the `fg` and `bg` values ' ..
-                'of the `colors` table instead.\n',
+            M.force_inactive = properties.force_inactive
+        end
 
-                'WarningMsg'
-            }},
-            true, {}
-        )
-    end
+        -- Deprecation warning for `default_fg` and `default_bg`
+        if config.default_fg or config.default_bg then
+            api.nvim_echo(
+                {{
+                    '\nDeprecation warning:\n' ..
+                    'The setup options `default_fg` and `default_bg` for Feline have been ' ..
+                    'removed and no longer work. Please use the `fg` and `bg` values ' ..
+                    'of the `colors` table instead.\n',
 
-    if parse_config(config, 'preset', 'string') then
-        preset = presets[config.preset]
+                    'WarningMsg'
+                }},
+                true, {}
+            )
+        end
+        preset = config
     else
-        local has_devicons = pcall(require,'nvim-web-devicons')
-
-        if has_devicons then
-            preset = presets['default']
+        local presets = require('feline.presets')
+        if parse_config(config, 'preset', 'string') then
+            preset = presets[config.preset]
         else
-            preset = presets['noicon']
+            local has_devicons = pcall(require,'nvim-web-devicons')
+
+            if has_devicons then
+                preset = presets['default']
+            else
+                preset = presets['noicon']
+            end
         end
     end
 
-    components = parse_config(config, 'components', 'table', preset.components)
+    local components = parse_config(config, 'components', 'table', preset.components)
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
