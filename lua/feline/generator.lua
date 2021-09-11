@@ -189,6 +189,10 @@ local function parse_component(component, winid)
 
     icon = parse_icon(evaluate_if_function(icon), hl)
 
+    if component.max_length and component.max_length > 3 and #str > component.max_length then
+        str = str:sub(1, component.max_length - 3) .. '...'
+    end
+
     return left_sep_str .. icon .. '%#' .. hlname .. '#' .. str .. right_sep_str
 end
 

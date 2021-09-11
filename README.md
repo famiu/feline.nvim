@@ -323,6 +323,8 @@ hl = function()
 end
 ```
 
+- `max_length` (number): Maximum length of the component. If the component exceeds this length in the statusline, it'll be truncated with a `...` at the end to signify the truncation. `max_length` is not set to any component by default, so by default components don't have any limit to how large they can be. Note that since a `...` is appended at the end of a truncated component, the value of `max_length` must always be larger than 3, otherwise it'll be ignored by Feline.
+
 <br>
 
 **NOTE:** Some providers may also have special component values unique to them, such as the `file_info` provider having a `file_modified_icon` value that you can set. For more info, see: [default providers](#default-providers).
@@ -433,7 +435,7 @@ components.active[2][1] = {
     provider = 'file_encoding'
 }
 
--- Component that shows current git branch
+-- Component that shows current git branch with a maximum length of 8
 components.active[3][1] = {
     provider = 'git_branch',
     hl = {
@@ -441,6 +443,7 @@ components.active[3][1] = {
         bg = 'black',
         style = 'bold'
     },
+    max_length = 8,
     right_sep = function()
         local val = {hl = {fg = 'NONE', bg = 'black'}}
         if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
