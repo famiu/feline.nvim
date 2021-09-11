@@ -24,10 +24,8 @@ local function parse_config(config_dict, config_name, expected_type, default_val
                 expected_type, config_name, type(config_dict[config_name])
             )
         end
-    elseif default_value then
-        return default_value
     else
-        return nil
+        return default_value
     end
 end
 
@@ -92,10 +90,11 @@ function M.setup(config)
         end
     end
 
+    local components = parse_config(config, 'components', 'table')
 
-    local preset
-    if config and parse_config(config, 'components', 'table') then
+    if config then
         local properties = parse_config(config, 'properties', 'table')
+
         if properties then
             -- Deprecation warning for the `properties` table
             api.nvim_echo(
@@ -127,23 +126,23 @@ function M.setup(config)
                 true, {}
             )
         end
-        preset = config
-    else
+    end
+
+    if not components then
         local presets = require('feline.presets')
-        if parse_config(config, 'preset', 'string') then
-            preset = presets[config.preset]
+
+        if parse_config(config, 'preset', 'string') and presets[config.preset] then
+            components = presets[config.preset].components
         else
             local has_devicons = pcall(require,'nvim-web-devicons')
 
             if has_devicons then
-                preset = presets['default']
+                components = presets['default'].components
             else
-                preset = presets['noicon']
+                components = presets['noicon'].components
             end
         end
     end
-
-    local components = parse_config(config, 'components', 'table', preset.components)
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
