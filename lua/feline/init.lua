@@ -52,12 +52,27 @@ function M.setup(config)
         return
     end
 
-    local colors = require('feline.defaults').colors
-    local separators = require('feline.defaults').separators
-    local vi_mode = require('feline.providers.vi_mode')
+    local defaults = require('feline.defaults')
     local presets = require('feline.presets')
     local preset, components, properties
-    local custom_colors, custom_separators, vi_mode_colors
+
+    -- Configuration options that aren't defined in a preset
+    local config_opts = {
+        'colors',
+        'separators',
+        'vi_mode_colors'
+    }
+
+    -- Parse the opts in config_opts by getting the default values and
+    -- appending the custom values on top of them
+    for _, opt in ipairs(config_opts) do
+        local custom_val = parse_config(config, opt, 'table', {})
+        M[opt] = defaults[opt]
+
+        for k, v in pairs(custom_val) do
+            M[opt][k] = v
+        end
+    end
 
     -- Deprecation warning for `default_fg` and `default_bg`
     if config.default_fg or config.default_bg then
@@ -86,20 +101,8 @@ function M.setup(config)
         end
     end
 
-    custom_colors = parse_config(config, 'colors', 'table', {})
-    custom_separators = parse_config(config, 'separators', 'table', {})
-
-    for color, hex in pairs(custom_colors) do colors[color] = hex end
-    for name, str in pairs(custom_separators) do separators[name] = str end
-
-    vi_mode_colors = parse_config(config, 'vi_mode_colors', 'table', {})
     components = parse_config(config, 'components', 'table', preset.components)
     properties = parse_config(config, 'properties', 'table', preset.properties)
-
-    for k,v in pairs(vi_mode_colors) do
-        if colors[v] then v = colors[v] end
-        vi_mode.mode_colors[k] = v
-    end
 
     -- Deprecation warning for old component format
     if not (components.active and components.inactive) then
@@ -116,8 +119,8 @@ function M.setup(config)
         )
     end
 
-    gen.components = components
-    gen.properties = properties
+    M.components = components
+    M.properties = properties
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
@@ -132,11 +135,7 @@ function M.setup(config)
 end
 
 function M.statusline()
-    if g.statusline_winid == fn.win_getid() then
-        return gen.generate_statusline(true)
-    else
-        return gen.generate_statusline(false)
-    end
+    return require('feline.generator').generate_statusline(g.statusline_winid == fn.win_getid())
 end
 
 return M

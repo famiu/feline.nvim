@@ -40,4 +40,22 @@ M.separators = {
     circle = '●'
 }
 
+M.vi_mode_colors = {
+    ['NORMAL'] = 'green',
+    ['OP'] = 'green',
+    ['INSERT'] = 'red',
+    ['VISUAL'] = 'skyblue',
+    ['LINES'] = 'skyblue',
+    ['BLOCK'] = 'skyblue',
+    ['REPLACE'] = 'violet',
+    ['V-REPLACE'] = 'violet',
+    ['ENTER'] = 'cyan',
+    ['MORE'] = 'cyan',
+    ['SELECT'] = 'orange',
+    ['COMMAND'] = 'green',
+    ['SHELL'] = 'green',
+    ['TERM'] = 'green',
+    ['NONE'] = 'yellow'
+}
+
 return M

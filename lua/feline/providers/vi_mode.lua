@@ -1,5 +1,4 @@
 local api = vim.api
-local colors = require('feline.defaults').colors
 
 local M = {}
 
@@ -36,24 +35,6 @@ local mode_alias = {
     ['null'] = 'NONE',
 }
 
-M.mode_colors = {
-    ['NORMAL'] = colors.green,
-    ['OP'] = colors.green,
-    ['INSERT'] = colors.red,
-    ['VISUAL'] = colors.skyblue,
-    ['LINES'] = colors.skyblue,
-    ['BLOCK'] = colors.skyblue,
-    ['REPLACE'] = colors.violet,
-    ['V-REPLACE'] = colors.violet,
-    ['ENTER'] = colors.cyan,
-    ['MORE'] = colors.cyan,
-    ['SELECT'] = colors.orange,
-    ['COMMAND'] = colors.green,
-    ['SHELL'] = colors.green,
-    ['TERM'] = colors.green,
-    ['NONE'] = colors.yellow
-}
-
 -- Functions for statusline
 function M.get_vim_mode()
     local mode = api.nvim_get_mode().mode
@@ -61,7 +42,7 @@ function M.get_vim_mode()
 end
 
 function M.get_mode_color()
-    return M.mode_colors[M.get_vim_mode()]
+    return require('feline').vi_mode_colors[M.get_vim_mode()]
 end
 
 -- String to title case

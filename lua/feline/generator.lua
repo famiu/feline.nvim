@@ -2,8 +2,9 @@ local bo = vim.bo
 local fn = vim.fn
 local cmd = vim.cmd
 
-local colors = require('feline.defaults').colors
-local separators = require('feline.defaults').separators
+local feline = require('feline')
+local colors = feline.colors
+local separators = feline.separators
 local providers = require('feline.providers')
 
 local M ={}
@@ -11,7 +12,7 @@ M.highlights = {}
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
-    local force_inactive = M.properties.force_inactive
+    local force_inactive = feline.properties.force_inactive
 
     local buftype = bo.buftype
     local filetype = bo.filetype
@@ -184,10 +185,10 @@ end
 -- Parse components of a section of the statusline
 -- (For old component table format)
 local function parse_statusline_section_old(section, type)
-    if M.components[section] and M.components[section][type] then
+    if feline.components[section] and feline.components[section][type] then
         local section_components = {}
 
-        for _, v in ipairs(M.components[section][type]) do
+        for _, v in ipairs(feline.components[section][type]) do
             section_components[#section_components+1] = parse_component(v)
         end
 
@@ -210,8 +211,8 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
-    if not M.components then
-        return ""
+    if not feline.components then
+        return ''
     end
 
     local statusline_type
@@ -224,10 +225,10 @@ function M.generate_statusline(is_active)
 
     -- Determine if the component table uses the old format or new format
     -- and parse it accordingly
-    if(M.components.active and M.components.inactive) then
+    if(feline.components.active and feline.components.inactive) then
         local sections = {}
 
-        for _, section in ipairs(M.components[statusline_type]) do
+        for _, section in ipairs(feline.components[statusline_type]) do
             sections[#sections+1] = parse_statusline_section(section)
         end
 
