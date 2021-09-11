@@ -221,36 +221,48 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
+    local statusline_str
+
     if not feline.components or is_disabled(winid) then
-        return ''
-    end
-
-    local statusline_type
-
-    if winid == api.nvim_get_current_win() and not is_forced_inactive() then
-        statusline_type='active'
+        statusline_str = ''
     else
-        statusline_type='inactive'
-    end
+        local statusline_type
 
-    -- Determine if the component table uses the old format or new format
-    -- and parse it accordingly
-    if(feline.components.active and feline.components.inactive) then
-        local sections = {}
-
-        for _, section in ipairs(feline.components[statusline_type]) do
-            sections[#sections+1] = parse_statusline_section(section, winid)
+        if winid == api.nvim_get_current_win() and not is_forced_inactive() then
+            statusline_type='active'
+        else
+            statusline_type='inactive'
         end
 
-        return table.concat(sections, '%=')
-    else
-        return string.format(
-            "%s%%=%s%%=%s",
-            parse_statusline_section_old('left', statusline_type, winid),
-            parse_statusline_section_old('mid', statusline_type, winid),
-            parse_statusline_section_old('right', statusline_type, winid)
-        )
+        -- Determine if the component table uses the old format or new format
+        -- and parse it accordingly
+        if feline.components.active or feline.components.inactive then
+            local statusline = feline.components[statusline_type]
+
+            if not statusline or statusline == {} then
+                statusline_str = ''
+            else
+                local sections = {}
+
+                for _, section in ipairs(statusline) do
+                    sections[#sections+1] = parse_statusline_section(section, winid)
+                end
+
+                statusline_str = table.concat(sections, '%=')
+            end
+        else
+            statusline_str = string.format(
+                '%s%%=%s%%=%s',
+                parse_statusline_section_old('left', statusline_type, winid),
+                parse_statusline_section_old('mid', statusline_type, winid),
+                parse_statusline_section_old('right', statusline_type, winid)
+            )
+        end
     end
+
+    -- Never return an empty string since setting statusline to an empty string or nil
+    -- makes it use the global statusline value
+    if statusline_str == '' then return '%#' .. defhl .. '#' else return statusline_str end
 end
 
 return M
