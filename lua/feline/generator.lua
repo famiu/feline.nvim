@@ -65,13 +65,8 @@ local function parse_hl(hl, parent_hl)
 
     if hl == {} then return defhl end
 
-    if hl.name then
-        if M.highlights[hl.name] then
-            return hl.name
-        elseif pcall(api.nvim_get_hl_id_by_name(hl.name)) then
-            M.highlights[hl.name] = true
-            return hl.name
-        end
+    if hl.name and M.highlights[hl.name] then
+        return hl.name
     end
 
     parent_hl = parent_hl or {}
