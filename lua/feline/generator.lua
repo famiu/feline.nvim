@@ -48,11 +48,10 @@ local function evaluate_if_function(key, default)
     end
 end
 
--- Add highlight of component
-local function add_component_highlight(name, fg, bg, style)
+-- Add highlight and store its name in the highlights table
+local function add_hl(name, fg, bg, style)
     cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', name, style, fg, bg))
     M.highlights[name] = true
-    return name
 end
 
 local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
@@ -86,7 +85,11 @@ local function parse_hl(hl, parent_hl)
         string.gsub(hl.style, ',', '_')
     )
 
-    return add_component_highlight(hl.name, hl.fg, hl.bg, hl.style)
+    if not M.highlights[hl.name] then
+        add_hl(hl.name, hl.fg, hl.bg, hl.style)
+    end
+
+    return hl.name
 end
 
 -- Parse component seperator
