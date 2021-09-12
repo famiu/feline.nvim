@@ -119,7 +119,7 @@ local function parse_sep(sep, parent_bg)
 
     if separators[str] then str = separators[str] end
 
-    return '%#' .. parse_hl(hl) .. '#' .. str
+    return string.format('%%#%s#%s', parse_hl(hl), str)
 end
 
 -- Either parse a single separator or a list of separators with different highlights
@@ -157,7 +157,7 @@ local function parse_icon(icon, parent_hl)
         hl = evaluate_if_function(icon.hl) or parent_hl
     end
 
-    return '%#' .. parse_hl(hl, parent_hl) .. '#' ..  str
+    return string.format('%%#%s#%s', parse_hl(hl, parent_hl), str)
 end
 
 -- Parse component provider
@@ -199,7 +199,7 @@ local function parse_component(component, winid)
 
     icon = parse_icon(evaluate_if_function(icon), hl)
 
-    return left_sep_str .. icon .. '%#' .. hlname .. '#' .. str .. right_sep_str
+    return string.format('%s%s%%#%s#%s%s', left_sep_str, icon, hlname, str, right_sep_str)
 end
 
 -- Parse components of a section of the statusline
@@ -272,7 +272,11 @@ function M.generate_statusline(winid)
 
     -- Never return an empty string since setting statusline to an empty string or nil
     -- makes it use the global statusline value
-    if statusline_str == '' then return '%#' .. defhl() .. '#' else return statusline_str end
+    if statusline_str == '' then
+        return string.format('%%#%s#', defhl())
+    else
+        return statusline_str
+    end
 end
 
 return M
