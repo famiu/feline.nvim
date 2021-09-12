@@ -1,7 +1,6 @@
 -- Minimal init file to run Feline with the most basic functionality
-
-local fn = vim.fn
-local cmd = vim.api.nvim_command
+-- Run from Feline top-level directory using:
+-- nvim --noplugin -u minimal_init.lua
 
 local function load_plugins()
     local packer = require('packer')
@@ -34,7 +33,7 @@ local function load_plugins()
 end
 
 _G.load_config = function()
-    cmd('set termguicolors')
+    vim.opt.termguicolors = true
 
     -- Replace this part of the config with whatever Feline configuration you're using
     require('feline').setup()
@@ -42,11 +41,11 @@ end
 
 local install_path = '/tmp/nvim/site/pack/packer/start/packer.nvim'
 
-cmd('set packpath=/tmp/nvim/site')
+vim.opt.packpath = {'/tmp/nvim/site'}
 
-if fn.isdirectory(install_path) == 0 then
-    fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+if vim.fn.isdirectory(install_path) == 0 then
+    vim.fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
 end
 
 load_plugins()
-cmd('autocmd User PackerComplete ++once lua load_config()')
+vim.api.nvim_command('autocmd User PackerComplete ++once lua load_config()')
