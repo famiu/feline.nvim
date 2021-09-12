@@ -56,11 +56,13 @@ end
 
 -- Clear all highlights created by Feline and remove them from cache
 function M.reset_highlights()
-    for hl, _ in pairs(require('feline.generator').highlights) do
+    local gen = require('feline.generator')
+
+    for hl, _ in pairs(gen.highlights) do
         cmd('highlight clear ' .. hl)
     end
 
-    require('feline.generator').highlights = {}
+    gen.highlights = {}
 
     M.update_inactive_windows()
 end
@@ -191,8 +193,7 @@ function M.setup(config)
 end
 
 function M.statusline(winid)
-    winid = winid or vim.api.nvim_get_current_win()
-    return require('feline.generator').generate_statusline(winid)
+    return require('feline.generator').generate_statusline(winid or vim.api.nvim_get_current_win())
 end
 
 return M
