@@ -5,15 +5,8 @@ local api = vim.api
 
 local M = {}
 
--- Reset highlights
-function M.reset_highlights()
-    for hl, _ in pairs(require('feline.generator').highlights) do
-        cmd('highlight clear ' .. hl)
-    end
-
-    require('feline.generator').highlights = {}
-end
-
+-- Parse configuration option with name config_name from config_dict and match its type
+-- Return a default value (if provided one) in case the configuration option doesn't exist
 local function parse_config(config_dict, config_name, expected_type, default_value)
     if config_dict and config_dict[config_name] then
         if type(config_dict[config_name]) == expected_type then
@@ -59,6 +52,17 @@ function M.update_inactive_windows()
 
     -- Reset local statusline of current window to use the global statusline for it
     vim.wo.statusline = nil
+end
+
+-- Clear all highlights created by Feline and remove them from cache
+function M.reset_highlights()
+    for hl, _ in pairs(require('feline.generator').highlights) do
+        cmd('highlight clear ' .. hl)
+    end
+
+    require('feline.generator').highlights = {}
+
+    M.update_inactive_windows()
 end
 
 function M.setup(config)
