@@ -1,5 +1,4 @@
 local bo = vim.bo
-local cmd = vim.cmd
 local api = vim.api
 
 local feline = require('feline')
@@ -50,7 +49,14 @@ end
 
 -- Add highlight and store its name in the highlights table
 local function add_hl(name, fg, bg, style)
-    cmd(string.format('highlight %s gui=%s guifg=%s guibg=%s', name, style, fg, bg))
+    vim.api.nvim_command(string.format(
+        'highlight %s gui=%s guifg=%s guibg=%s',
+        name,
+        style,
+        fg,
+        bg
+    ))
+
     M.highlights[name] = true
 end
 

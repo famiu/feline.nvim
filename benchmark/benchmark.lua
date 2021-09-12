@@ -4,7 +4,7 @@
 -- Run from Feline top-level directory using:
 -- env AK_PROFILER=1 nvim --noplugin -u benchmark/benchmark.lua > /dev/null 2>&1 | less
 
-vim.cmd('packadd profiler.nvim')
+vim.api.nvim_command('packadd profiler.nvim')
 
 local profiler = require('profiler')
 profiler.wrap(require('feline').setup())

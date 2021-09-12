@@ -1,6 +1,6 @@
 -- install packer
 local fn = vim.fn
-local cmd = vim.cmd
+local cmd = vim.api.nvim_command
 
 local install_path = '/tmp/nvim/site/pack/packer/start/packer.nvim'
 
