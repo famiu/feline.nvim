@@ -25,7 +25,7 @@ end
 
 -- Check if buffer contained in window is configured to have statusline disabled
 local function is_disabled(winid)
-    local disable = {buftypes = {}, filetypes = {}, bufnames = {}}
+    local disable = feline.disable
 
     local buftype = bo.buftype
     local filetype = bo.filetype
