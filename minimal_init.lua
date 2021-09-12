@@ -1,10 +1,7 @@
--- install packer
+-- Minimal init file to run Feline with the most basic functionality
+
 local fn = vim.fn
 local cmd = vim.api.nvim_command
-
-local install_path = '/tmp/nvim/site/pack/packer/start/packer.nvim'
-
-cmd('set packpath=/tmp/nvim/site')
 
 local function load_plugins()
     local packer = require('packer')
@@ -42,6 +39,10 @@ _G.load_config = function()
     -- Replace this part of the config with whatever Feline configuration you're using
     require('feline').setup()
 end
+
+local install_path = '/tmp/nvim/site/pack/packer/start/packer.nvim'
+
+cmd('set packpath=/tmp/nvim/site')
 
 if fn.isdirectory(install_path) == 0 then
     fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
