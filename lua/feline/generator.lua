@@ -54,7 +54,14 @@ local function add_hl(name, fg, bg, style)
     M.highlights[name] = true
 end
 
-local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
+-- Return default highlight
+local function defhl()
+    if not M.highlights['StatusComponentDefault'] then
+        add_hl('StatusComponentDefault', colors.fg, colors.bg, 'NONE')
+    end
+
+    return 'StatusComponentDefault'
+end
 
 -- Parse highlight, inherit default/parent values if values are not given
 -- Also generate unique name for highlight if name is not given
@@ -62,7 +69,7 @@ local defhl = add_component_highlight('Default', colors.fg, colors.bg, 'NONE')
 local function parse_hl(hl, parent_hl)
     if type(hl) == "string" then return hl end
 
-    if hl == {} then return defhl end
+    if hl == {} then return defhl() end
 
     if hl.name and M.highlights[hl.name] then
         return hl.name
@@ -265,7 +272,7 @@ function M.generate_statusline(winid)
 
     -- Never return an empty string since setting statusline to an empty string or nil
     -- makes it use the global statusline value
-    if statusline_str == '' then return '%#' .. defhl .. '#' else return statusline_str end
+    if statusline_str == '' then return '%#' .. defhl() .. '#' else return statusline_str end
 end
 
 return M
