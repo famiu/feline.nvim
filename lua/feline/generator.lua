@@ -85,7 +85,7 @@ local function parse_hl(hl, parent_hl)
 
     hl.fg = hl.fg or parent_hl.fg or colors.fg
     hl.bg = hl.bg or parent_hl.bg or colors.bg
-    hl.style = hl.style or 'NONE'
+    hl.style = hl.style or parent_hl.style or 'NONE'
 
     if colors[hl.fg] then hl.fg = colors[hl.fg] end
     if colors[hl.bg] then hl.bg = colors[hl.bg] end
