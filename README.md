@@ -990,7 +990,7 @@ local InactiveStatusHL = {
     style = nvim_exec("highlight VertSplit", true):match("gui=(#[0-9A-Fa-f]+)") or "",
 }
 
--- Add strikethrough to inactive statusline highlight style
+-- Add underline to inactive statusline highlight style
 -- in order to have a thin line instead of the statusline
 if InactiveStatusHL.style == '' then
     InactiveStatusHL.style = 'underline'
