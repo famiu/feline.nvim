@@ -411,10 +411,9 @@ components.active[1][2] = {
     -- icon = ''
 }
 
--- Components that show current file size
+-- Component that shows current file size
 components.active[1][3] = {
     provider = 'file_size',
-    enabled = function() return vim.fn.getfsize(vim.fn.expand('%:p')) > 0 end,
     right_sep = {
         ' ',
         {
@@ -610,7 +609,6 @@ components.active[1] = {
     },
     {
         provider = 'file_size',
-        enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
         right_sep = {
             ' ',
             {

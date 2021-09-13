@@ -44,7 +44,6 @@ M.components.active[1] = {
     },
     {
         provider = 'file_size',
-        enabled = function() return fn.getfsize(fn.expand('%:p')) > 0 end,
         right_sep = {
             ' ',
             {

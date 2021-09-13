@@ -138,11 +138,13 @@ function M.file_info(component, winid)
     return ' ' .. readonly_str .. filename .. ' ' .. modified_str, icon
 end
 
-function M.file_size()
+function M.file_size(_, winnr)
     local suffix = {'b', 'k', 'M', 'G', 'T', 'P', 'E'}
     local index = 1
 
-    local fsize = fn.getfsize(fn.expand('%:p'))
+    local fsize = fn.getfsize(api.nvim_buf_get_name(api.nvim_win_get_buf(winnr)))
+
+    if fsize < 0 then fsize = 0 end
 
     while fsize > 1024 and index < 7 do
         fsize = fsize / 1024
