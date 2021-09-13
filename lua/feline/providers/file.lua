@@ -138,11 +138,11 @@ function M.file_info(component, winid)
     return ' ' .. readonly_str .. filename .. ' ' .. modified_str, icon
 end
 
-function M.file_size(_, winnr)
+function M.file_size(_, winid)
     local suffix = {'b', 'k', 'M', 'G', 'T', 'P', 'E'}
     local index = 1
 
-    local fsize = fn.getfsize(api.nvim_buf_get_name(api.nvim_win_get_buf(winnr)))
+    local fsize = fn.getfsize(api.nvim_buf_get_name(api.nvim_win_get_buf(winid)))
 
     if fsize < 0 then fsize = 0 end
 
