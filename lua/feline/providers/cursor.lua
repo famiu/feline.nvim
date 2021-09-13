@@ -2,8 +2,8 @@ local api = vim.api
 
 local M = {}
 
-function M.position()
-    return "%3l:%-2c"
+function M.position(_, winnr)
+    return string.format('%3d:%-2d', unpack(api.nvim_win_get_cursor(winnr)))
 end
 
 function M.line_percentage(_, winid)
