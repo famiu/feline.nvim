@@ -583,8 +583,8 @@ It's finally time to see a fully-fledged example of how to set up the statusline
 local lsp = require('feline.providers.lsp')
 local vi_mode_utils = require('feline.providers.vi_mode')
 
+local api = vim.api
 local b = vim.b
-local fn = vim.fn
 
 local components = {
     active = {},
@@ -652,28 +652,28 @@ components.active[1] = {
     {
         provider = 'diagnostic_errors',
         enabled = function(winid) return
-            lsp.diagnostics_exist('Error', vim.api.nvim_win_get_buf(winid))
+            lsp.diagnostics_exist('Error', api.nvim_win_get_buf(winid))
         end,
         hl = { fg = 'red' }
     },
     {
         provider = 'diagnostic_warnings',
         enabled = function(winid) return
-            lsp.diagnostics_exist('Warning', vim.api.nvim_win_get_buf(winid))
+            lsp.diagnostics_exist('Warning', api.nvim_win_get_buf(winid))
         end,
         hl = { fg = 'yellow' }
     },
     {
         provider = 'diagnostic_hints',
         enabled = function(winid) return
-            lsp.diagnostics_exist('Hint', vim.api.nvim_win_get_buf(winid))
+            lsp.diagnostics_exist('Hint', api.nvim_win_get_buf(winid))
         end,
         hl = { fg = 'cyan' }
     },
     {
         provider = 'diagnostic_info',
         enabled = function(winid) return
-            lsp.diagnostics_exist('Information', vim.api.nvim_win_get_buf(winid))
+            lsp.diagnostics_exist('Information', api.nvim_win_get_buf(winid))
         end,
         hl = { fg = 'skyblue' }
     }
