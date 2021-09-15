@@ -110,11 +110,13 @@ M.components.active[2] = {
             bg = 'black',
             style = 'bold'
         },
-        right_sep = function()
-            local val = {hl = {fg = 'NONE', bg = 'black'}}
-            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-            return val
-        end,
+        right_sep = {
+            str = ' ',
+            hl = {
+                fg = 'NONE',
+                bg = 'black'
+            }
+        },
         icon = ' '
     },
     {
@@ -139,11 +141,13 @@ M.components.active[2] = {
             fg = 'red',
             bg = 'black'
         },
-        right_sep = function()
-            local val = {hl = {fg = 'NONE', bg = 'black'}}
-            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-            return val
-        end,
+        right_sep = {
+            str = ' ',
+            hl = {
+                fg = 'NONE',
+                bg = 'black'
+            }
+        },
         icon = ' -'
     },
     {

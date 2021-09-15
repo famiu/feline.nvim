@@ -337,9 +337,13 @@ end
 
 Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
-The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets). The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there would be two values, `str` and `hl`, where `str` would represent the separator string and `hl` would represent the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
+The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets).
 
-But you can also set `left_sep` and `right_sep` to be a `table` containing multiple separator elements, you can use this if you want to have different highlights for different parts of the left/right separator of the same component or if you want to better organize your separator components.
+The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there can be three values, `str`, `hl` and `always_visible`. `str` represents the separator string and `hl` represents the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
+
+By default, Feline doesn't show the separator if the value returned by the provider is empty. If you want the separator to be shown even when the component string is empty, you can set the `always_visible` value in the separator table to `true`. If unset or set to `false`, the separator is not shown if the component string is empty.
+
+You can also set `left_sep` and `right_sep` to be a `table` containing multiple separator elements. It's useful if you want to have different highlights for different parts of the left/right separator of the same component, or if you want to always show certain parts of the separator regardless of whether the component string is empty, or if you just want to better organize the component's separator.
 
 For example:
 
@@ -359,12 +363,16 @@ left_sep = {
     }
 }
 
+-- Making sep always visible
+right_sep = {
+    str = ' ',
+    always_visible = true
+}
+
 -- Setting sep to a function
 right_sep = function()
-    local val = {hl = {fg = 'NONE', bg = 'black'}}
-    if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-
-    return val
+    local values = { 'right_rounded', 'right_filled', 'right' }
+    return values[math.random(#values)]
 end
 
 -- Setting sep to a list separator elements
@@ -374,7 +382,8 @@ right_sep = {
         hl = {
             fg = 'NONE',
             bg = 'oceanblue'
-        }
+        },
+        always_visible = true
     },
     -- The line below is equivalent to { str = 'slant_right' }
     'slant_right'
@@ -445,12 +454,13 @@ components.active[3][1] = {
         bg = 'black',
         style = 'bold'
     },
-    right_sep = function()
-        local val = {hl = {fg = 'NONE', bg = 'black'}}
-        if vim.b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-
-        return val
-    end
+    right_sep = {
+        str = ' ',
+        hl = {
+            fg = 'NONE',
+            bg = 'black'
+        }
+    }
 }
 ```
 </details>
@@ -677,11 +687,13 @@ components.active[2] = {
             bg = 'black',
             style = 'bold'
         },
-        right_sep = function()
-            local val = {hl = {fg = 'NONE', bg = 'black'}}
-            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-            return val
-        end
+        right_sep = {
+            str = ' ',
+            hl = {
+                fg = 'NONE',
+                bg = 'black'
+            }
+        }
     },
     {
         provider = 'git_diff_added',
@@ -703,11 +715,13 @@ components.active[2] = {
             fg = 'red',
             bg = 'black'
         },
-        right_sep = function()
-            local val = {hl = {fg = 'NONE', bg = 'black'}}
-            if b.gitsigns_status_dict then val.str = ' ' else val.str = '' end
-            return val
-        end
+        right_sep = {
+            str = ' ',
+            hl = {
+                fg = 'NONE',
+                bg = 'black'
+            }
+        }
     },
     {
         provider = 'line_percentage',

@@ -108,17 +108,22 @@ end
 -- Parse component seperator
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
-local function parse_sep(sep, parent_bg)
+local function parse_sep(sep, parent_bg, is_component_empty)
     if sep == nil then return '' end
 
     local hl
     local str
 
     if type(sep) == "string" then
+        if is_component_empty then return '' end
+
         str = sep
         hl = {fg = parent_bg, bg = colors.bg}
     else
         sep = evaluate_if_function(sep)
+
+        if is_component_empty and not sep.always_visible then return '' end
+
         str = sep.str or ''
         hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = colors.bg}
     end
@@ -129,7 +134,7 @@ local function parse_sep(sep, parent_bg)
 end
 
 -- Either parse a single separator or a list of separators with different highlights
-local function parse_sep_list(sep_list, parent_bg)
+local function parse_sep_list(sep_list, parent_bg, is_component_empty)
     if sep_list == nil then return '' end
 
     if (type(sep_list) == "table" and sep_list[1] and
@@ -137,12 +142,12 @@ local function parse_sep_list(sep_list, parent_bg)
         local sep_strs = {}
 
         for _,v in ipairs(sep_list) do
-            sep_strs[#sep_strs+1] = parse_sep(v, parent_bg)
+            sep_strs[#sep_strs+1] = parse_sep(v, parent_bg, is_component_empty)
         end
 
         return table.concat(sep_strs)
     else
-        return parse_sep(sep_list, parent_bg)
+        return parse_sep(sep_list, parent_bg, is_component_empty)
     end
 end
 
@@ -196,12 +201,12 @@ local function parse_component(component, winid)
 
     if not enabled then return '' end
 
+    local str, icon = parse_provider(component.provider, component, winid)
+
     local hl = evaluate_if_function(component.hl, {})
 
-    local left_sep_str = parse_sep_list(component.left_sep, hl.bg)
-    local right_sep_str = parse_sep_list(component.right_sep, hl.bg)
-
-    local str, icon = parse_provider(component.provider, component, winid)
+    local left_sep_str = parse_sep_list(component.left_sep, hl.bg, str == '')
+    local right_sep_str = parse_sep_list(component.right_sep, hl.bg, str == '')
 
     local hlname = parse_hl(hl)
 

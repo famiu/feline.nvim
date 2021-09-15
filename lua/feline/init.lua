@@ -193,7 +193,7 @@ function M.setup(config)
 end
 
 function M.statusline(winid)
-    return require('feline.generator').generate_statusline(winid or vim.api.nvim_get_current_win())
+    return require('feline.generator').generate_statusline(winid or api.nvim_get_current_win())
 end
 
 return M
