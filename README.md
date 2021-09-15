@@ -964,7 +964,9 @@ Default:`'🔒'`
 
 #### Git
 
-The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll output nothing.
+The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll have no output.
+
+The git provider also provides a utility function `require('feline.providers.git').git_info_exists(winid)` (where `winid` is the window handler) for checking if any git information exists in the window through this utility function.
 
 #### Diagnostics
 

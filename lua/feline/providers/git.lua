@@ -5,11 +5,7 @@ local M = {}
 function M.git_branch(component, winid)
     local icon
     local str = ''
-    local ok, head = pcall(
-        api.nvim_buf_get_var,
-        api.nvim_win_get_buf(winid),
-        'gitsigns_head'
-    )
+    local ok, head = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_head')
 
     if not ok then head = vim.g.gitsigns_head or '' end
 
@@ -22,11 +18,7 @@ function M.git_branch(component, winid)
 end
 
 function M.git_diff_added(component, winid)
-    local ok, gsd = pcall(
-        api.nvim_buf_get_var,
-        api.nvim_win_get_buf(winid),
-        'gitsigns_status_dict'
-    )
+    local ok, gsd = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
 
     local icon
     local str = ''
@@ -40,11 +32,7 @@ function M.git_diff_added(component, winid)
 end
 
 function M.git_diff_removed(component, winid)
-    local ok, gsd = pcall(
-        api.nvim_buf_get_var,
-        api.nvim_win_get_buf(winid),
-        'gitsigns_status_dict'
-    )
+    local ok, gsd = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
 
     local icon
     local str = ''
@@ -58,11 +46,7 @@ function M.git_diff_removed(component, winid)
 end
 
 function M.git_diff_changed(component, winid)
-    local ok, gsd = pcall(
-        api.nvim_buf_get_var,
-        api.nvim_win_get_buf(winid),
-        'gitsigns_status_dict'
-    )
+    local ok, gsd = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
 
     local icon
     local str = ''
@@ -73,6 +57,11 @@ function M.git_diff_changed(component, winid)
     end
 
     return str, icon
+end
+
+function M.git_info_exists(winid)
+    local ok, _ = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
+    return ok
 end
 
 return M
