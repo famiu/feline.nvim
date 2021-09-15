@@ -27,6 +27,8 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 
 ## Screenshots
 
+**NOTE: Some of these configurations may be outdated and may need to be changed prior to use.**
+
 **Default setup:**
 ![image](https://user-images.githubusercontent.com/29580810/114544000-d3028400-9c7b-11eb-856c-2feb166334b2.png)
 
@@ -39,24 +41,24 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 **[Config by 6cdh:](https://github.com/6cdh/dotfiles/blob/62959d27344dade28d6dd638252cd82accb309ab/nvim/.config/nvim/lua/statusline.lua)**
 ![image](https://user-images.githubusercontent.com/39000776/114838041-e68e2600-9e06-11eb-9334-431a627ff144.png)
 
-**[Config by luizcoro2:](https://bitbucket.org/luizcoro/dotfiles/src/master/.config/nvim/lua/plugins/feline.lua)**
+**Config by luizcoro2:**
 ![image](https://user-images.githubusercontent.com/70335871/115327167-dd81b980-a164-11eb-9c02-7a3a1b6a94b5.png)
 
-**[Config by rafamadriz (classic):](https://github.com/rafamadriz/dotfiles/blob/main/.config/nvim/lua/plugins/statusline/styles/classic.lua)**
+**Config by rafamadriz (classic):**
 
 **Gruvbox:**
 ![image](https://user-images.githubusercontent.com/67771985/116002735-a7bc5500-a5ea-11eb-82e3-86d1837902cf.png)
 **Nord:**
 ![image](https://user-images.githubusercontent.com/67771985/116002779-d3d7d600-a5ea-11eb-8772-7cb85d7bc324.png)
 
-**[Config by rafamadriz (slant):](https://github.com/rafamadriz/dotfiles/blob/main/.config/nvim/lua/plugins/statusline/styles/slant.lua)**
+**Config by rafamadriz (slant):**
 
 **Gruvbox:**
 ![image](https://user-images.githubusercontent.com/67771985/116002799-e94d0000-a5ea-11eb-9472-da0d75bbcceb.png)
 **Nord:**
 ![image](https://user-images.githubusercontent.com/67771985/116002808-efdb7780-a5ea-11eb-97eb-caf7875e9a3d.png)
 
-**[Config by rafamadriz (VSCode):](https://github.com/rafamadriz/dotfiles/blob/main/.config/nvim/lua/plugins/statusline/styles/vscode.lua)**
+**Config by rafamadriz (VSCode):**
 ![image](https://user-images.githubusercontent.com/67771985/117713773-9d42b380-b1c5-11eb-8a8b-76949c9b2db1.png)
 
 **[Config by pianocomposer321:](https://gist.github.com/pianocomposer321/6151c458132a97590d21415db67361a6)**
