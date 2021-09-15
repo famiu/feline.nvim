@@ -219,7 +219,7 @@ components.active[3][2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also keep in mind that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
-Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` value, which can take arguments (more about that below). Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` and `enabled` values, which can take arguments (more about that below). Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
 - `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
 
@@ -260,12 +260,17 @@ provider = 'position' -- This will use the default file position provider.
 
 Note that you can also use your [manually added providers](#adding-your-own-provider) the same way
 
-- `enabled` (boolean): Determines if the component is enabled. If false, the component is not shown in the statusline. For example:
+- `enabled` (boolean or function): Determines if the component is enabled. If false, the component is not shown in the statusline. If it's a function that returns a boolean value, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 ```lua
 -- Enable if opened file has a valid size
 enabled = function()
     return vim.fn.getfsize(vim.fn.expand('%:p')) > 0
+end
+
+-- Enable if current window width is higher than 80
+enabled = function(winid)
+    return vim.api.nvim_win_get_width(winid) > 80
 end
 ```
 
@@ -636,22 +641,30 @@ components.active[1] = {
     },
     {
         provider = 'diagnostic_errors',
-        enabled = function() return lsp.diagnostics_exist('Error') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Error', vim.api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'red' }
     },
     {
         provider = 'diagnostic_warnings',
-        enabled = function() return lsp.diagnostics_exist('Warning') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Warning', vim.api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'yellow' }
     },
     {
         provider = 'diagnostic_hints',
-        enabled = function() return lsp.diagnostics_exist('Hint') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Hint', vim.api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'cyan' }
     },
     {
         provider = 'diagnostic_info',
-        enabled = function() return lsp.diagnostics_exist('Information') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Information', vim.api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'skyblue' }
     }
 }

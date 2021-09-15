@@ -1,8 +1,8 @@
 local lsp = require('feline.providers.lsp')
 local vi_mode_utils = require('feline.providers.vi_mode')
 
+local api = vim.api
 local b = vim.b
-local fn = vim.fn
 
 local M = {
     components = {
@@ -70,25 +70,33 @@ M.components.active[1] = {
     },
     {
         provider = 'diagnostic_errors',
-        enabled = function() return lsp.diagnostics_exist('Error') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Error', api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'red' },
         icon = ' E-'
     },
     {
         provider = 'diagnostic_warnings',
-        enabled = function() return lsp.diagnostics_exist('Warning') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Warning', api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'yellow' },
         icon = ' W-'
     },
     {
         provider = 'diagnostic_hints',
-        enabled = function() return lsp.diagnostics_exist('Hint') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Hint', api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'cyan' },
         icon = ' H-'
     },
     {
         provider = 'diagnostic_info',
-        enabled = function() return lsp.diagnostics_exist('Information') end,
+        enabled = function(winid) return
+            lsp.diagnostics_exist('Information', api.nvim_win_get_buf(winid))
+        end,
         hl = { fg = 'skyblue' },
         icon = ' I-'
     }

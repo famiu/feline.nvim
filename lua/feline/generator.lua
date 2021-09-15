@@ -186,7 +186,13 @@ end
 
 -- Parses a component alongside its highlight
 local function parse_component(component, winid)
-    local enabled = evaluate_if_function(component.enabled, true)
+    local enabled
+
+    if component.enabled then enabled = component.enabled else enabled = true end
+
+    if type(enabled) == 'function' then
+        enabled = enabled(winid)
+    end
 
     if not enabled then return '' end
 
