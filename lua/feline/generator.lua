@@ -25,10 +25,11 @@ end
 -- Check if buffer contained in window is configured to have statusline disabled
 local function is_disabled(winid)
     local disable = feline.disable
+    local bufnr = api.nvim_win_get_buf(winid)
 
-    local buftype = bo.buftype
-    local filetype = bo.filetype
-    local bufname = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+    local buftype = bo[bufnr].buftype
+    local filetype = bo[bufnr].filetype
+    local bufname = api.nvim_buf_get_name(bufnr)
 
     return vim.tbl_contains(disable.buftypes, buftype) or
         vim.tbl_contains(disable.filetypes, filetype) or
