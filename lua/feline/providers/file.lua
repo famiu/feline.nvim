@@ -130,7 +130,9 @@ function M.file_info(component, winid)
     end
 
     if bo[bufnr].modified then
-        modified_str = (component.file_modified_icon or '●') .. ' '
+        modified_str = (component.file_modified_icon or '●')
+
+        if modified_str ~= '' then modified_str = modified_str .. ' ' end
     else
         modified_str = ''
     end
