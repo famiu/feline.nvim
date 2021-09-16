@@ -118,7 +118,7 @@ Plug 'famiu/feline.nvim', { 'branch': 'develop' }
 
 Once you've installed Feline, it's very easy to start using it. Here are the following options for using Feline:
 
-### 1. Using default statusline.
+### 1. Using default statusline
 
 If you want an opinionated statusline that "just works", then you can just use Feline's default statusline, for which you just have to add the `setup()` function to your config:
 
@@ -147,7 +147,7 @@ require('feline').setup {
 }
 ```
 
-### 2. Building your own statusline.
+### 2. Building your own statusline
 
 If you don't mind getting your hands dirty, then I recommend making your own statusline, it's very easy to do so, but for that you have to first understand how Feline works.<br><br>Feline has a statusline generator that takes a `components` value, which is a Lua table that needs to contain the statusline components.
 
@@ -338,7 +338,7 @@ end
 
 -- As a function returning a string
 hl = function()
-  if require("feline.providers.vi_mode).get_vim_mode() == "NORMAL" then
+  if require("feline.providers.vi_mode").get_vim_mode() == "NORMAL" then
     return "MyStatuslineNormal"
   else
     return "MyStatuslineOther"
@@ -353,7 +353,7 @@ end
 
 ##### Separators
 
-Separators are both the simplest and the trickiest part of Feline. There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
+There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
 The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets).
 
