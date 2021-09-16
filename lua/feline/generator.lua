@@ -209,8 +209,8 @@ local function parse_component(component, winid)
 
     local is_component_empty = str == ''
 
-    local left_sep_str = parse_sep_list(component.left_sep, hl.bg, is_component_empty)
-    local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
+    local left_sep_str = parse_sep_list(component.left_sep, hl.bg or colors.bg, is_component_empty)
+    local right_sep_str = parse_sep_list(component.right_sep, hl.bg or colors.bg, is_component_empty)
 
     local hlname = parse_hl(hl)
 
