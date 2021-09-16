@@ -1,12 +1,16 @@
+<!-- panvimdoc-ignore-start -->
+
 # feline.nvim
 
 A minimal, stylish and customizable statusline for Neovim written in Lua
 
 Requires Neovim >= 0.5
 
+
+<!-- panvimdoc-ignore-end -->
 ## About
 
-Feline is a Lua statusline that prioritizes speed, customizability and minimalism. It's blazing fast and never gets in your way. Feline only provides you with the necessary tools that you need to customize the statusline to your liking and avoids feature-bloat. It's also extremely customizable and allows you to configure it in any way you wish to. Feline also has reasonable defaults for those who don't want to configure things and just want a good out of the box experience. 
+Feline is a Lua statusline that prioritizes speed, customizability and minimalism. It's blazing fast and never gets in your way. Feline only provides you with the necessary tools that you need to customize the statusline to your liking and avoids feature-bloat. It's also extremely customizable and allows you to configure it in any way you wish to. Feline also has reasonable defaults for those who don't want to configure things and just want a good out of the box experience.
 
 ## Features
 
@@ -33,6 +37,8 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
   - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icon support
   - [A patched font](https://github.com/ryanoasis/nerd-fonts/) - For icon support
   - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For [git providers](#git)
+
+<!-- panvimdoc-ignore-start -->
 
 ## Screenshots
 
@@ -75,7 +81,7 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
 
 You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
-## How to install
+## Installation
 
 ### Install latest stable release
 
@@ -109,7 +115,9 @@ Plug 'famiu/feline.nvim', { 'tag': 'v0.1' }
 
 ### Install from develop branch
 
-**NOTE:** The develop branch is intended for those who either wish to contribute to Feline or want the absolute bleeding edge version of Feline. The develop branch may contain changes that have not been tested thoroughly and therefore stability is not guaranteed. Moreover, commit history of the develop branch may be rewritten at any time. So use it at your own risk.
+**NOTE:** The develop branch is intended for those who either wish to contribute to Feline or want the absolute bleeding edge version of Feline.
+The develop branch may contain changes that have not been tested thoroughly and therefore stability is not guaranteed.
+Moreover, commit history of the develop branch may be rewritten at any time. So use it at your own risk.
 
 - [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 
@@ -123,7 +131,9 @@ use { 'famiu/feline.nvim', branch = 'develop' }
 Plug 'famiu/feline.nvim', { 'branch': 'develop' }
 ```
 
-## How to use
+<!-- panvimdoc-ignore-end -->
+
+## Usage
 
 Once you've installed Feline, it's very easy to start using it. Here are the following options for using Feline:
 
@@ -143,7 +153,8 @@ require('feline').setup({
 })
 ```
 
-NOTE: This is also the configuration used by default if you don't have `nvim-web-devicons`. You don't have to specify it manually in case you don't have `nvim-web-devicons`. In that case, Feline will detect that you don't have `nvim-web-devicons` and automatically pick the `noicon` preset.
+NOTE: This is also the configuration used by default if you don't have `nvim-web-devicons`. You don't have to specify it manually in case you don't have `nvim-web-devicons`.
+In that case, Feline will detect that you don't have `nvim-web-devicons` and automatically pick the `noicon` preset.
 
 You can also make minor tweaks like changing the default foreground and background color like this:
 
@@ -510,7 +521,7 @@ hl = {bg = 'oceanblue'},
 right_sep = 'slant_right'
 ```
 
-Not only that, you can add your own custom colors and separators through [the setup function](#the-setup-function) which allows you to just use the name of the color or separator to refer to it.
+Not only that, you can add your own custom colors and separators through [the setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
 
 Below is a list of all the default value names and their values:
 
@@ -557,7 +568,7 @@ Below is a list of all the default value names and their values:
 | `right_rounded_thin` | `''` |
 | `circle`             | `'●'` |
 
-#### The setup function
+#### Setup function
 
 Now that we've learned to set up both the components table, it's finally time to revisit the setup function. The setup function takes a table that can have the following values:
 
@@ -624,7 +635,7 @@ If you like the defaults for the most part but there's some things you want to c
 local components = require('feline.presets')[preset_name].components
 ```
 
-After that, you can just modify the components and call [the setup function](#the-setup-function) with the preset as you normally would.
+After that, you can just modify the components and call [the setup function](#setup-function) with the preset as you normally would.
 
 ## Providers
 
@@ -723,7 +734,7 @@ In case none of the default providers do what you want, it's very easy to add yo
 
 ### Common issues
 
-#### Feline crashes or disappears for seemingly no reason
+> Feline crashes or disappears for seemingly no reason
 
 This can be caused if you forget to remove your other statusline plugins after installing Feline. Make sure all other statusline plugins are removed before you install Feline, that should fix the issue.
 
@@ -739,7 +750,7 @@ require('feline').reset_highlights()
 
 And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
 
-#### Use thin line instead of the inactive statusline
+#### Thin line for horizontal splits
 
 If you want, you can have a thin line instead of the inactive statusline to separate your windows, like the vertical window split separator, except in this case it would act as a horizontal window separator of sorts. You can do this through:
 
@@ -773,6 +784,8 @@ components.inactive = {
 }
 ```
 
+<!-- panvimdoc-ignore-start -->
+
 ### Reporting issues or feature requests
 
 If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [Issue](https://github.com/famiu/feline.nvim/issues) and I will try my best to look into it. If you want to contribute to Feline, you can make a Pull Request. For more details, please see: [CONTRIBUTING](CONTRIBUTING.md)
@@ -793,9 +806,13 @@ Lastly, anyone is welcomes to contribute to Feline, either by making an Issue or
 
 And this plugin is named after cats, you won't get that anywhere else.
 
+<!-- panvimdoc-ignore-end -->
+
 ## LICENSE
 
 Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md).
+
+<!-- panvimdoc-ignore-start -->
 
 ## Miscellaneous
 
@@ -812,3 +829,5 @@ Feline uses [Semantic Versioning](https://semver.org/) for its version names. Th
 If you liked this plugin, also check out:
 
 - [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
+
+<!-- panvimdoc-ignore-end -->
