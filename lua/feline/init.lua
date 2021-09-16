@@ -67,6 +67,7 @@ function M.reset_highlights()
     M.update_inactive_windows()
 end
 
+-- Setup Feline using the provided configuration options
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
     if fn.has('nvim-0.5') ~= 1 then

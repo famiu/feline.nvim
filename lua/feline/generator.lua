@@ -6,8 +6,9 @@ local colors = feline.colors
 local separators = feline.separators
 local providers = require('feline.providers')
 
-local M ={}
-M.highlights = {}
+local M = {
+    highlights = {}
+}
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
@@ -213,7 +214,9 @@ local function parse_component(component, winid)
 
     local hlname = parse_hl(hl)
 
-    if icon == nil and str ~= '' then
+    if is_component_empty then
+        icon = nil
+    elseif component.icon then
         icon = component.icon
     end
 

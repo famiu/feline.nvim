@@ -55,12 +55,10 @@ function M.get_mode_highlight_name()
 end
 
 function M.vi_mode(component)
-    if component.icon then
-        if component.icon == '' then
-            return M.get_vim_mode()
-        else
-            return component.icon
-        end
+    if component.icon == '' then
+        return M.get_vim_mode()
+    elseif component.icon ~= nil then
+        return component.icon
     else
         return ''
     end

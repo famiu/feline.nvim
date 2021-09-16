@@ -2,7 +2,6 @@ local lsp = require('feline.providers.lsp')
 local vi_mode_utils = require('feline.providers.vi_mode')
 
 local api = vim.api
-local b = vim.b
 
 local M = {
     components = {
