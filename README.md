@@ -68,34 +68,50 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 
 ## How to install
 
+### Install latest stable release
+
 - [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 
-```
+```lua
 use 'famiu/feline.nvim'
-```
-
-- [paq-nvim](https://github.com/savq/paq-nvim/)
-
-```
-paq 'famiu/feline.nvim'
 ```
 
 - [vim-plug](https://github.com/junegunn/vim-plug/):
 
-```
+```vim
 Plug 'famiu/feline.nvim'
 ```
 
-- Using Neovim's built-in plugin manager (Linux or MacOS):<br><br>Open your Terminal and enter the following command:
+### Install specific version
 
-```bash
-git clone https://github.com/famiu/feline.nvim/ ~/.local/share/nvim/site/pack/feline.nvim/start/feline.nvim/
+- [packer.nvim](https://github.com/wbthomason/packer.nvim/):
+
+```lua
+-- Replace 0.1 with your preferred version
+use { 'famiu/feline.nvim', tag = 'v0.1' }
 ```
 
-- Using Neovim's built-in plugin manager (Windows):<br><br>Open Powershell and enter the following command:
+- [vim-plug](https://github.com/junegunn/vim-plug/):
 
-```powershell
-git clone https://github.com/famiu/feline.nvim/ ~\AppData\Local\nvim-data\site\pack\feline.nvim\start\feline.nvim\
+```vim
+"" Replace 0.1 with your preferred version
+Plug 'famiu/feline.nvim', { 'tag': 'v0.1' }
+```
+
+### Install from develop branch
+
+**NOTE:** The develop branch is intended for those who either wish to contribute to Feline or want the absolute bleeding edge version of Feline. The develop branch may contain changes that have not been tested thoroughly and therefore stability is not guaranteed. Moreover, commit history of the develop branch may be rewritten at any time. So use it at your own risk.
+
+- [packer.nvim](https://github.com/wbthomason/packer.nvim/):
+
+```lua
+use { 'famiu/feline.nvim', branch = 'develop' }
+```
+
+- [vim-plug](https://github.com/junegunn/vim-plug/):
+
+```vim
+Plug 'famiu/feline.nvim', { 'branch': 'develop' }
 ```
 
 ## How to use
@@ -774,10 +790,11 @@ Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md)
 
 The name of this plugin is a silly pun based on the convention of the names of statusline plugins ending with 'line', while also being named after cats. And in a way this statusline is supposed to be as quick as a cat's instincts, so I guess the name fits.
 
-### Special thanks
+### Versioning scheme
 
-[glepnir](https://github.com/glepnir) - for creating [galaxyline](https://github.com/glepnir/galaxyline.nvim) which this plugin was inspired by.
+Feline uses [Semantic Versioning](https://semver.org/) for its version names. This is meant to ensure that releases after 1.0 do not break backwards compatibility without a MAJOR version bump, thus allowing users to have better control over when they want to install a change that might potentially break their workflow.
 
 ## Self-plug
+
 If you liked this plugin, also check out:
 - [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
