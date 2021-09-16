@@ -762,7 +762,7 @@ components.inactive = {
 
 ### Reporting issues or feature requests
 
-If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [issue](https://github.com/famiu/feline.nvim/issues) and I will try my best to look into it.
+If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [Issue](https://github.com/famiu/feline.nvim/issues) and I will try my best to look into it. If you want to contribute to Feline, you can make a Pull Request. For more details, please see: [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Why Feline?
 
