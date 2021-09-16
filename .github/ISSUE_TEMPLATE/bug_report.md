@@ -11,7 +11,7 @@ assignees: ''
 The output of `nvim --version`.
 
 **Feline version**
-`cd` to the directory containing Feline and use `git rev-parse HEAD`, and put the output of that here.
+What version of Feline are you using? If you're using the `develop` branch instead of a release then please clarify that as well.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
