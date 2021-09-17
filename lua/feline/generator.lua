@@ -137,6 +137,8 @@ end
 local function parse_sep_list(sep_list, parent_bg, is_component_empty)
     if sep_list == nil then return '' end
 
+    parent_bg = parent_bg or colors.fg
+
     if (type(sep_list) == "table" and sep_list[1] and
     (type(sep_list[1]) == "function" or type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
         local sep_strs = {}
@@ -208,8 +210,8 @@ local function parse_component(component, winid)
 
     local is_component_empty = str == ''
 
-    local left_sep_str = parse_sep_list(component.left_sep, hl.bg or colors.bg, is_component_empty)
-    local right_sep_str = parse_sep_list(component.right_sep, hl.bg or colors.bg, is_component_empty)
+    local left_sep_str = parse_sep_list(component.left_sep, hl.bg, is_component_empty)
+    local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
 
     local hlname = parse_hl(hl)
 
