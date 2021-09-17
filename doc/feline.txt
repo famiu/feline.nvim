@@ -529,9 +529,9 @@ or separator to the value, eg:
 <
 
 
-Not only that, you can add your own custom colors and separators through
-|feline-the-setup-function| which allows you to just use the name of the color
-or separator to refer to it.
+Not only that, you can add your own custom colors and separators through the
+|feline-setup-function| which allows you to just use the name of the color or
+separator to refer to it.
 
 Below is a list of all the default value names and their values:
 
@@ -665,8 +665,8 @@ existing preset to get the statusline configuration you want. Just do:
 <
 
 
-After that, you can just modify the components and call
-|feline-the-setup-function| with the preset as you normally would.
+After that, you can just modify the components and call the
+|feline-setup-function| with the preset as you normally would.
 
 PROVIDERS                                                   *feline-providers*
 
