@@ -77,8 +77,6 @@ end
 local function parse_hl(hl, parent_hl)
     if type(hl) == "string" then return hl end
 
-    if hl == {} then return defhl() end
-
     if hl.name and M.highlights[hl.name] then
         return hl.name
     end
