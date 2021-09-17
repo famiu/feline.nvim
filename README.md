@@ -521,7 +521,7 @@ hl = {bg = 'oceanblue'},
 right_sep = 'slant_right'
 ```
 
-Not only that, you can add your own custom colors and separators through [the setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
+Not only that, you can add your own custom colors and separators through the [setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
 
 Below is a list of all the default value names and their values:
 
@@ -635,7 +635,7 @@ If you like the defaults for the most part but there's some things you want to c
 local components = require('feline.presets')[preset_name].components
 ```
 
-After that, you can just modify the components and call [the setup function](#setup-function) with the preset as you normally would.
+After that, you can just modify the components and call the [setup function](#setup-function) with the preset as you normally would.
 
 ## Providers
 
