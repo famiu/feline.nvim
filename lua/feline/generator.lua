@@ -2,9 +2,12 @@ local bo = vim.bo
 local api = vim.api
 
 local feline = require('feline')
+local providers = require('feline.providers')
+local components = feline.components
 local colors = feline.colors
 local separators = feline.separators
-local providers = require('feline.providers')
+local disable = feline.disable
+local force_inactive = feline.force_inactive
 
 local M = {
     highlights = {}
@@ -12,8 +15,6 @@ local M = {
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
-    local force_inactive = feline.force_inactive
-
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
@@ -25,7 +26,6 @@ end
 
 -- Check if buffer contained in window is configured to have statusline disabled
 local function is_disabled(winid)
-    local disable = feline.disable
     local bufnr = api.nvim_win_get_buf(winid)
 
     local buftype = bo[bufnr].buftype
@@ -51,7 +51,7 @@ end
 
 -- Add highlight and store its name in the highlights table
 local function add_hl(name, fg, bg, style)
-    vim.api.nvim_command(string.format(
+    api.nvim_command(string.format(
         'highlight %s gui=%s guifg=%s guibg=%s',
         name,
         style,
@@ -174,6 +174,7 @@ end
 -- Parse component provider
 local function parse_provider(provider, component, winid)
     local icon
+
     if type(provider) == "string" and type(providers[provider]) == "function" then
         provider, icon = providers[provider](component, winid)
     elseif type(provider) == "function" then
@@ -226,10 +227,10 @@ end
 -- Parse components of a section of the statusline
 -- (For old component table format)
 local function parse_statusline_section_old(section, type, winid)
-    if feline.components[section] and feline.components[section][type] then
+    if components[section] and components[section][type] then
         local section_components = {}
 
-        for _, v in ipairs(feline.components[section][type]) do
+        for _, v in ipairs(components[section][type]) do
             section_components[#section_components+1] = parse_component(v, winid)
         end
 
@@ -241,20 +242,20 @@ end
 
 -- Parse components of a section of the statusline
 local function parse_statusline_section(section, winid)
-    local components = {}
+    local section_components = {}
 
     for _, component in ipairs(section) do
-        components[#components+1] = parse_component(component, winid)
+        section_components[#section_components+1] = parse_component(component, winid)
     end
 
-    return table.concat(components)
+    return table.concat(section_components)
 end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
     local statusline_str
 
-    if not feline.components or is_disabled(winid) then
+    if not components or is_disabled(winid) then
         statusline_str = ''
     else
         local statusline_type
@@ -267,8 +268,8 @@ function M.generate_statusline(winid)
 
         -- Determine if the component table uses the old format or new format
         -- and parse it accordingly
-        if feline.components.active or feline.components.inactive then
-            local statusline = feline.components[statusline_type]
+        if components.active or components.inactive then
+            local statusline = components[statusline_type]
 
             if not statusline or statusline == {} then
                 statusline_str = ''
