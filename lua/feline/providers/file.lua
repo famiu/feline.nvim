@@ -94,17 +94,22 @@ function M.file_info(component, winid)
     local extension = fn.fnamemodify(filename, ':e')
     local readonly_str, modified_str
 
-    local icon_str, icon_hlname = require("nvim-web-devicons").get_icon(
-        filename, extension, { default = true }
-    )
+    local icon
 
-    local icon = { str = icon_str }
+    -- Avoid loading nvim-web-devicons if an icon is provided already
+    if not component.icon then
+        local icon_str, icon_hlname = require("nvim-web-devicons").get_icon(
+            filename, extension, { default = true }
+        )
 
-    if component.colored_icon == nil or component.colored_icon then
-        local fg = api.nvim_get_hl_by_name(icon_hlname, true).foreground
+        icon = { str = icon_str }
 
-        if fg then
-            icon.hl = { fg = string.format('#%06x', fg) }
+        if component.colored_icon == nil or component.colored_icon then
+            local fg = api.nvim_get_hl_by_name(icon_hlname, true).foreground
+
+            if fg then
+                icon.hl = { fg = string.format('#%06x', fg) }
+            end
         end
     end
 
