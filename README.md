@@ -6,7 +6,7 @@ Requires Neovim >= 0.5
 
 ## About
 
-Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/galaxyline.nvim), but being more minimal and keeping complete customizability in mind. Feline is less of a statusline unto itself but more of a framework for you to easily build your own statusline on, while being able to tweak every tiny bit to your heart's content. But for those who just want to get stuff done, Feline also provides a default statusline which should fit the needs of most people.
+Feline is a Lua statusline that prioritizes speed, customizability and minimalism. It's blazing fast and never gets in your way. Feline only provides you with the necessary tools that you need to customize the statusline to your liking and avoids feature-bloat. It's also extremely customizable and allows you to configure it in any way you wish to. Feline also has reasonable defaults for those who don't want to configure things and just want a good out of the box experience. 
 
 ## Features
 
@@ -17,7 +17,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
   - Vi-mode
   - File info
   - Cursor position
-  - Diagnostics (using [Neovim's buiilt-in LSP](https://neovim.io/doc/user/lsp.html))
+  - Diagnostics (using [Neovim's built-in LSP](https://neovim.io/doc/user/lsp.html))
   - Git branch and diffs (using [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/))
 
   and many more
@@ -27,16 +27,16 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 ## Requirements
 
 - Necessary
-  - Neovim >= 0.5
-  - Truecolor support for Neovim (with `set termguicolors` and a truecolor supporting Terminal / GUI)
+  - Neovim v0.5 or greater
+  - Truecolor support for Neovim (do `:help 'termguicolors'` in Neovim for more info)
 - Optional
   - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icon support
   - [A patched font](https://github.com/ryanoasis/nerd-fonts/) - For icon support
-  - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For git info
+  - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For [git providers](#git)
 
 ## Screenshots
 
-**NOTE: Some of these configurations may be outdated and may need to be changed prior to use.**
+**NOTE: Some of these configurations may be outdated and may need to be changed prior to use. A few of the configurations are missing a link because the link to them was removed due to the link no longer being valid.**
 
 **Default setup:**
 ![image](https://user-images.githubusercontent.com/29580810/114544000-d3028400-9c7b-11eb-856c-2feb166334b2.png)
@@ -73,7 +73,7 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 **[Config by pianocomposer321:](https://gist.github.com/pianocomposer321/6151c458132a97590d21415db67361a6)**
 ![image](https://user-images.githubusercontent.com/54072354/117869424-65d51500-b260-11eb-898c-0a0b987a6275.png)
 
-**NOTE: You can add your own configuration to this list. If you're interested, simply make a pull request and I'll add it.**
+You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
 ## How to install
 
@@ -246,7 +246,11 @@ components.active[3][2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also keep in mind that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
-Now you can customize each component to your liking. Most values that a component requires can also use a function without arguments, with the exception of the `provider` and `enabled` values, which can take arguments (more about that below). Feline will automatically evaluate the function if it is given a function. But in case a function is provided, the type of value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value. Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+You can customize each component to your liking. Most values that a component requires can also use a function. However, these functions cannot take any arguments, with the exception of the `provider` and `enabled` values, which can take arguments (more about that below).
+
+Feline will automatically evaluate the function if it is one. But in case a function is provided, the type of the value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value.
+
+Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
 - `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
 
@@ -301,7 +305,7 @@ enabled = function(winid)
 end
 ```
 
-- `icon` (table or string): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, you may set this value to use any icon you want instead. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icons's highlight works just like the `hl` component's values. For example:
+- `icon` (table or string): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, or if you want an icon for a component that doesn't have any default icons, you may set this value to use any icon you want instead. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values. For example:
 
 ```lua
 -- Setting icon to a string
@@ -323,7 +327,7 @@ icon = {
   - `hl.fg` (string): RGB hex or [name](#value-presets) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
   - `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
   - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
-  - `hl.name` (string): Name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`).<br><br>Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redifines existing highlights. So if `hl` is a function that can return different values for `hl.fg`, `hl.bg` or `hl.style`, make sure to return a different value for `hl.name` as well if you want the highlight to actually change. If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values. So you can also just omit the `name` and Feline will create new highlights for you when required.<br><br>Setting `hl.name` may provide a performance improvement since Feline caches highlight names and doesn't take the time to generate a name if the name is already provided by the user.
+  - `hl.name` (string): Name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`).<br><br>Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `hl.fg`, `hl.bg` or `hl.style`, make sure to return a different value for `hl.name` as well if you want the highlight to actually change. If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values. So you can also just omit the `name` and Feline will create new highlights for you when required.<br><br>Setting `hl.name` may provide a performance improvement since Feline caches highlight names and doesn't take the time to generate a name if the name is already provided by the user.
 
 An example of using the hl group:
 
@@ -559,7 +563,7 @@ Now that we've learned to set up both the components table, it's finally time to
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `components` - The components table.
-- `colors` - A table containing custom [color value presets](#value-presets).
+- `colors` - A table containing custom [color value presets](#value-presets). The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
   Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
@@ -585,7 +589,8 @@ Now that we've learned to set up both the components table, it's finally time to
 ```
 
 - `disable` - Similar to `force_inactive`, except the statusline is disabled completely. Configured the same way as `force_inactive`. Feline doesn't disable the statusline on anything by default.
-- `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
+- `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>
+Here is a list of all possible vi_mode names used with the default color associated with them:
 
 | Mode        | Description           | Value       |
 | ----------- | --------------------- | ----------- |
@@ -734,16 +739,9 @@ require('feline').reset_highlights()
 
 And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
 
-#### Disable inactive statusline
+#### Use thin line instead of the inactive statusline
 
-If you want, you can just disable the inactive statusline by doing:
-
-```lua
--- Remove all inactive statusline components
-components.inactive = {}
-```
-
-Alternatively, you could also use a thin line instead of the inactive statusline to separate you windows, like the vertical split seperator, except in this case it would act as a horizontal separator of sorts. You can do this through:
+If you want, you can have a thin line instead of the inactive statusline to separate your windows, like the vertical window split separator, except in this case it would act as a horizontal window separator of sorts. You can do this through:
 
 ```lua
 local nvim_exec = vim.api.nvim_exec
