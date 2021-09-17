@@ -12,7 +12,16 @@ Feline is a lua statusline inspired by [galaxyline](https://github.com/glepnir/g
 
 - Ease-of-use.
 - Complete customizability over every component.
-- Built-in providers for things like vi-mode, file info, file size, cursor position, diagnostics (using [Neovim's buiilt-in LSP](https://neovim.io/doc/user/lsp.html)), git branch and diffs (using [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/)), etc.
+- [Built-in providers](#default-providers) such as:
+
+  - Vi-mode
+  - File info
+  - Cursor position
+  - Diagnostics (using [Neovim's buiilt-in LSP](https://neovim.io/doc/user/lsp.html))
+  - Git branch and diffs (using [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/))
+
+  and many more
+
 - Minimalistic, only provides the bare minimum and allows the user to build their own components very easily.
 
 ## Requirements
@@ -153,7 +162,7 @@ If you don't mind getting your hands dirty, then I recommend making your own sta
 
 #### Components
 
-Inside the `components` table, there needs to be two tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in an active window or an inactive window. And inside each of the `active` and `inactive` tables, you can put any amount of tables, each of which will indicate a section of the statusline. For example, if you want two sections (left and right), you can put two tables inside each of the `active` and `inactive` tables. If you want three sections (left, mid and right), you can put three tables inside each of the `active` and `inactive` tables. There is no limit to the amount of sections you can have. It's also possible to have a different amount of sections for the `active` and `inactive` statuslines. 
+Inside the `components` table, there needs to be two tables, `active` and `inactive`, which will dictate whether the component is a part of the statusline when it's in an active window or an inactive window. And inside each of the `active` and `inactive` tables, you can put any amount of tables, each of which will indicate a section of the statusline. For example, if you want two sections (left and right), you can put two tables inside each of the `active` and `inactive` tables. If you want three sections (left, mid and right), you can put three tables inside each of the `active` and `inactive` tables. There is no limit to the amount of sections you can have. It's also possible to have a different amount of sections for the `active` and `inactive` statuslines.
 
 So first, in your init.lua file, you have to initialize the components table
 
@@ -309,8 +318,8 @@ icon = {
 ```
 
 - `hl` (table or string): Determines the highlight settings.<br>
-If a string, it'll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your nvim config).<br>
-If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have three values:
+  If a string, it'll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your nvim config).<br>
+  If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have three values:
   - `hl.fg` (string): RGB hex or [name](#value-presets) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
   - `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
   - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
@@ -481,6 +490,7 @@ components.active[3][1] = {
     }
 }
 ```
+
 </details>
 
 [**NOTE:** Remember to initialize the components table before assigning anything to it]
@@ -501,6 +511,7 @@ Not only that, you can add your own custom colors and separators through [the se
 Below is a list of all the default value names and their values:
 
 ###### Default colors
+
 | Name        | Value       |
 | ----------- | ----------- |
 | `fg`        | `'#D0D0D0'` |
@@ -518,6 +529,7 @@ Below is a list of all the default value names and their values:
 | `yellow`    | `'#E1E120'` |
 
 ###### Default Separators
+
 | Name                 | Value |
 | -------------------- | ----- |
 | `vertical_bar`       | `'┃'` |
@@ -550,9 +562,10 @@ Now that we've learned to set up both the components table, it's finally time to
 - `colors` - A table containing custom [color value presets](#value-presets).
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
-Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
+  Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain file types, buffer types and buffer names respectively.<br><br>
-Default:
+  Default:
+
 ```lua
 {
     filetypes = {
@@ -570,6 +583,7 @@ Default:
     bufnames = {}
 }
 ```
+
 - `disable` - Similar to `force_inactive`, except the statusline is disabled completely. Configured the same way as `force_inactive`. Feline doesn't disable the statusline on anything by default.
 - `vi_mode_colors` - A table containing colors associated with Vi modes. It can later be used to get the color associated with the current Vim mode using `require('feline.providers.vi_mode').get_mode_color()`. For more info on it see the [Vi-mode](#vi-mode) section.<br><br>Here is a list of all possible vi_mode names used with the default color associated with them:
 
@@ -612,25 +626,26 @@ After that, you can just modify the components and call [the setup function](#th
 ### Default providers
 
 Feline by default has some built-in providers to make your life easy. They are:
-|Name|Description|
---|--
-|[`vi_mode`](#vi-mode)|Current vi_mode|
-|`position`|Get line and column number of cursor|
-|`line_percentage`|Current line percentage|
-|`scroll_bar`|Scroll bar that shows file progress|
-|[`file_info`](#file-info)|Get file icon, name and modified status|
-|`file_size`|Get file size|
-|`file_type`|Get file type|
-|`file_encoding`|Get file encoding|
-|[`git_branch`](#git)|Shows current git branch|
-|[`git_diff_added`](#git)|Git diff added count|
-|[`git_diff_removed`](#git)|Git diff removed count|
-|[`git_diff_changed`](#git)|Git diff changed count|
-|`lsp_client_names`|Name of LSP clients attached to current buffer|
-|[`diagnostic_errors`](#diagnostics)|Diagnostics errors count|
-|[`diagnostic_warnings`](#diagnostics)|Diagnostics warnings count|
-|[`diagnostic_hints`](#diagnostics)|Diagnostics hints count|
-|[`diagnostic_info`](#diagnostics)|Diagnostics info count|
+
+| Name                                  | Description                                    |
+| ------------------------------------- | ---------------------------------------------- |
+| [`vi_mode`](#vi-mode)                 | Current vim mode                               |
+| `position`                            | Get line and column number of cursor           |
+| `line_percentage`                     | Current line percentage                        |
+| `scroll_bar`                          | Scroll bar that shows file progress            |
+| [`file_info`](#file-info)             | Get file icon, name and modified status        |
+| `file_size`                           | Get file size                                  |
+| `file_type`                           | Get file type                                  |
+| `file_encoding`                       | Get file encoding                              |
+| [`git_branch`](#git)                  | Shows current git branch                       |
+| [`git_diff_added`](#git)              | Git diff added count                           |
+| [`git_diff_removed`](#git)            | Git diff removed count                         |
+| [`git_diff_changed`](#git)            | Git diff changed count                         |
+| `lsp_client_names`                    | Name of LSP clients attached to current buffer |
+| [`diagnostic_errors`](#diagnostics)   | Diagnostics errors count                       |
+| [`diagnostic_warnings`](#diagnostics) | Diagnostics warnings count                     |
+| [`diagnostic_hints`](#diagnostics)    | Diagnostics hints count                        |
+| [`diagnostic_info`](#diagnostics)     | Diagnostics info count                         |
 
 #### Vi-mode
 
@@ -664,24 +679,24 @@ The Vi-mode provider also provides a helper function `get_mode_highlight_name()`
 The `file_info` provider has some special component values:
 
 - `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
-Default: `true`
+  Default: `true`
 - `file_modified_icon` (string): The icon that is shown when a file is modified.<br>
-Default:`'●'`
+  Default:`'●'`
 - `file_readonly_icon` (string): The icon that is shown when a file is read-only.<br>
-Default:`'🔒'`
+  Default:`'🔒'`
 - `type` (string): Determines which parts of the filename are shown. Its value can be one of:
-    - `'full-path'`: Full path of the file (eg: `'/home/user/.config/nvim/init.lua'`)
-    - `'short-path'`: Shortened path of the file (eg: `'/h/u/.c/n/init.lua'`)
-    - `'base-only'`: Show only base filename and extension (eg: `'init.lua'`)
-    - `'relative'`: File path relative to the current directory.
-    - `'relative-short'`: Combination of `'relative'` and `'short-path'`.
-    - `'unique'`: Unique substring of the full path.<br>
+
+  - `'full-path'`: Full path of the file (eg: `'/home/user/.config/nvim/init.lua'`)
+  - `'short-path'`: Shortened path of the file (eg: `'/h/u/.c/n/init.lua'`)
+  - `'base-only'`: Show only base filename and extension (eg: `'init.lua'`)
+  - `'relative'`: File path relative to the current directory.
+  - `'relative-short'`: Combination of `'relative'` and `'short-path'`.
+  - `'unique'`: Unique substring of the full path.<br>
     For example: If you have three buffers with the paths `'/home/user/file.lua'`, `'/home/user/dir1/file.lua'` and `'/home/user/dir2/file.lua'`, Feline will show the names `'user/file.lua'`, `'dir1/file.lua'` and `'dir2/file.lua'` for them, respectively.<br>
     If there's no files that share the same name, it behaves the same as `'base-only'`.
-    - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
-    
+  - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
 
-    <br>Default: `'base-only'`
+  <br>Default: `'base-only'`
 
 #### Git
 
@@ -797,4 +812,5 @@ Feline uses [Semantic Versioning](https://semver.org/) for its version names. Th
 ## Self-plug
 
 If you liked this plugin, also check out:
+
 - [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
