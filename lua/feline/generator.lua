@@ -71,16 +71,8 @@ local function defhl()
     return 'StatusComponentDefault'
 end
 
--- Parse highlight, inherit default/parent values if values are not given
--- Also generate unique name for highlight if name is not given
--- If given a string, accept it as an existing external highlight group
+-- Parse highlight table, inherit default/parent values if values are not given
 local function parse_hl(hl, parent_hl)
-    if type(hl) == "string" then return hl end
-
-    if hl.name and M.highlights[hl.name] then
-        return hl.name
-    end
-
     parent_hl = parent_hl or {}
 
     hl.fg = hl.fg or parent_hl.fg or colors.fg
@@ -89,6 +81,42 @@ local function parse_hl(hl, parent_hl)
 
     if colors[hl.fg] then hl.fg = colors[hl.fg] end
     if colors[hl.bg] then hl.bg = colors[hl.bg] end
+
+    return hl
+end
+
+-- If highlight is a string, use it as highlight name and
+-- extract the properties from the highlight
+local function get_hl_properties(hlname)
+    local hl = api.nvim_get_hl_by_name(hlname, true)
+    local styles = {}
+
+    for k, v in ipairs(hl) do
+        if v == true then
+            styles[#styles+1] = k
+        end
+    end
+
+    return {
+        name = hlname,
+        fg = hl.foreground and string.format('#%06x', hl.foreground),
+        bg = hl.background and string.format('#%06x', hl.background),
+        style = next(styles) and table.concat(styles, ',') or 'NONE'
+    }
+end
+
+-- Generate unique name for highlight if name is not given
+-- Create the highlight with the name if it doesn't exist
+-- If given a string, just interpret it as an external highlight group and return it
+local function get_hlname(hl, parent_hl)
+    if type(hl) == 'string' then return hl end
+
+    -- If highlight name exists and is cached, just return it
+    if hl.name and M.highlights[hl.name] then
+        return hl.name
+    end
+
+    hl = parse_hl(hl, parent_hl)
 
     -- Generate unique hl name from color strings if a name isn't provided
     hl.name = hl.name or string.format(
@@ -114,7 +142,7 @@ local function parse_sep(sep, parent_bg, is_component_empty)
     local hl
     local str
 
-    if type(sep) == "string" then
+    if type(sep) == 'string' then
         if is_component_empty then return '' end
 
         str = sep
@@ -130,17 +158,15 @@ local function parse_sep(sep, parent_bg, is_component_empty)
 
     if separators[str] then str = separators[str] end
 
-    return string.format('%%#%s#%s', parse_hl(hl), str)
+    return string.format('%%#%s#%s', get_hlname(hl), str)
 end
 
 -- Either parse a single separator or a list of separators with different highlights
 local function parse_sep_list(sep_list, parent_bg, is_component_empty)
     if sep_list == nil then return '' end
 
-    parent_bg = parent_bg or colors.fg
-
-    if (type(sep_list) == "table" and sep_list[1] and
-    (type(sep_list[1]) == "function" or type(sep_list[1]) == "table" or type(sep_list[1]) == "string")) then
+    if (type(sep_list) == 'table' and sep_list[1] and (type(sep_list[1]) == 'function' or
+    type(sep_list[1]) == 'table' or type(sep_list[1]) == 'string')) then
         local sep_strs = {}
 
         for _,v in ipairs(sep_list) do
@@ -167,10 +193,10 @@ local function parse_icon(icon, parent_hl)
     else
         icon = evaluate_if_function(icon)
         str = icon.str or ''
-        hl = evaluate_if_function(icon.hl) or parent_hl
+        hl = icon.hl or parent_hl
     end
 
-    return string.format('%%#%s#%s', parse_hl(hl, parent_hl), str)
+    return string.format('%%#%s#%s', get_hlname(hl, parent_hl), str)
 end
 
 -- Parse component provider
@@ -208,13 +234,23 @@ local function parse_component(component, winid)
     local str, icon = parse_provider(component.provider, component, winid)
 
     local hl = evaluate_if_function(component.hl, {})
+    local hlname
+
+    -- If highlight is a string, then accept it as an external highlight group and
+    -- extract its properties for use as a parent highlight for separators and icon
+    if type(hl) == 'string' then
+        hlname = hl
+        hl = get_hl_properties(hl)
+    -- If highlight is a table, just normally generate a highlight name
+    else
+        hl = parse_hl(hl)
+        hlname = get_hlname(hl)
+    end
 
     local is_component_empty = str == ''
 
     local left_sep_str = parse_sep_list(component.left_sep, hl.bg, is_component_empty)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
-
-    local hlname = parse_hl(hl)
 
     if is_component_empty then
         icon = nil
@@ -295,8 +331,6 @@ function M.generate_statusline(winid)
         end
     end
 
-    -- Never return an empty string since setting statusline to an empty string or nil
-    -- makes it use the global statusline value
     if statusline_str == '' then
         return string.format('%%#%s#', defhl())
     else
