@@ -777,7 +777,7 @@ end
 components.inactive = {
     {
         {
-            provider = '',
+            provider = ' ',
             hl = InactiveStatusHL
         }
     }

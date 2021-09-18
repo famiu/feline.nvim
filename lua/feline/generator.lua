@@ -258,9 +258,17 @@ local function parse_component(component, winid)
         icon = component.icon
     end
 
+    local hl_str
+
+    if not is_component_empty then
+        hl_str = string.format('%%#%s#', hlname)
+    else
+        hl_str = ''
+    end
+
     icon = parse_icon(evaluate_if_function(icon), hl)
 
-    return string.format('%s%s%%#%s#%s%s', left_sep_str, icon, hlname, str, right_sep_str)
+    return string.format('%s%s%s%s%s', left_sep_str, icon, hl_str, str, right_sep_str)
 end
 
 -- Parse components of a section of the statusline
