@@ -30,7 +30,10 @@ local M = {
 
 function M.add_provider(name, provider)
     if M[name] then
-        print("Provider " .. name .. " already exists! Please try using another name")
+        vim.api.nvim_err_writeln(string.format(
+            "Provider %s already exists! Please try using another name",
+            name
+        ))
     else
         M[name] = provider
     end

@@ -184,9 +184,10 @@ local function parse_provider(provider, component, winid)
     end
 
     if type(provider) ~= "string" then
-        print(string.format(
-            "Invalid provider! Provider must evaluate to string. Got type '%s' instead."
-        ), type(provider))
+        api.nvim_err_writeln(string.format(
+            "Invalid provider! Provider must evaluate to string. Got type '%s' instead",
+            type(provider)
+        ))
     end
 
     return provider, icon

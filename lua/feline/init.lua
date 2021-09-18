@@ -12,10 +12,12 @@ local function parse_config(config_dict, config_name, expected_type, default_val
         if type(config_dict[config_name]) == expected_type then
             return config_dict[config_name]
         else
-            print(
-                string.format("Feline: Expected '%s' for config option '%s', got '%s'"),
-                expected_type, config_name, type(config_dict[config_name])
-            )
+            api.nvim_err_writeln(string.format(
+                "Feline: Expected '%s' for config option '%s', got '%s'",
+                expected_type,
+                config_name,
+                type(config_dict[config_name])
+            ))
         end
     else
         return default_value
