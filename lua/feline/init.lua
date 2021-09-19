@@ -5,6 +5,94 @@ local cmd = api.nvim_command
 
 local M = {}
 
+-- Wrap components table with metatable allowing access of named components through their name
+-- Also automatically cache names whenever the table is updated
+local function wrap_components(components)
+    -- Metatable for components table
+    local components_mt = {}
+
+    -- Original table
+    components_mt._t = components
+
+    -- Table that maps component names to their corresponding indices in the components table
+    components_mt.named_component_indices = {}
+
+    components_mt.__index = function(_, key)
+        -- If key is 'active' or 'inactive', just return the value in the original table
+        -- Otherwise treat it as a named component and get its corresponding indices
+        -- then return the corresponding value
+        if key == 'active' or key == 'inactive' then
+            return components_mt._t[key]
+        else
+            local type, section, number = unpack(components_mt.named_component_indices[key])
+
+            return components_mt._t[type][section][number]
+        end
+    end
+
+    -- Helper function to search all sections of a statusline for named components
+    -- Use the component name as key and its corresponding indices as the value
+    local function find_named_components(sections)
+        local named_components = {}
+
+        for i, section in ipairs(sections) do
+            for j, component in ipairs(section) do
+                if component.name then
+                    named_components[component.name] = {i, j}
+                end
+            end
+        end
+
+        return named_components
+    end
+
+    -- Re-cache a specific statusline type (active or inactive)
+    -- It's possibly to specify a value to treat as the sections table of the statusline type, in
+    -- which case that is used for caching. Otherwise, it uses the existing value in the components
+    -- table for caching
+    local function cache_statusline_type(type, val)
+        val = val or components_mt._t[type]
+        local named_components = find_named_components(val)
+
+        -- Since type corresponds to statusline type, combining it with the indices
+        -- returned by find_named_components will give the full indices to the component,
+        -- which we can then cache
+        for name, indices in pairs(named_components) do
+            components_mt.named_component_indices[name] = {type, unpack(indices)}
+        end
+    end
+
+    components_mt.__newindex = function(_, key, newval)
+        -- If key is 'active' or 'inactive', scan every section of the new value for any
+        -- named components and cache them accordingly
+        -- Also remove all cached indices corresponding to the old value
+        if key == 'active' or key == 'inactive' then
+            local oldval = components_mt._t[key]
+
+            local old_named_components = find_named_components(oldval)
+
+            -- Remove old caches
+            for name, _ in pairs(old_named_components) do
+                components_mt.named_component_indices[name] = nil
+            end
+
+            cache_statusline_type(key, newval)
+        end
+
+        components_mt._t[key] = newval
+    end
+
+    -- Set metatable to false to make it impossible to modify for users
+    components_mt.__metatable = false
+
+    -- Cache the named components
+    cache_statusline_type('active')
+    cache_statusline_type('inactive')
+
+    -- Return a proxy table
+    return setmetatable({}, components_mt)
+end
+
 -- Parse configuration option with name config_name from config_dict and match its type
 -- Return a default value (if provided one) in case the configuration option doesn't exist
 local function parse_config(config_dict, config_name, expected_type, default_value)
@@ -174,7 +262,8 @@ function M.setup(config)
         )
     end
 
-    M.components = components
+    -- Wrap components table to cache the component names
+    M.components = wrap_components(components)
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
