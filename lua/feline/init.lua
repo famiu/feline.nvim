@@ -8,6 +8,9 @@ local M = {}
 -- Wrap components table with metatable allowing access of named components through their name
 -- Also automatically cache names whenever the table is updated
 local function wrap_components(components)
+    -- Use a metatable that uses a proxy table so that all index searches and assignments go through
+    -- __index and __newindex respectively so that component names can be cached
+
     -- Metatable for components table
     local components_mt = {}
 
