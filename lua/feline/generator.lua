@@ -118,11 +118,18 @@ local function get_hlname(hl, parent_hl)
 
     hl = parse_hl(hl, parent_hl)
 
+    local fg_str, bg_str
+
+    -- If first character of the color starts with '#', remove the '#' and keep the rest
+    -- If it doesn't start with '#', do nothing
+    if hl.fg:sub(1, 1) == '#' then fg_str = hl.fg:sub(2) else fg_str = hl.fg end
+    if hl.bg:sub(1, 1) == '#' then bg_str = hl.bg:sub(2) else bg_str = hl.bg end
+
     -- Generate unique hl name from color strings if a name isn't provided
     hl.name = hl.name or string.format(
         'StatusComponent_%s_%s_%s',
-        string.sub(hl.fg, 2),
-        string.sub(hl.bg, 2),
+        fg_str,
+        bg_str,
         string.gsub(hl.style, ',', '_')
     )
 
