@@ -216,9 +216,10 @@ correct index. Also keep in mind that unlike most other programming languages,
 Lua indices start at `1` instead of `0`.
 
 You can customize each component to your liking. Most values that a component
-requires can also use a function. However, these functions cannot take any
-arguments, with the exception of the `provider` and `enabled` values, which can
-take arguments (more about that below).
+requires can also use a function. These functions can take either no arguments
+or exactly one argument, the window id (`winid`) of the window for which the
+statusline is being generated. However, the `provider` value is an exception
+because it can take two arguments (more on that below).
 
 Feline will automatically evaluate the function if it is one. But in case a
 function is provided, the type of the value the function returns must be the
@@ -275,7 +276,7 @@ provider name like this:
 Note that you can also use your |feline-manually-added-providers| the same way
 
 
-- `enabled` (boolean or function): Determines if the component is enabled. If false, the component is not shown in the statusline. If it’s a function that returns a boolean value, it can take either the window handler as an argument, or it can take no arguments. For example:
+- `enabled` (boolean or function): Determines if the component is enabled. If false, the component is not shown in the statusline. If it’s a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 
 >
@@ -292,7 +293,7 @@ Note that you can also use your |feline-manually-added-providers| the same way
 
 
 
-- `icon` (table or string): Some inbuilt providers such as `git_branch` provide default icons. If you either don’t have a patched font or don’t like the default icon that Feline provides, or if you want an icon for a component that doesn’t have any default icons, you may set this value to use any icon you want instead. By default, the icon inherits the component’s highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon’s highlight works just like the `hl` component’s values. For example:
+- `icon` (table, string or function): Some inbuilt providers such as `git_branch` provide default icons. If you either don’t have a patched font or don’t like the default icon that Feline provides, or if you want an icon for a component that doesn’t have any default icons, you may set this value to use any icon you want instead. By default, the icon inherits the component’s highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon’s highlight works just like the `hl` component’s values. If it’s a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 
 >
@@ -311,13 +312,15 @@ Note that you can also use your |feline-manually-added-providers| the same way
 
 
 
-- `hl` (table or string): Determines the highlight settings.<br>
+- `hl` (table, string or function): Determines the highlight settings.<br>
     If a string, it’ll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your nvim config).<br>
     If it’s a table, it’ll automatically generate a highlight group for you based on the given values. The hl table can have three values:
     - `hl.fg` (string): RGB hex or |feline-name| of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
     - `hl.bg` (string): RGB hex or |feline-name| of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
     - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
-    - `hl.name` (string): Name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`).<br><br>Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don’t exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `hl.fg`, `hl.bg` or `hl.style`, make sure to return a different value for `hl.name` as well if you want the highlight to actually change. If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values. So you can also just omit the `name` and Feline will create new highlights for you when required.<br><br>Setting `hl.name` may provide a performance improvement since Feline caches highlight names and doesn’t take the time to generate a name if the name is already provided by the user.
+    - `hl.name` (string): Name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`).<br><br>
+        If it’s a function, it can take either the window handler as an argument, or it can take no arguments.<br><br>
+        Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don’t exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `hl.fg`, `hl.bg` or `hl.style`, make sure to return a different value for `hl.name` as well if you want the highlight to actually change. If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values. So you can also just omit the `name` and Feline will create new highlights for you when required.<br><br>Setting `hl.name` may provide a performance improvement since Feline caches highlight names and doesn’t take the time to generate a name if the name is already provided by the user.
 
 
 An example of using the hl group:
@@ -375,7 +378,11 @@ separator highlight. The separator’s highlight works just like the
 component’s `hl` value. The only difference is that the separator’s `hl` by
 default uses the parent’s background color as its foreground color.
 
-By default, Feline doesn’t show the separator if the value returned by the
+If the separator is a function that returns a table, it can take either the
+window handler of the window for which the statusline is being generated for as
+an argument, or it can take no arguments.
+
+By default, Feline doesn’t show a separator if the value returned by the
 provider is empty. If you want the separator to be shown even when the
 component string is empty, you can set the `always_visible` value in the
 separator table to `true`. If unset or set to `false`, the separator is not
