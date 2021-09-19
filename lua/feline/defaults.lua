@@ -60,25 +60,21 @@ M.vi_mode_colors = {
 
 M.force_inactive = {
     filetypes = {
-        'NvimTree',
-        'packer',
-        'startify',
-        'fugitive',
-        'fugitiveblame',
-        'qf',
-        'help'
+        '^NvimTree$',
+        '^packer$',
+        '^startify$',
+        '^fugitive$',
+        '^fugitiveblame$',
+        '^qf$',
+        '^help$'
     },
     buftypes = {
-        'terminal'
+        '^terminal$'
     },
     bufnames = {}
 }
 
-M.disable = {
-    filetypes = {},
-    buftypes = {},
-    bufnames = {}
-}
+M.disable = {}
 
 M.update_triggers = {
     'VimEnter',

@@ -585,22 +585,22 @@ Now that we've learned to set up both the components table, it's finally time to
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
   Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
-- `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain file types, buffer types and buffer names respectively.<br><br>
+- `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
   Default:
 
 ```lua
 {
     filetypes = {
-        'NvimTree',
-        'packer',
-        'startify',
-        'fugitive',
-        'fugitiveblame',
-        'qf',
-        'help'
+        '^NvimTree$',
+        '^packer$',
+        '^startify$',
+        '^fugitive$',
+        '^fugitiveblame$',
+        '^qf$',
+        '^help$'
     },
     buftypes = {
-        'terminal'
+        '^terminal$'
     },
     bufnames = {}
 }
