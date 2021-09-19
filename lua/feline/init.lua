@@ -7,10 +7,14 @@ local M = {}
 
 -- Parse configuration option with name config_name from config_dict and match its type
 -- Return a default value (if provided one) in case the configuration option doesn't exist
-local function parse_config(config_dict, config_name, expected_type, default_value)
+local function parse_config(config_dict, config_name, expected_type, default_value, extend)
     if config_dict and config_dict[config_name] then
         if type(config_dict[config_name]) == expected_type then
-            return config_dict[config_name]
+            local opt = config_dict[config_name]
+            if expected_type == "table" and extend then
+                opt = vim.tbl_extend('keep', opt, default_value)
+            end
+            return opt
         else
             api.nvim_err_writeln(string.format(
                 "Feline: Expected '%s' for config option '%s', got '%s'",
@@ -97,8 +101,8 @@ function M.setup(config)
         end
     end
 
-    M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
-    M.disable = parse_config(config, 'disable', 'table', defaults.disable)
+    M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive, true)
+    M.disable = parse_config(config, 'disable', 'table', defaults.disable, true)
     M.update_triggers = defaults.update_triggers
 
     for _, trigger in ipairs(parse_config(config, 'update_triggers', 'table', {})) do
