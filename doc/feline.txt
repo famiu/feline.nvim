@@ -868,7 +868,7 @@ Thin line for horizontal splits        If you want, you can have a thin line
     components.inactive = {
         {
             {
-                provider = '',
+                provider = ' ',
                 hl = InactiveStatusHL
             }
         }
