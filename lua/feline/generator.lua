@@ -198,7 +198,6 @@ local function parse_icon(icon, parent_hl)
         str = icon
         hl = parent_hl
     else
-        icon = evaluate_if_function(icon)
         str = icon.str or ''
         hl = icon.hl or parent_hl
     end
@@ -251,7 +250,6 @@ local function parse_component(component, winid)
     -- If highlight is a table, just normally generate a highlight name
     else
         hl = parse_hl(hl)
-        hlname = get_hlname(hl)
     end
 
     local is_component_empty = str == ''
@@ -260,22 +258,21 @@ local function parse_component(component, winid)
     local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
 
     if is_component_empty then
-        icon = nil
-    elseif component.icon then
-        icon = component.icon
-    end
-
-    local hl_str
-
-    if not is_component_empty then
-        hl_str = string.format('%%#%s#', hlname)
+        return string.format(
+            '%s%s',
+            left_sep_str,
+            right_sep_str
+        )
     else
-        hl_str = ''
+        return string.format(
+            '%s%s%%#%s#%s%s',
+            left_sep_str,
+            parse_icon(evaluate_if_function(component.icon or icon), hl),
+            hlname or get_hlname(hl),
+            str,
+            right_sep_str
+        )
     end
-
-    icon = parse_icon(evaluate_if_function(icon), hl)
-
-    return string.format('%s%s%s%s%s', left_sep_str, icon, hl_str, str, right_sep_str)
 end
 
 -- Parse components of a section of the statusline
@@ -346,6 +343,8 @@ function M.generate_statusline(winid)
         end
     end
 
+    -- Never return an empty string since setting statusline to an empty string will make it
+    -- use the global statusline value (same as active statusline) for inactive windows
     if statusline_str == '' then
         return string.format('%%#%s#', defhl())
     else
