@@ -38,12 +38,10 @@ local function is_disabled(winid)
 end
 
 -- Evaluate a component key if it is a function, else return the value
--- Also returns specified default value if value is nil
-local function evaluate_if_function(key, default)
-    if key == nil then
-        return default
-    elseif type(key) == "function" then
-        return key()
+-- If the key is a function, every argument after the first one is passed to it
+local function evaluate_if_function(key, ...)
+    if type(key) == "function" then
+        return key(...)
     else
         return key
     end
@@ -155,12 +153,10 @@ local function parse_sep(sep, parent_bg, is_component_empty)
         str = sep
         hl = {fg = parent_bg, bg = colors.bg}
     else
-        sep = evaluate_if_function(sep)
-
         if is_component_empty and not sep.always_visible then return '' end
 
         str = sep.str or ''
-        hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = colors.bg}
+        hl = sep.hl or {fg = parent_bg, bg = colors.bg}
     end
 
     if separators[str] then str = separators[str] end
@@ -169,7 +165,7 @@ local function parse_sep(sep, parent_bg, is_component_empty)
 end
 
 -- Either parse a single separator or a list of separators with different highlights
-local function parse_sep_list(sep_list, parent_bg, is_component_empty)
+local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
     if sep_list == nil then return '' end
 
     if (type(sep_list) == 'table' and sep_list[1] and (type(sep_list[1]) == 'function' or
@@ -177,12 +173,16 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty)
         local sep_strs = {}
 
         for _,v in ipairs(sep_list) do
-            sep_strs[#sep_strs+1] = parse_sep(v, parent_bg, is_component_empty)
+            sep_strs[#sep_strs+1] = parse_sep(
+                evaluate_if_function(v, winid),
+                parent_bg,
+                is_component_empty
+            )
         end
 
         return table.concat(sep_strs)
     else
-        return parse_sep(sep_list, parent_bg, is_component_empty)
+        return parse_sep(evaluate_if_function(sep_list, winid), parent_bg, is_component_empty)
     end
 end
 
@@ -231,15 +231,13 @@ local function parse_component(component, winid)
 
     if component.enabled then enabled = component.enabled else enabled = true end
 
-    if type(enabled) == 'function' then
-        enabled = enabled(winid)
-    end
+    enabled = evaluate_if_function(enabled, winid)
 
     if not enabled then return '' end
 
     local str, icon = parse_provider(component.provider, component, winid)
 
-    local hl = evaluate_if_function(component.hl, {})
+    local hl = evaluate_if_function(component.hl, winid) or {}
     local hlname
 
     -- If highlight is a string, then accept it as an external highlight group and
@@ -254,8 +252,19 @@ local function parse_component(component, winid)
 
     local is_component_empty = str == ''
 
-    local left_sep_str = parse_sep_list(component.left_sep, hl.bg, is_component_empty)
-    local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
+    local left_sep_str = parse_sep_list(
+        component.left_sep,
+        hl.bg,
+        is_component_empty,
+        winid
+    )
+
+    local right_sep_str = parse_sep_list(
+        component.right_sep,
+        hl.bg,
+        is_component_empty,
+        winid
+    )
 
     if is_component_empty then
         return string.format(
@@ -267,7 +276,7 @@ local function parse_component(component, winid)
         return string.format(
             '%s%s%%#%s#%s%s',
             left_sep_str,
-            parse_icon(evaluate_if_function(component.icon or icon), hl),
+            parse_icon(evaluate_if_function(component.icon or icon, winid), hl),
             hlname or get_hlname(hl),
             str,
             right_sep_str
