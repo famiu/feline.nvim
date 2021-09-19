@@ -13,15 +13,25 @@ local M = {
     highlights = {}
 }
 
+-- Return true if any string in table matches pattern
+local function find_pattern_match(tbl, val)
+    return next(vim.tbl_filter(
+        function(pattern)
+            return string.match(val, pattern)
+        end,
+        tbl
+    ))
+end
+
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
 
-    return (force_inactive.filetypes and vim.tbl_contains(force_inactive.filetypes, filetype)) or
-        (force_inactive.buftypes and vim.tbl_contains(force_inactive.buftypes, buftype)) or
-        (force_inactive.bufnames and vim.tbl_contains(force_inactive.bufnames, bufname))
+    return (force_inactive.filetypes and find_pattern_match(force_inactive.filetypes, filetype)) or
+        (force_inactive.buftypes and find_pattern_match(force_inactive.buftypes, buftype)) or
+        (force_inactive.bufnames and find_pattern_match(force_inactive.bufnames, bufname))
 end
 
 -- Check if buffer contained in window is configured to have statusline disabled
@@ -32,9 +42,9 @@ local function is_disabled(winid)
     local filetype = bo[bufnr].filetype
     local bufname = api.nvim_buf_get_name(bufnr)
 
-    return (disable.filetypes and vim.tbl_contains(disable.filetypes, filetype)) or
-        (disable.buftypes and vim.tbl_contains(disable.buftypes, buftype)) or
-        (disable.bufnames and vim.tbl_contains(disable.bufnames, bufname))
+    return (disable.filetypes and find_pattern_match(disable.filetypes, filetype)) or
+        (disable.buftypes and find_pattern_match(disable.buftypes, buftype)) or
+        (disable.bufnames and find_pattern_match(disable.bufnames, bufname))
 end
 
 -- Evaluate a component key if it is a function, else return the value
