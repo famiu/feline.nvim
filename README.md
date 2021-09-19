@@ -79,6 +79,9 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
 **[Config by pianocomposer321:](https://gist.github.com/pianocomposer321/6151c458132a97590d21415db67361a6)**
 ![image](https://user-images.githubusercontent.com/54072354/117869424-65d51500-b260-11eb-898c-0a0b987a6275.png)
 
+**[Config by iBhagwan:](https://github.com/ibhagwan/nvim-lua/blob/main/lua/plugins/feline.lua)**
+![image](https://user-images.githubusercontent.com/59988195/133922136-3d037c37-7a3f-4e1b-b42e-c50b22fedfdb.png)
+
 You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
 ## Installation
