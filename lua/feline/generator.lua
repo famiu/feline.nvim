@@ -13,14 +13,9 @@ local M = {
     highlights = {}
 }
 
--- Return true if any string in table matches pattern
+-- Return true if any pattern in tbl matches provided value
 local function find_pattern_match(tbl, val)
-    return next(vim.tbl_filter(
-        function(pattern)
-            return string.match(val, pattern)
-        end,
-        tbl
-    ))
+    return next(vim.tbl_filter(function(pattern) return val:match(pattern) end, tbl))
 end
 
 -- Check if current buffer is forced to have inactive statusline
