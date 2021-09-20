@@ -147,14 +147,14 @@ function M.setup(config)
         local presets = require('feline.presets')
 
         if parse_config(config, 'preset', 'string') and presets[config.preset] then
-            components = presets[config.preset].components
+            components = presets[config.preset]
         else
             local has_devicons = pcall(require,'nvim-web-devicons')
 
             if has_devicons then
-                components = presets['default'].components
+                components = presets['default']
             else
-                components = presets['noicon'].components
+                components = presets['noicon']
             end
         end
     end

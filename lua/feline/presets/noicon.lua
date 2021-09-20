@@ -1,13 +1,11 @@
 local vi_mode_utils = require('feline.providers.vi_mode')
 
 local M = {
-    components = {
-        active = {},
-        inactive = {}
-    }
+    active = {},
+    inactive = {}
 }
 
-M.components.active[1] = {
+M.active[1] = {
     {
         provider = '▊ ',
         hl = {
@@ -86,7 +84,7 @@ M.components.active[1] = {
     }
 }
 
-M.components.active[2] = {
+M.active[2] = {
     {
         provider = 'git_branch',
         hl = {
@@ -151,7 +149,7 @@ M.components.active[2] = {
     }
 }
 
-M.components.inactive[1] = {
+M.inactive[1] = {
     {
         provider = 'file_type',
         hl = {

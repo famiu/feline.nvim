@@ -639,7 +639,7 @@ If you like the defaults for the most part but there's some things you want to c
 ```lua
 -- Substitute preset_name with the name of the preset you want to modify.
 -- eg: "default" or "noicon"
-local components = require('feline.presets')[preset_name].components
+local components = require('feline.presets')[preset_name]
 ```
 
 After that, you can just modify the components and call the [setup function](#setup-function) with the preset as you normally would.
