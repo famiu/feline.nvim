@@ -668,7 +668,7 @@ existing preset to get the statusline configuration you want. Just do:
 >
     -- Substitute preset_name with the name of the preset you want to modify.
     -- eg: "default" or "noicon"
-    local components = require('feline.presets')[preset_name].components
+    local components = require('feline.presets')[preset_name]
 <
 
 
