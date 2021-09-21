@@ -302,11 +302,9 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
-    local statusline_str
+    local statusline_str = ''
 
-    if not components or is_disabled(winid) then
-        statusline_str = ''
-    else
+    if components and not is_disabled(winid) then
         local statusline_type
 
         if winid == api.nvim_get_current_win() and not is_forced_inactive() then
@@ -317,9 +315,7 @@ function M.generate_statusline(winid)
 
         local statusline = components[statusline_type]
 
-        if not statusline or statusline == {} then
-            statusline_str = ''
-        else
+        if statusline then
             local sections = {}
 
             for _, section in ipairs(statusline) do
