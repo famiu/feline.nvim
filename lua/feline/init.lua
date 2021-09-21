@@ -107,42 +107,6 @@ function M.setup(config)
 
     local components = parse_config(config, 'components', 'table')
 
-    if config then
-        local properties = parse_config(config, 'properties', 'table')
-
-        if properties then
-            -- Deprecation warning for the `properties` table
-            api.nvim_echo(
-                {{
-                    '\nDeprecation warning:\n' ..
-                    'The `properties` table for Feline has been deprecated and support for it ' ..
-                    'will be removed soon. Please put the `force_inactive` table directly ' ..
-                    'inside the setup function instead',
-
-                    'WarningMsg'
-                }},
-                true, {}
-            )
-
-            M.force_inactive = properties.force_inactive
-        end
-
-        -- Deprecation warning for `default_fg` and `default_bg`
-        if config.default_fg or config.default_bg then
-            api.nvim_echo(
-                {{
-                    '\nDeprecation warning:\n' ..
-                    'The setup options `default_fg` and `default_bg` for Feline have been ' ..
-                    'removed and no longer work. Please use the `fg` and `bg` values ' ..
-                    'of the `colors` table instead.\n',
-
-                    'WarningMsg'
-                }},
-                true, {}
-            )
-        end
-    end
-
     if not components then
         local presets = require('feline.presets')
 
@@ -157,21 +121,6 @@ function M.setup(config)
                 components = presets['noicon']
             end
         end
-    end
-
-    -- Deprecation warning for old component format
-    if not (components.active and components.inactive) then
-        api.nvim_echo(
-            {{
-                '\nDeprecation warning:\n' ..
-                'This format for defining Feline components has been deprecated and will soon ' ..
-                'become unsupported. Please check the docs and switch your statusline ' ..
-                'configuration to the new format as soon as possible.\n',
-
-                'WarningMsg'
-            }},
-            true, {}
-        )
     end
 
     M.components = components

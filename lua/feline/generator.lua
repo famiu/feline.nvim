@@ -290,22 +290,6 @@ local function parse_component(component, winid)
 end
 
 -- Parse components of a section of the statusline
--- (For old component table format)
-local function parse_statusline_section_old(section, type, winid)
-    if components[section] and components[section][type] then
-        local section_components = {}
-
-        for _, v in ipairs(components[section][type]) do
-            section_components[#section_components+1] = parse_component(v, winid)
-        end
-
-        return table.concat(section_components)
-    else
-        return ''
-    end
-end
-
--- Parse components of a section of the statusline
 local function parse_statusline_section(section, winid)
     local section_components = {}
 
@@ -331,29 +315,18 @@ function M.generate_statusline(winid)
             statusline_type='inactive'
         end
 
-        -- Determine if the component table uses the old format or new format
-        -- and parse it accordingly
-        if components.active or components.inactive then
-            local statusline = components[statusline_type]
+        local statusline = components[statusline_type]
 
-            if not statusline or statusline == {} then
-                statusline_str = ''
-            else
-                local sections = {}
-
-                for _, section in ipairs(statusline) do
-                    sections[#sections+1] = parse_statusline_section(section, winid)
-                end
-
-                statusline_str = table.concat(sections, '%=')
-            end
+        if not statusline or statusline == {} then
+            statusline_str = ''
         else
-            statusline_str = string.format(
-                '%s%%=%s%%=%s',
-                parse_statusline_section_old('left', statusline_type, winid),
-                parse_statusline_section_old('mid', statusline_type, winid),
-                parse_statusline_section_old('right', statusline_type, winid)
-            )
+            local sections = {}
+
+            for _, section in ipairs(statusline) do
+                sections[#sections+1] = parse_statusline_section(section, winid)
+            end
+
+            statusline_str = table.concat(sections, '%=')
         end
     end
 
