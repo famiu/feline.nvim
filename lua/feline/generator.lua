@@ -220,13 +220,6 @@ local function parse_provider(provider, component, winid)
         provider, icon = provider(component, winid)
     end
 
-    if type(provider) ~= "string" then
-        api.nvim_err_writeln(string.format(
-            "Invalid provider! Provider must evaluate to string. Got type '%s' instead",
-            type(provider)
-        ))
-    end
-
     return provider, icon
 end
 
@@ -294,7 +287,22 @@ local function parse_statusline_section(section, winid)
     local section_components = {}
 
     for _, component in ipairs(section.get_components()) do
-        section_components[#section_components+1] = parse_component(component, winid)
+        local ok, result = pcall(parse_component, component, winid)
+
+        if ok then
+            section_components[#section_components+1] = result
+        elseif component.name then
+            api.nvim_err_writeln(string.format(
+                "Feline: error while parsing component '%s':\n%s",
+                component.name,
+                result
+            ))
+        else
+            api.nvim_err_writeln(string.format(
+                "Feline: error while parsing a component:\n%s",
+                result
+            ))
+        end
     end
 
     return table.concat(section_components)
