@@ -293,7 +293,7 @@ end
 local function parse_statusline_section(section, winid)
     local section_components = {}
 
-    for _, component in ipairs(section) do
+    for _, component in ipairs(section.get_components()) do
         section_components[#section_components+1] = parse_component(component, winid)
     end
 
@@ -302,11 +302,9 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
-    local statusline_str
+    local statusline_str = ''
 
-    if not components or is_disabled(winid) then
-        statusline_str = ''
-    else
+    if components and not is_disabled(winid) then
         local statusline_type
 
         if winid == api.nvim_get_current_win() and not is_forced_inactive() then
@@ -315,18 +313,16 @@ function M.generate_statusline(winid)
             statusline_type='inactive'
         end
 
-        local statusline = components[statusline_type]
+        local type_sections = components[statusline_type].get_sections()
 
-        if not statusline or statusline == {} then
-            statusline_str = ''
-        else
-            local sections = {}
+        if type_sections then
+            local parsed_sections = {}
 
-            for _, section in ipairs(statusline) do
-                sections[#sections+1] = parse_statusline_section(section, winid)
+            for _, section in ipairs(type_sections) do
+                parsed_sections[#parsed_sections+1] = parse_statusline_section(section, winid)
             end
 
-            statusline_str = table.concat(sections, '%=')
+            statusline_str = table.concat(parsed_sections, '%=')
         end
     end
 

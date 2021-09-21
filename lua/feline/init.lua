@@ -3,26 +3,9 @@ local fn = vim.fn
 local api = vim.api
 local cmd = api.nvim_command
 
-local M = {}
+local wrap_components_table = require('feline.component_wrapper').wrap_components_table
 
--- Parse configuration option with name config_name from config_dict and match its type
--- Return a default value (if provided one) in case the configuration option doesn't exist
-local function parse_config(config_dict, config_name, expected_type, default_value)
-    if config_dict and config_dict[config_name] then
-        if type(config_dict[config_name]) == expected_type then
-            return config_dict[config_name]
-        else
-            api.nvim_err_writeln(string.format(
-                "Feline: Expected '%s' for config option '%s', got '%s'",
-                expected_type,
-                config_name,
-                type(config_dict[config_name])
-            ))
-        end
-    else
-        return default_value
-    end
-end
+local M = {}
 
 -- Utility function to create augroups
 local function create_augroup(autocmds, name)
@@ -86,10 +69,29 @@ function M.setup(config)
         'vi_mode_colors',
     }
 
+    -- Parse configuration option with name config_name from config and match its type
+    -- Return a default value (if provided one) in case the configuration option doesn't exist
+    local function parse_config(config_name, expected_type, default_value)
+        if config and config[config_name] then
+            if type(config[config_name]) == expected_type then
+                return config[config_name]
+            else
+                vim.api.nvim_err_writeln(string.format(
+                    "Feline: Expected '%s' for config option '%s', got '%s'",
+                    expected_type,
+                    config_name,
+                    type(config[config_name])
+                ))
+            end
+        else
+            return default_value
+        end
+    end
+
     -- Parse the opts in config_opts by getting the default values and
     -- appending the custom values on top of them
     for _, opt in ipairs(value_presets) do
-        local custom_val = parse_config(config, opt, 'table', {})
+        local custom_val = parse_config(opt, 'table', {})
         M[opt] = defaults[opt]
 
         for k, v in pairs(custom_val) do
@@ -97,20 +99,20 @@ function M.setup(config)
         end
     end
 
-    M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
-    M.disable = parse_config(config, 'disable', 'table', defaults.disable)
+    M.force_inactive = parse_config('force_inactive', 'table', defaults.force_inactive)
+    M.disable = parse_config('disable', 'table', defaults.disable)
     M.update_triggers = defaults.update_triggers
 
-    for _, trigger in ipairs(parse_config(config, 'update_triggers', 'table', {})) do
+    for _, trigger in ipairs(parse_config('update_triggers', 'table', {})) do
         M.update_triggers[#M.update_triggers+1] = trigger
     end
 
-    local components = parse_config(config, 'components', 'table')
+    local components = parse_config('components', 'table')
 
     if not components then
         local presets = require('feline.presets')
 
-        if parse_config(config, 'preset', 'string') and presets[config.preset] then
+        if parse_config('preset', 'string') and presets[config.preset] then
             components = presets[config.preset]
         else
             local has_devicons = pcall(require,'nvim-web-devicons')
@@ -123,7 +125,7 @@ function M.setup(config)
         end
     end
 
-    M.components = components
+    M.components = wrap_components_table(components)
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
