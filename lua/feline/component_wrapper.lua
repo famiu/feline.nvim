@@ -1,3 +1,10 @@
+-- Utility for wrapping the components table in order to automatically cache names everytime the
+-- table is modified, automatically assigns metatables to the tables containing the type, section 
+-- and individual component themselves in order to detect all changes to the components table where
+-- the name of a component can possibly be changed and re-cache the changed parts for component
+-- names. Also allows accessing a component through the components table by name without having to
+-- remember the index of the component
+
 local M = {}
 
 local component_name_cache = {}
