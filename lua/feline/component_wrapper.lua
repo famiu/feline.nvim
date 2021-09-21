@@ -1,5 +1,5 @@
 -- Utility for wrapping the components table in order to automatically cache names everytime the
--- table is modified, automatically assigns metatables to the tables containing the type, section 
+-- table is modified, automatically assigns metatables to the tables containing the type, section
 -- and individual component themselves in order to detect all changes to the components table where
 -- the name of a component can possibly be changed and re-cache the changed parts for component
 -- names. Also allows accessing a component through the components table by name without having to
@@ -14,7 +14,19 @@ local function wrap_component(component, indices)
     component_mt.__metatable = false
     component_mt._t = {}
 
-    component_mt.__index = component_mt._t
+    component_mt.__index = function(_, key)
+        if key == 'get_values' then
+            return function()
+                return component_mt._t
+            end
+        elseif key == 'copy' then
+            return function()
+                return vim.deepcopy(component_mt._t)
+            end
+        else
+            return component_mt._t[key]
+        end
+    end
 
     component_mt.__newindex = function(_, key, val)
         if key == 'name' then
@@ -49,6 +61,16 @@ local function wrap_section(section, indices)
             return function()
                 return section_mt._t
             end
+        elseif key == 'copy' then
+            return function()
+                local copy = {}
+
+                for i, v in ipairs(section_mt._t) do
+                    copy[i] = v.copy()
+                end
+
+                return copy
+            end
         else
             return section_mt._t[key]
         end
@@ -78,13 +100,23 @@ local function wrap_statusline_type(type, index)
     type_mt.__metatable = false
     type_mt._t = {}
 
-    type_mt.__index = function(_, k)
-        if k == 'get_sections' then
+    type_mt.__index = function(_, key)
+        if key == 'get_sections' then
             return function()
                 return type_mt._t
             end
+        elseif key == 'copy' then
+            return function()
+                local copy = {}
+
+                for i, v in ipairs(type_mt._t) do
+                    copy[i] = v.copy()
+                end
+
+                return copy
+            end
         else
-            return type_mt._t[k]
+            return type_mt._t[key]
         end
     end
 
@@ -115,6 +147,13 @@ function M.wrap_components_table(components)
     components_mt.__index = function(_, key)
         if key == 'active' or key == 'inactive' then
             return components_mt._t[key]
+        elseif key == 'copy' then
+            return function()
+                return {
+                    active = components_mt._t.active.copy(),
+                    inactive = components_mt._t.inactive.copy()
+                }
+            end
         else
             local indices = component_name_cache[key]
 

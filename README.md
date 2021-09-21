@@ -266,7 +266,7 @@ Feline will automatically evaluate the function if it is one. But in case a func
 
 Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
 
-- `name` (string): If provided, it allows the component to be easily modified without having to know or remember its index using `require('feline').components[component_name]`. In case of an error while parsing a component, it also allows Feline to point out which component the error is coming from if the component has a name. If you don't need any of that, then the component name can be omitted without any issues.
+- `name` (string): If provided, it allows the component to be easily modified without having to know or remember its index using `require('feline').components[component_name]`. You can also do `require('feline').components[component_name].copy()` in order to copy the values of a component. In case of an error while parsing a component, it also allows Feline to point out which component the error is coming from if the component has a name. If you don't need any of that, then the component name can be omitted without any issues.
 
 - `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
 
