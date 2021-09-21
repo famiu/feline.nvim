@@ -220,13 +220,6 @@ local function parse_provider(provider, component, winid)
         provider, icon = provider(component, winid)
     end
 
-    if type(provider) ~= "string" then
-        api.nvim_err_writeln(string.format(
-            "Invalid provider! Provider must evaluate to string. Got type '%s' instead",
-            type(provider)
-        ))
-    end
-
     return provider, icon
 end
 
@@ -290,11 +283,20 @@ local function parse_component(component, winid)
 end
 
 -- Parse components of a section of the statusline
-local function parse_statusline_section(section, winid)
+local function parse_statusline_section(section, winid, statusline_type, section_index)
     local section_components = {}
 
-    for _, component in ipairs(section) do
-        section_components[#section_components+1] = parse_component(component, winid)
+    for i, component in ipairs(section) do
+        local ok, result = pcall(parse_component, component, winid)
+
+        if ok then
+            section_components[#section_components+1] = result
+        else
+            api.nvim_err_writeln(string.format(
+                "Feline: error while processing component number %d on section %d of type '%s': %s",
+                i, section_index, statusline_type, result
+            ))
+        end
     end
 
     return table.concat(section_components)
@@ -318,8 +320,8 @@ function M.generate_statusline(winid)
         if statusline then
             local sections = {}
 
-            for _, section in ipairs(statusline) do
-                sections[#sections+1] = parse_statusline_section(section, winid)
+            for i, section in ipairs(statusline) do
+                sections[#sections+1] = parse_statusline_section(section, winid, statusline_type, i)
             end
 
             statusline_str = table.concat(sections, '%=')
