@@ -1,3 +1,4 @@
+local g = vim.g
 local api = vim.api
 
 local M = {}
@@ -5,7 +6,7 @@ local M = {}
 function M.git_branch(_, winid)
     local ok, head = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_head')
 
-    if not ok then head = vim.g.gitsigns_head or '' end
+    if not ok then head = g.gitsigns_head or '' end
     return head, ' '
 end
 
@@ -34,8 +35,9 @@ end
 
 -- Utility function to check if git provider information is available
 function M.git_info_exists(winid)
-    local ok, _ = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
-    return ok
+    return g.gitsigns_head or
+        pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_head') or
+        pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_status_dict')
 end
 
 return M
