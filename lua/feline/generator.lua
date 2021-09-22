@@ -193,16 +193,20 @@ end
 
 -- Parse component icon
 -- By default, icon inherits component highlights
-local function parse_icon(icon, parent_hl)
+local function parse_icon(icon, parent_hl, is_component_empty)
     if icon == nil then return '' end
 
-    local str
     local hl
+    local str
 
     if type(icon) == "string" then
+        if is_component_empty then return '' end
+
         str = icon
         hl = parent_hl
     else
+        if is_component_empty and not icon.always_visible then return '' end
+
         str = icon.str or ''
         hl = icon.hl or parent_hl
     end
@@ -264,17 +268,20 @@ local function parse_component(component, winid)
         winid
     )
 
+    icon = parse_icon(evaluate_if_function(component.icon or icon, winid), hl, is_component_empty)
+
     if is_component_empty then
         return string.format(
-            '%s%s',
+            '%s%s%s',
             left_sep_str,
+            icon,
             right_sep_str
         )
     else
         return string.format(
             '%s%s%%#%s#%s%s',
             left_sep_str,
-            parse_icon(evaluate_if_function(component.icon or icon, winid), hl),
+            icon,
             hlname or get_hlname(hl),
             str,
             right_sep_str

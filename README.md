@@ -319,7 +319,10 @@ enabled = function(winid)
 end
 ```
 
-- `icon` (table, string or function): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, or if you want an icon for a component that doesn't have any default icons, you may set this value to use any icon you want instead. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
+- `icon` (table, string or function): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, or if you want an icon for a component that doesn't have any default icons, you may set this value to use any icon you want instead.<br><br>
+By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values.<br><br>
+There's also another value you can set if the value of `icon` is a table, which is `always_visible`. By default, the icon is not shown if the value returned by the provider is empty. If you want the icon to be shown even when the provider string is empty, you need to set `always_visible` to `true`.<br><br>
+If the value of `icon` a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 ```lua
 -- Setting icon to a string
@@ -331,7 +334,18 @@ icon = function() return ' - ' end
 -- Setting icon to a table
 icon = {
     str = ' ~ ',
-    hl = { fg = 'orange' },
+    hl = { fg = 'orange' }
+}
+
+-- Making icon always visible
+icon = {
+    str = '',
+    hl = {
+        fg = require('feline.providers.vi_mode').get_mode_color(),
+        bg = 'black',
+        style = 'bold'
+    },
+    always_visible = true
 }
 ```
 
