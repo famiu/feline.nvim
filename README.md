@@ -303,7 +303,7 @@ There are also some [default providers](#default-providers), to use them, you ju
 provider = 'position' -- This will use the default file position provider.
 ```
 
-Note that you can also use your [manually added providers](#adding-your-own-provider) the same way
+Note that you can also use your [manually added providers](#setup-function) the same way
 
 - `enabled` (boolean or function): Determines if the component is enabled. If false, the component is not shown in the statusline. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
@@ -595,6 +595,16 @@ Now that we've learned to set up both the components table, it's finally time to
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `components` - The components table.
+- `custom_providers` - A table containing user-defined provider functions. For example:
+
+```lua
+custom_providers = {
+    window_number = function(_, winid)
+        return vim.api.nvim_win_get_number(winid)
+    end
+}
+```
+
 - `colors` - A table containing custom [color value presets](#value-presets). The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
@@ -746,10 +756,6 @@ The git provider also provides a utility function `require('feline.providers.git
 The diagnostics and LSP providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type, winid)` (where `type` represents the type of diagnostic and `winid` is the window handler) for checking if any diagnostics of the provided type exists in the window. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
-
-### Adding your own provider
-
-In case none of the default providers do what you want, it's very easy to add your own provider. Just call `require('feline.providers').add_provider(name, function)` where `name` is the name of the provider and `function` is the function associated with the provider, you can then use your provider the same way you use the other providers. Remember, the function has to take either no argument, or one argument that contains the component and its values.
 
 ## Help
 

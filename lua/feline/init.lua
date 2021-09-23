@@ -95,6 +95,12 @@ function M.setup(config)
         M.update_triggers[#M.update_triggers+1] = trigger
     end
 
+    M.providers = require('feline.providers')
+
+    for k, v in pairs(parse_config(config, 'custom_providers', 'table', {})) do
+        M.providers.add_provider(k, v)
+    end
+
     local components = parse_config(config, 'components', 'table')
 
     if not components then
