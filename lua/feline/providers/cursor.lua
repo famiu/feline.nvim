@@ -2,11 +2,11 @@ local api = vim.api
 
 local M = {}
 
-function M.position(_, winid)
+function M.position(winid)
     return string.format('%3d:%-2d', unpack(api.nvim_win_get_cursor(winid)))
 end
 
-function M.line_percentage(_, winid)
+function M.line_percentage(winid)
     local curr_line = api.nvim_win_get_cursor(winid)[1]
     local lines = api.nvim_buf_line_count(api.nvim_win_get_buf(winid))
 
@@ -19,7 +19,7 @@ function M.line_percentage(_, winid)
     end
 end
 
-function M.scroll_bar(_, winid)
+function M.scroll_bar(winid)
     local blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
     local width = 2
 

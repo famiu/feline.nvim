@@ -260,52 +260,84 @@ components.active[3][2] = {
 
 **NOTE:** If you use the index instead of table.insert, remember to put the correct index. Also keep in mind that unlike most other programming languages, Lua indices start at `1` instead of `0`.
 
-You can customize each component to your liking. Most values that a component requires can also use a function. These functions can take either no arguments or exactly one argument, the window id (`winid`) of the window for which the statusline is being generated. However, the `provider` value is an exception because it can take two arguments (more on that below).
+You can customize each component to your liking. Most values that a component requires can also use a function. These functions can take either no arguments or exactly one argument, the window id (`winid`) of the window for which the statusline is being generated. However, the `provider` value is an exception because it can take more than one argument (more on that below).
 
 Feline will automatically evaluate the function if it is one. But in case a function is provided, the type of the value the function returns must be the same as the type of value required by the component. For example, since `enabled` requires a boolean value, if you set it to a function, the function must also return a boolean value.
 
-Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. A component can have the following values:
+Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. The different kinds of component values are discussed below.
 
-- `provider` (string or function): If it's a string, it represents the text to show. If it's a function, it must return a string when called. As a function it may also optionally return an `icon` component alongside the string when called, which would represent the provider's icon, possibly along with the icon highlight group configuration. The function can take either no arguments, or one argument which would contain the component itself, or it can take two arguments, the component and the window handler of the window for which the statusline is being generated.
+##### Component providers
+
+The `provider` value of a component can be a table, string or function.
+
+If it's a string, it represents the text to show.
 
 ```lua
--- Provider that shows current line in file
+-- Providers can simply just contain a string, such as:
+provider = 'some text here'
+```
+
+A string value can also refer to a [default provider](#default-providers). When the name of a default provider is used as the value of `provider`, it uses the default provider for the component.
+
+```lua
+provider = 'position' -- This will use the default file position provider
+```
+
+Some of these providers can also take some special options, in which case the value of `provider` can be a table containing two values: `name` which represents the name of the provider, and `opts` which represents the options passed to the provider.
+
+```lua
+provider = {
+    name = 'file_info',
+    opts = {
+        type = 'unique',
+        file_modified_icon = 'M'
+    }
+}
+```
+
+Note that you can also use your [manually added providers](#setup-function) the same way as the default providers.
+
+The value of `provider` can also be set to a function. The function must return a string when called. The function may also optionally return an [`icon`](#component-icon) value alongside the string, which would represent the provider's default icon. The provider functions can take up to three arguments: `winid`, which is the window handler, `component`, which represents the component itself and can be used to access the component values from within the provider, and `opts`, which represents the provider options discussed above.
+
+Here are a few examples of setting the provider to a function:
+
+```lua
+-- Here's an example of a basic provider with no arguments
 provider = function()
-    return string.format('%d:%d', vim.fn.line('.'), vim.fn.col('.'))
+    return tostring(#vim.api.nvim_list_wins())
 end
 
--- Providers can also take the component as an argument
-provider = function(component)
+-- Provider functions can take the window handler as the first argument
+provider = function(winid)
+    return tostring(vim.api.nvim_win_get_buf(winid))
+end
+
+-- Providers can also take the component itself as an argument to access the component values
+-- using the second argument passed to the provider function
+provider = function(_, component)
     if component.icon then
         return component.icon
     else
         return ''
     end
 end
-
--- Providers can also take the window handler as an argument
-provider = function(component, winid)
-    return (component.icon or '') .. tostring(vim.api.nvim_win_get_buf(winid))
-end
-
--- If you only need the window handler, you can avoid using the component value like this:
-provider = function(_, winid)
-    return vim.api.nvim_win_get_cursor(winid)[1]
-end
-
--- Providers can also simply just contain a string, such as:
-provider = 'some text here'
 ```
 
-There are also some [default providers](#default-providers), to use them, you just use the provider name like this:
+Functions that are added as [custom providers](#setup-function) can also take a third argument, `opts`, which represents the provider options given to the provider (if any). For example:
 
-```lua
-provider = 'position' -- This will use the default file position provider.
+```
+provider = function(_, _, opts)
+    if opts.return_two then
+        return 2
+    else
+        return 3
+    end
+end
 ```
 
-Note that you can also use your [manually added providers](#setup-function) the same way
+##### Conditionally enable components
 
-- `enabled` (boolean or function): Determines if the component is enabled. If false, the component is not shown in the statusline. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
+The `enabled` value of a component can be a boolean or function. This value determines if the component is enabled or not. If false, the component is not shown in the statusline. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 ```lua
 -- Enable if opened file has a valid size
@@ -319,9 +351,14 @@ enabled = function(winid)
 end
 ```
 
-- `icon` (table, string or function): Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, or if you want an icon for a component that doesn't have any default icons, you may set this value to use any icon you want instead.<br><br>
-By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values.<br><br>
-There's also another value you can set if the value of `icon` is a table, which is `always_visible`. By default, the icon is not shown if the value returned by the provider is empty. If you want the icon to be shown even when the provider string is empty, you need to set `always_visible` to `true`.<br><br>
+##### Component icon
+
+Some inbuilt providers such as `git_branch` provide default icons. If you either don't have a patched font or don't like the default icon that Feline provides, or if you want an icon for a component that doesn't have any default icons, you may set this value to use any icon you want instead.
+
+The component's icon can be a table, string or function. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values.
+
+There's also another value you can set if the value of `icon` is a table, which is `always_visible`. By default, the icon is not shown if the value returned by the provider is empty. If you want the icon to be shown even when the provider string is empty, you need to set `always_visible` to `true`.
+
 If the value of `icon` a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 ```lua
@@ -349,17 +386,24 @@ icon = {
 }
 ```
 
-- `hl` (table, string or function): Determines the highlight settings.<br>
-  If a string, it'll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your nvim config).<br>
-  If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have three values:
-  - `hl.fg` (string): RGB hex or [name](#value-presets) of foreground color. (eg: `'#FFFFFF'`, `'white'`).<br>By default it uses the default foreground color provided in the `setup()` function.
-  - `hl.bg` (string): RGB hex or [name](#value-presets) of background color. (eg: `#000000'`, `'black'`).<br>By default it uses the default background color provided in the `setup()` function.
-  - `hl.style` (string): Formatting style of text. (eg: `'bold,undercurl'`).<br>By default it is set to `'NONE'`
-  - `hl.name` (string): Name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`).<br><br>
-  If it's a function, it can take either the window handler as an argument, or it can take no arguments.<br><br>
-  Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `hl.fg`, `hl.bg` or `hl.style`, make sure to return a different value for `hl.name` as well if you want the highlight to actually change. If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values. So you can also just omit the `name` and Feline will create new highlights for you when required.<br><br>Setting `hl.name` may provide a performance improvement since Feline caches highlight names and doesn't take the time to generate a name if the name is already provided by the user.
+##### Component highlight
 
-An example of using the hl group:
+The `hl` component value represents the component highlight. It can be a table, string or function.
+
+If a string, it'll use the given string as the name of the component highlight group. In that case, this highlight group must be defined elsewhere (i.e. in your colorscheme or your Neovim configuration).
+
+If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have four values: `fg`, `bg`, `style` and `name`.
+
+The `fg` and `bg` values are strings that represent the RGB hex or [name](#value-presets) of the foreground and background color of the highlight, respectively. (eg: `'#FFFFFF'`, `'white'`). If `fg` or `bg` is not provided, it uses the default foreground or background color provided in the `setup()` function, respectively.
+
+The `style` value is a string that determines the formatting style of the component's text (do
+`:help attr-list` in Neovim for more info). By default it is set to `'NONE'`
+
+The `name` value is a string that determines the name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`). If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values, so you can also just omit the `name` and Feline will create new highlights for you when required. However, setting `name` may provide a performance improvement since Feline caches highlight names and doesn't take the time to generate a name if the name is already provided by the user.
+
+If the value of `hl` is a function, it can take either the window handler as an argument, or it can take no arguments. Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `fg`, `bg` or `style`, make sure to return a different value for `name` as well if you want the highlight to actually change.
+
+Here are a few examples using the `hl` value:
 
 ```lua
 -- As a table
@@ -389,12 +433,7 @@ hl = function()
 end
 ```
 
-<br>
-
-**NOTE:** Some providers may also have special component values unique to them, such as the `file_info` provider having a `file_modified_icon` value that you can set. For more info, see: [default providers](#default-providers).
-<br><br>
-
-##### Separators
+##### Component separators
 
 There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
@@ -453,7 +492,7 @@ right_sep = {
 }
 ```
 
-##### Component example
+##### Component Examples
 
 Now that we know of the possible values you can set in a component, let's make some actual components to show you how it all looks like together:
 
@@ -530,64 +569,6 @@ components.active[3][1] = {
 </details>
 
 [**NOTE:** Remember to initialize the components table before assigning anything to it]
-
-##### Value presets
-
-Value presets are names for colors and separators that you can use instead of the hex code or separator string, respectively.
-
-For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline.defaults').colors` and `require('feline.defaults').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
-
-```lua
-hl = {bg = 'oceanblue'},
-right_sep = 'slant_right'
-```
-
-Not only that, you can add your own custom colors and separators through the [setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
-
-Below is a list of all the default value names and their values:
-
-###### Default colors
-
-| Name        | Value       |
-| ----------- | ----------- |
-| `fg`        | `'#D0D0D0'` |
-| `bg`        | `'#1F1F23'` |
-| `black`     | `'#1B1B1B'` |
-| `skyblue`   | `'#50B0F0'` |
-| `cyan`      | `'#009090'` |
-| `green`     | `'#60A040'` |
-| `oceanblue` | `'#0066cc'` |
-| `magenta`   | `'#C26BDB'` |
-| `orange`    | `'#FF9000'` |
-| `red`       | `'#D10000'` |
-| `violet`    | `'#9E93E8'` |
-| `white`     | `'#FFFFFF'` |
-| `yellow`    | `'#E1E120'` |
-
-###### Default Separators
-
-| Name                 | Value |
-| -------------------- | ----- |
-| `vertical_bar`       | `'┃'` |
-| `vertical_bar_thin`  | `'│'` |
-| `left`               | `''` |
-| `right`              | `''` |
-| `block`              | `'█'` |
-| `left_filled`        | `''` |
-| `right_filled`       | `''` |
-| `slant_left`         | `''` |
-| `slant_left_thin`    | `''` |
-| `slant_right`        | `''` |
-| `slant_right_thin`   | `''` |
-| `slant_left_2`       | `''` |
-| `slant_left_2_thin`  | `''` |
-| `slant_right_2`      | `''` |
-| `slant_right_2_thin` | `''` |
-| `left_rounded`       | `''` |
-| `left_rounded_thin`  | `''` |
-| `right_rounded`      | `''` |
-| `right_rounded_thin` | `''` |
-| `circle`             | `'●'` |
 
 #### Setup function
 
@@ -668,9 +649,7 @@ local components = require('feline.presets')[preset_name]
 
 After that, you can just modify the components and call the [setup function](#setup-function) with the preset as you normally would.
 
-## Providers
-
-### Default providers
+## Default providers
 
 Feline by default has some built-in providers to make your life easy. They are:
 
@@ -694,7 +673,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 | [`diagnostic_hints`](#diagnostics)    | Diagnostics hints count                        |
 | [`diagnostic_info`](#diagnostics)     | Diagnostics info count                         |
 
-#### Vi-mode
+### Vi-mode
 
 The vi-mode provider by itself only shows an icon. To actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` for the component's `hl.fg`.
 
@@ -721,9 +700,9 @@ components.active[1][1] = {
 
 The Vi-mode provider also provides a helper function `get_mode_highlight_name()` which can be used through `require('feline.providers.vi_mode').get_mode_highlight_name()`, it returns the highlight name for the current mode, which you can then use for the provider's `hl.name` to give its highlight groups meaningful names.
 
-#### File Info
+### File Info
 
-The `file_info` provider has some special component values:
+The `file_info` provider has some special provider options that can be passed through the provider `opts`:
 
 - `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
   Default: `true`
@@ -745,17 +724,75 @@ The `file_info` provider has some special component values:
 
   <br>Default: `'base-only'`
 
-#### Git
+### Git
 
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll have no output.
 
 The git provider also provides a utility function `require('feline.providers.git').git_info_exists(winid)` (where `winid` is the window handler) for checking if any git information exists in the window through this utility function.
 
-#### Diagnostics
+### Diagnostics
 
 The diagnostics and LSP providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
 The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type, winid)` (where `type` represents the type of diagnostic and `winid` is the window handler) for checking if any diagnostics of the provided type exists in the window. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
+
+## Value presets
+
+Value presets are names for colors and separators that you can use instead of the hex code or separator string, respectively.
+
+For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline.defaults').colors` and `require('feline.defaults').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
+
+```lua
+hl = {bg = 'oceanblue'},
+right_sep = 'slant_right'
+```
+
+Not only that, you can add your own custom colors and separators through the [setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
+
+Below is a list of all the default value names and their values:
+
+### Default colors
+
+| Name        | Value       |
+| ----------- | ----------- |
+| `fg`        | `'#D0D0D0'` |
+| `bg`        | `'#1F1F23'` |
+| `black`     | `'#1B1B1B'` |
+| `skyblue`   | `'#50B0F0'` |
+| `cyan`      | `'#009090'` |
+| `green`     | `'#60A040'` |
+| `oceanblue` | `'#0066cc'` |
+| `magenta`   | `'#C26BDB'` |
+| `orange`    | `'#FF9000'` |
+| `red`       | `'#D10000'` |
+| `violet`    | `'#9E93E8'` |
+| `white`     | `'#FFFFFF'` |
+| `yellow`    | `'#E1E120'` |
+
+### Default Separators
+
+| Name                 | Value |
+| -------------------- | ----- |
+| `vertical_bar`       | `'┃'` |
+| `vertical_bar_thin`  | `'│'` |
+| `left`               | `''` |
+| `right`              | `''` |
+| `block`              | `'█'` |
+| `left_filled`        | `''` |
+| `right_filled`       | `''` |
+| `slant_left`         | `''` |
+| `slant_left_thin`    | `''` |
+| `slant_right`        | `''` |
+| `slant_right_thin`   | `''` |
+| `slant_left_2`       | `''` |
+| `slant_left_2_thin`  | `''` |
+| `slant_right_2`      | `''` |
+| `slant_right_2_thin` | `''` |
+| `left_rounded`       | `''` |
+| `left_rounded_thin`  | `''` |
+| `right_rounded`      | `''` |
+| `right_rounded_thin` | `''` |
+| `circle`             | `'●'` |
 
 ## Help
 
