@@ -1,15 +1,7 @@
--- Use an immutable table to only automatically load the preset that's are being used
-local M = setmetatable({}, {
-    __index = function(_, key)
-        local ok, result = pcall(require, 'feline.presets.' .. key)
-        if ok then return result else return nil end
-    end,
+-- Use lazy_require to only load the preset that's are being used
+local lazy_require = require('feline.utils').lazy_require
 
-    __newindex = function(_, _, _)
-    end,
-
-    __metatable = false
-})
-
-return M
-
+return {
+    default = lazy_require('feline.presets.default'),
+    noicon = lazy_require('feline.presets.noicon')
+}

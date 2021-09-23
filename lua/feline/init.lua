@@ -3,6 +3,8 @@ local fn = vim.fn
 local api = vim.api
 local cmd = api.nvim_command
 
+local create_augroup = require('feline.utils').create_augroup
+
 local M = {}
 
 -- Parse configuration option with name config_name from config_dict and match its type
@@ -22,18 +24,6 @@ local function parse_config(config_dict, config_name, expected_type, default_val
     else
         return default_value
     end
-end
-
--- Utility function to create augroups
-local function create_augroup(autocmds, name)
-    cmd('augroup ' .. name)
-    cmd('autocmd!')
-
-    for _, autocmd in ipairs(autocmds) do
-        cmd('autocmd ' .. table.concat(autocmd, ' '))
-    end
-
-    cmd('augroup END')
 end
 
 -- Update statusline of inactive windows on the current tabpage
