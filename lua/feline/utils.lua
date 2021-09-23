@@ -18,16 +18,27 @@ end
 -- Lazy require function
 -- Only actually `require()`s a module when it gets used
 function M.lazy_require(module)
-    return setmetatable({}, {
-        __index = function(_, key)
-            return require(module)[key]
-        end,
+    local mt = {}
 
-        __newindex = function(_, _, _)
-        end,
+    mt.__index = function(_, key)
+        if not mt._module then
+            mt._module = require(module)
+        end
 
-        __metatable = false
-    })
+        return mt._module[key]
+    end
+
+    mt.__newindex = function(_, key, val)
+        if not mt._module then
+            mt._module = require(module)
+        end
+
+        mt._module[key] = val
+    end
+
+    mt.__metatable = false
+
+    return setmetatable({}, mt)
 end
 
 return M

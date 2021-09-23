@@ -2,7 +2,7 @@ local bo = vim.bo
 local api = vim.api
 
 local feline = require('feline')
-local providers = require('feline.providers')
+local providers = feline.providers
 local components = feline.components
 local colors = feline.colors
 local separators = feline.separators
