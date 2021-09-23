@@ -57,9 +57,7 @@ end
 function M.vi_mode(component)
     if component.icon == '' then
         return M.get_vim_mode()
-    elseif component.icon ~= nil then
-        return component.icon
-    else
+    elseif component.icon == nil then
         return ''
     end
 end
