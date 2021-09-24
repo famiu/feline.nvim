@@ -224,7 +224,7 @@ local function parse_provider(provider, winid, component)
         provider, icon = providers[provider](winid, component, opts)
     -- If provider is a function, just evaluate it normally
     elseif type(provider) == "function" then
-        provider, icon = provider(winid, component, opts)
+        provider, icon = provider(winid, component)
     -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == "table" then
         opts = provider.opts
