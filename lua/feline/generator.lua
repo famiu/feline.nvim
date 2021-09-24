@@ -129,18 +129,18 @@ local function get_hlname(hl, parent_hl)
     if hl.bg:sub(1, 1) == '#' then bg_str = hl.bg:sub(2) else bg_str = hl.bg end
 
     -- Generate unique hl name from color strings if a name isn't provided
-    hl.name = hl.name or string.format(
+    local hlname = hl.name or string.format(
         'StatusComponent_%s_%s_%s',
         fg_str,
         bg_str,
         string.gsub(hl.style, ',', '_')
     )
 
-    if not M.highlights[hl.name] then
-        add_hl(hl.name, hl.fg, hl.bg, hl.style)
+    if not M.highlights[hlname] then
+        add_hl(hlname, hl.fg, hl.bg, hl.style)
     end
 
-    return hl.name
+    return hlname
 end
 
 -- Parse component seperator
