@@ -3,131 +3,42 @@
 ==============================================================================
 Table of Contents                                   *feline-table-of-contents*
 
-  - About                                                       |feline-about|
-  - Features                                                 |feline-features|
-  - Requirements                                         |feline-requirements|
-  - Usage                                                       |feline-usage|
+1. Usage                                                        |feline-usage|
+  - Components                                             |feline-components|
+  - Setup function                                     |feline-setup-function|
+  - Example configuration                       |feline-example-configuration|
+  - Modifying an existing preset         |feline-modifying-an-existing-preset|
   - Default providers                               |feline-default-providers|
   - Value presets                                       |feline-value-presets|
-  - Help                                                         |feline-help|
-  - LICENSE                                                   |feline-license|
+  - Tips and tricks                                   |feline-tips-and-tricks|
 
-ABOUT                                                           *feline-about*
+==============================================================================
+1. Usage                                                        *feline-usage*
 
-Feline is a Lua statusline that prioritizes speed, customizability and
-minimalism. It’s blazing fast and never gets in your way. Feline only
-provides you with the necessary tools that you need to customize the statusline
-to your liking and avoids feature-bloat. It’s also extremely customizable and
-allows you to configure it in any way you wish to. Feline also has reasonable
-defaults for those who don’t want to configure things and just want a good
-out of the box experience.
+This is a full guide to customizing Feline to build your own statusline
+configuration from scratch. While this may look daunting at first, be assured
+that this is very easy once you understand it. But before you can customize
+Feline, you have to understand how Feline works.
 
-FEATURES                                                     *feline-features*
+COMPONENTS                                                 *feline-components*
 
+Feline has a statusline generator that takes a `components` value, which is a
+Lua table that needs to contain the statusline components. Inside the
+`components` table, there needs to be two tables, `active` and `inactive`,
+which will dictate whether the component is a part of the statusline when
+it’s in an active window or an inactive window. Inside each of the `active`
+and `inactive` tables, you can put any amount of tables, each of which will
+indicate a section of the statusline.
 
-- Ease-of-use.
-- Complete customizability over every component.
-- |feline-built-in-providers| such as:
-    - Vi-mode
-    - File info
-    - Cursor position
-    - Diagnostics (using |Neovim’s built-in LSP|)
-    - Git branch and diffs (using gitsigns.nvim <https://github.com/lewis6991/gitsigns.nvim/>)
-    and many more
-- Minimalistic, only provides the bare minimum and allows the user to build their
-    own components very easily.
-
-
-REQUIREMENTS                                             *feline-requirements*
-
-
-- Necessary
-    - Neovim v0.5 or greater
-    - Truecolor support for Neovim (do `:help 'termguicolors'` in Neovim for more info)
-- Optional
-    - nvim-web-devicons <https://github.com/kyazdani42/nvim-web-devicons/> - For icon support
-    - A patched font <https://github.com/ryanoasis/nerd-fonts/> - For icon support
-    - gitsigns.nvim <https://github.com/lewis6991/gitsigns.nvim/> - For |feline-git-providers|
-
-
-USAGE                                                           *feline-usage*
-
-Once you’ve installed Feline, it’s very easy to start using it. Here are
-the following options for using Feline:
-
-1. USING DEFAULT STATUSLINE ~
-
-If you want an opinionated statusline that "just works", then you can just use
-Feline’s default statusline, for which you just have to add the `setup()`
-function to your config:
-
->
-    require('feline').setup()
-<
-
-
-In case you don’t like icons and want to use the default statusline
-configuration without icons, just do:
-
->
-    require('feline').setup({
-        preset = 'noicon'
-    })
-<
-
-
-NOTE: This is also the configuration used by default if you don’t have
-`nvim-web-devicons`. You don’t have to specify it manually in case you
-don’t have `nvim-web-devicons`. In that case, Feline will detect that you
-don’t have `nvim-web-devicons` and automatically pick the `noicon` preset.
-
-You can also make minor tweaks like changing the default foreground and
-background color like this:
-
->
-    require('feline').setup {
-        colors = {
-            fg = '#D0D0D0',
-            bg = '#1F1F23'
-        }
-    }
-<
-
-
-2. BUILDING YOUR OWN STATUSLINE ~
-
-If you don’t mind getting your hands dirty, then I recommend making your own
-statusline, it’s very easy to do so, but for that you have to first
-understand how Feline works.<br><br>Feline has a statusline generator that
-takes a `components` value, which is a Lua table that needs to contain the
-statusline components.
-
-                                                           *feline-Components*
-
-Components                             Inside the `components` table, there
-                                       needs to be two tables, `active` and
-                                       `inactive`, which will dictate whether
-                                       the component is a part of the
-                                       statusline when it’s in an active
-                                       window or an inactive window. And inside
-                                       each of the `active` and `inactive`
-                                       tables, you can put any amount of
-                                       tables, each of which will indicate a
-                                       section of the statusline. For example,
-                                       if you want two sections (left and
-                                       right), you can put two tables inside
-                                       each of the `active` and `inactive`
-                                       tables. If you want three sections
-                                       (left, mid and right), you can put three
-                                       tables inside each of the `active` and
-                                       `inactive` tables. There is no limit to
-                                       the amount of sections you can have.
-                                       It’s also possible to have a different
-                                       amount of sections for the `active` and
-                                       `inactive` statuslines.
-
+For example, if you want two sections (left and right), you can put two tables
+inside each of the `active` and `inactive` tables. If you want three sections
+(left, mid and right), you can put three tables inside each of the `active` and
+`inactive` tables. There is no limit to the amount of sections you can have.
+It’s also possible to have a different amount of sections for the `active`
+and `inactive` statuslines.
 
 So first, in your init.lua file, you have to initialize the components table
+like this:
 
 >
     -- Initialize the components table
@@ -216,25 +127,30 @@ Alternatively you can also use Lua table indices instead of table.insert, like:
 correct index. Also keep in mind that unlike most other programming languages,
 Lua indices start at `1` instead of `0`.
 
-You can customize each component to your liking. Most values that a component
-requires can also use a function. These functions can take either no arguments
-or exactly one argument, the window id (`winid`) of the window for which the
-statusline is being generated. However, the `provider` value is an exception
-because it can take more than one argument (more on that below).
+COMPONENT VALUES ~
 
-Feline will automatically evaluate the function if it is one. But in case a
+You can use component values to customize each component to your liking. Most
+values that a component requires can also use a function. These functions can
+take either no arguments or exactly one argument, the window id (`winid`) of
+the window for which the statusline is being generated. However, the
+|feline-`provider`| value is an exception because it can take more than one
+argument (more on that below).
+
+Feline will automatically evaluate the function if it is one. In case a
 function is provided, the type of the value the function returns must be the
 same as the type of value required by the component. For example, since
-`enabled` requires a boolean value, if you set it to a function, the function
-must also return a boolean value.
+|feline-`enabled`| requires a boolean value, if you set it to a function, the
+function must also return a boolean value.
 
 Note that you can omit all of the component values except `provider`, in which
 case the defaults would be used instead. The different kinds of component
 values are discussed below.
 
-COMPONENT PROVIDERS
+                                                  *feline-Component-providers*
 
-The `provider` value of a component can be a table, string or function.
+Component providers                    The `provider` value of a component can
+                                       be a table, string or function.
+
 
 If it’s a string, it represents the text to show.
 
@@ -321,12 +237,17 @@ argument, `opts`, which represents the provider options given to the provider
 <
 
 
-CONDITIONALLY ENABLE COMPONENTS
+                                      *feline-Conditionally-enable-components*
 
-The `enabled` value of a component can be a boolean or function. This value
-determines if the component is enabled or not. If false, the component is not
-shown in the statusline. If it’s a function, it can take either the window
-handler as an argument, or it can take no arguments. For example:
+Conditionally enable components        The `enabled` value of a component can
+                                       be a boolean or function. This value
+                                       determines if the component is enabled
+                                       or not. If false, the component is not
+                                       shown in the statusline. If it’s a
+                                       function, it can take either the window
+                                       handler as an argument, or it can take
+                                       no arguments. For example:
+
 
 >
     -- Enable if opened file has a valid size
@@ -341,12 +262,17 @@ handler as an argument, or it can take no arguments. For example:
 <
 
 
-COMPONENT ICON
+                                                       *feline-Component-icon*
 
-Some inbuilt providers such as `git_branch` provide default icons. If you
-either don’t have a patched font or don’t like the default icon that Feline
-provides, or if you want an icon for a component that doesn’t have any
-default icons, you may set this value to use any icon you want instead.
+Component icon                         Some inbuilt providers such as
+                                       `git_branch` provide default icons. If
+                                       you either don’t have a patched font
+                                       or don’t like the default icon that
+                                       Feline provides, or if you want an icon
+                                       for a component that doesn’t have any
+                                       default icons, you may set this value to
+                                       use any icon you want instead.
+
 
 The component’s icon can be a table, string or function. By default, the icon
 inherits the component’s highlight, but you can also change the highlight
@@ -389,10 +315,12 @@ argument, or it can take no arguments. For example:
 <
 
 
-COMPONENT HIGHLIGHT
+                                                  *feline-Component-highlight*
 
-The `hl` component value represents the component highlight. It can be a table,
-string or function.
+Component highlight                    The `hl` component value represents the
+                                       component highlight. It can be a table,
+                                       string or function.
+
 
 If a string, it’ll use the given string as the name of the component
 highlight group. In that case, this highlight group must be defined elsewhere
@@ -460,11 +388,15 @@ Here are a few examples using the `hl` value:
 <
 
 
-COMPONENT SEPARATORS
+                                                 *feline-Component-separators*
 
-There are two types of separator values that you can put in a component, which
-are `left_sep` and `right_sep`, which represent the separator on the left and
-the right side of the component, respectively.
+Component separators                   There are two types of separator values
+                                       that you can put in a component, which
+                                       are `left_sep` and `right_sep`, which
+                                       represent the separator on the left and
+                                       the right side of the component,
+                                       respectively.
+
 
 The value of `left_sep` and `right_sep` can just be set to a string that’s
 displayed. You can use a function that returns a string just like the other
@@ -541,7 +473,7 @@ For example:
 <
 
 
-COMPONENT EXAMPLES
+COMPONENT EXAMPLES ~
 
 Now that we know of the possible values you can set in a component, let’s
 make some actual components to show you how it all looks like together:
@@ -619,19 +551,18 @@ Component example
 [**NOTE:** Remember to initialize the components table before assigning
 anything to it]
 
-                                                       *feline-Setup-function*
+SETUP FUNCTION                                         *feline-setup-function*
 
-Setup function                         Now that we’ve learned to set up both
-                                       the components table, it’s finally
-                                       time to revisit the setup function. The
-                                       setup function takes a table that can
-                                       have the following values:
-
+Now that you know about the components table and how Feline components work,
+you can learn about Feline’s `setup()` function. The `setup()` function
+initializes Feline with your provided configuration. The configuration can be
+passed to the function through a table. The available configuration options are
+listed below:
 
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don’t have to put any of the other values if you use a preset, but if you do, your settings will override the preset’s settings. To see more info such as how to modify a preset to build a statusline, see: |feline-modifying-an-existing-preset|
-- `components` - The components table.
-- `custom_providers` - A table containing user-defined provider functions. For example:
+- `components` - The |feline-components-table|.
+- `custom_providers` - A table containing user-defined |feline-provider-functions|. For example:
 
 
 >
@@ -695,18 +626,14 @@ Setup function                         Now that we’ve learned to set up both
 │NONE         │None                 │'yellow'     │
 
 
-                                                *feline-Example-configuration*
+EXAMPLE CONFIGURATION                           *feline-example-configuration*
 
-Example configuration                  Now that you know how to create Feline
-                                       components, you can check out the code
-                                       in the default preset
-                                       <lua/feline/presets/default.lua> to see
-                                       how the components in it are set up so
-                                       you can get a good practical idea of how
-                                       to use the tools that Feline gives you.
+You can check out the code in the default preset
+<lua/feline/presets/default.lua> to see how the components in it are set up so
+you can get a good practical idea of how to use the tools that Feline gives you
+to create all kinds of different statusline components.
 
-
-3. MODIFYING AN EXISTING PRESET ~
+MODIFYING AN EXISTING PRESET             *feline-modifying-an-existing-preset*
 
 If you like the defaults for the most part but there’s some things you want
 to change, then you’d be glad to know that it’s easy to just modify an
@@ -902,28 +829,13 @@ DEFAULT SEPARATORS ~
 │circle                │'●'    │
 
 
-HELP                                                             *feline-help*
+TIPS AND TRICKS                                       *feline-tips-and-tricks*
 
-COMMON ISSUES ~
+RESET HIGHLIGHT ~
 
-
-  Feline crashes or disappears for seemingly no reason
-
-
-This can be caused if you forget to remove your other statusline plugins after
-installing Feline. Make sure all other statusline plugins are removed before
-you install Feline, that should fix the issue.
-
-TIPS AND TRICKS ~
-
-                                                      *feline-Reset-highlight*
-
-Reset highlight                        If, for some reason, you want to clear
-                                       all highlights that Feline sets (useful
-                                       if you want to reload your entire Neovim
-                                       config which may mess up highlights),
-                                       you can do:
-
+If, for some reason, you want to clear all highlights that Feline sets (useful
+if you want to reload your entire Neovim config which may mess up highlights),
+you can do:
 
 >
     require('feline').reset_highlights()
@@ -933,16 +845,12 @@ Reset highlight                        If, for some reason, you want to clear
 And then Feline will automatically regenerate those highlights when it needs
 them, so you don’t have to worry about setting the highlights yourself.
 
-                                      *feline-Thin-line-for-horizontal-splits*
+THIN LINE FOR HORIZONTAL SPLITS ~
 
-Thin line for horizontal splits        If you want, you can have a thin line
-                                       instead of the inactive statusline to
-                                       separate your windows, like the vertical
-                                       window split separator, except in this
-                                       case it would act as a horizontal window
-                                       separator of sorts. You can do this
-                                       through:
-
+If you want, you can have a thin line instead of the inactive statusline to
+separate your windows, like the vertical window split separator, except in this
+case it would act as a horizontal window separator of sorts. You can do this
+through:
 
 >
     local nvim_exec = vim.api.nvim_exec
@@ -973,13 +881,6 @@ Thin line for horizontal splits        If you want, you can have a thin line
         }
     }
 <
-
-
-LICENSE                                                       *feline-license*
-
-Feline is licensed under GNU GPLv3. For more info, see: LICENSE.md
-<LICENSE.md>.
-
 
 
 Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
