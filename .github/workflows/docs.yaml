@@ -3,7 +3,7 @@ name: panvimdoc
 on:
   push:
     paths:
-      - README.md
+      - USAGE.md
     branches:
       - develop
 
@@ -29,6 +29,7 @@ jobs:
         uses: kdheepak/panvimdoc@v2.7.1
         with:
           vimdoc: "feline"
+          pandoc: "USAGE.md"
           description: "minimal, stylish and customizable statusline for neovim"
           version: "NVIM v0.5.0"
       - name: Create PR
