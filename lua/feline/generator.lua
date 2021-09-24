@@ -254,7 +254,8 @@ local function parse_component(component, winid)
     if type(hl) == 'string' then
         hlname = hl
         hl = get_hl_properties(hl)
-    -- If highlight is a table, just normally generate a highlight name
+    -- If highlight is a table, parse the highlight so it can be passed to
+    -- parse_sep_list and parse_icon
     else
         hl = parse_hl(hl)
     end
