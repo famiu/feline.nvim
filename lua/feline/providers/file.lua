@@ -70,24 +70,23 @@ local function get_unique_filename(filename, shorten)
     return string.reverse(string.sub(filename, 1, index))
 end
 
-function M.file_info(component, winid)
+function M.file_info(winid, component, opts)
     local filename = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+    local type = opts.type or 'base-only'
 
-    component.type = component.type or 'base-only'
-
-    if component.type == 'short-path' then
+    if type == 'short-path' then
         filename = fn.pathshorten(filename)
-    elseif component.type == 'base-only' then
+    elseif type == 'base-only' then
         filename = fn.fnamemodify(filename, ':t')
-    elseif component.type == 'relative' then
+    elseif type == 'relative' then
         filename = fn.fnamemodify(filename, ":~:.")
-    elseif component.type == 'relative-short' then
+    elseif type == 'relative-short' then
         filename = fn.pathshorten(fn.fnamemodify(filename, ":~:."))
-    elseif component.type == 'unique' then
+    elseif type == 'unique' then
         filename = get_unique_filename(filename)
-    elseif component.type == 'unique-short' then
+    elseif type == 'unique-short' then
         filename = get_unique_filename(filename, true)
-    elseif component.type ~= 'full-path' then
+    elseif type ~= 'full-path' then
         filename = fn.fnamemodify(filename, ':t')
     end
 
@@ -104,7 +103,7 @@ function M.file_info(component, winid)
 
         icon = { str = icon_str }
 
-        if component.colored_icon == nil or component.colored_icon then
+        if opts.colored_icon == nil or opts.colored_icon then
             local fg = api.nvim_get_hl_by_name(icon_hlname, true).foreground
 
             if fg then
@@ -118,13 +117,13 @@ function M.file_info(component, winid)
     local bufnr = api.nvim_win_get_buf(winid)
 
     if bo[bufnr].readonly then
-        readonly_str = component.file_readonly_icon or '🔒'
+        readonly_str = opts.file_readonly_icon or '🔒'
     else
         readonly_str = ''
     end
 
     if bo[bufnr].modified then
-        modified_str = (component.file_modified_icon or '●')
+        modified_str = opts.file_modified_icon or '●'
 
         if modified_str ~= '' then modified_str = modified_str .. ' ' end
     else
@@ -134,7 +133,7 @@ function M.file_info(component, winid)
     return ' ' .. readonly_str .. filename .. ' ' .. modified_str, icon
 end
 
-function M.file_size(_, winid)
+function M.file_size(winid)
     local suffix = {'b', 'k', 'M', 'G', 'T', 'P', 'E'}
     local index = 1
 
@@ -150,11 +149,11 @@ function M.file_size(_, winid)
     return string.format(index == 1 and '%g' or '%.2f', fsize) .. suffix[index]
 end
 
-function M.file_type(_, winid)
+function M.file_type(winid)
     return bo[api.nvim_win_get_buf(winid)].filetype:upper()
 end
 
-function M.file_encoding(_, winid)
+function M.file_encoding(winid)
     local bufnr = api.nvim_win_get_buf(winid)
     local enc = (bo[bufnr].fenc ~= '' and bo[bufnr].fenc) or vim.o.enc
     return enc:upper()

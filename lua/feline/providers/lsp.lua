@@ -32,7 +32,7 @@ function M.diagnostics_exist(severity, bufnr)
     return diagnostics_count and diagnostics_count > 0
 end
 
-function M.lsp_client_names(_, winid)
+function M.lsp_client_names(winid)
     local clients = {}
 
     for _, client in pairs(lsp.buf_get_clients(api.nvim_win_get_buf(winid))) do
@@ -50,19 +50,19 @@ local function diagnostics(winid, severity)
     return tostring(count)
 end
 
-function M.diagnostic_errors(_, winid)
+function M.diagnostic_errors(winid)
     return diagnostics(winid, 'Error'), '  '
 end
 
-function M.diagnostic_warnings(_, winid)
+function M.diagnostic_warnings(winid)
     return diagnostics(winid, 'Warning'), '  '
 end
 
-function M.diagnostic_hints(_, winid)
+function M.diagnostic_hints(winid)
     return diagnostics(winid, 'Hint'), '  '
 end
 
-function M.diagnostic_info(_, winid)
+function M.diagnostic_info(winid)
     return diagnostics(winid, 'Information'), '  '
 end
 

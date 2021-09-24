@@ -3,7 +3,7 @@ local api = vim.api
 
 local M = {}
 
-function M.git_branch(_, winid)
+function M.git_branch(winid)
     local ok, head = pcall(api.nvim_buf_get_var, api.nvim_win_get_buf(winid), 'gitsigns_head')
 
     if not ok then head = g.gitsigns_head or '' end
@@ -21,15 +21,15 @@ local function git_diff(winid, type)
     return ''
 end
 
-function M.git_diff_added(_, winid)
+function M.git_diff_added(winid)
     return git_diff(winid, 'added'), '  '
 end
 
-function M.git_diff_removed(_, winid)
+function M.git_diff_removed(winid)
     return git_diff(winid, 'removed'), '  '
 end
 
-function M.git_diff_changed(_, winid)
+function M.git_diff_changed(winid)
     return git_diff(winid, 'changed'),  ' 柳'
 end
 

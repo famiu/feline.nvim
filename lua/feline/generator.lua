@@ -215,13 +215,20 @@ local function parse_icon(icon, parent_hl, is_component_empty)
 end
 
 -- Parse component provider
-local function parse_provider(provider, component, winid)
+local function parse_provider(provider, winid, component)
     local icon
+    local opts = {}
 
-    if type(provider) == "string" and type(providers[provider]) == "function" then
-        provider, icon = providers[provider](component, winid)
+    -- If provider is a string and its name matches the name of a registered provider, use it
+    if type(provider) == "string" and providers[provider] then
+        provider, icon = providers[provider](winid, component, opts)
+    -- If provider is a function, just evaluate it normally
     elseif type(provider) == "function" then
-        provider, icon = provider(component, winid)
+        provider, icon = provider(winid, component)
+    -- If provider is a table, get the provider name and opts and evaluate the provider
+    elseif type(provider) == "table" then
+        opts = provider.opts
+        provider = providers[provider.name](winid, component, opts)
     end
 
     return provider, icon
@@ -237,7 +244,7 @@ local function parse_component(component, winid)
 
     if not enabled then return '' end
 
-    local str, icon = parse_provider(component.provider, component, winid)
+    local str, icon = parse_provider(component.provider, winid, component)
 
     local hl = evaluate_if_function(component.hl, winid) or {}
     local hlname
