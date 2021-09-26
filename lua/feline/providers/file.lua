@@ -97,18 +97,14 @@ function M.file_info(winid, component, opts)
 
     -- Avoid loading nvim-web-devicons if an icon is provided already
     if not component.icon then
-        local icon_str, icon_hlname = require("nvim-web-devicons").get_icon(
+        local icon_str, icon_color = require("nvim-web-devicons").get_icon_color(
             filename, extension, { default = true }
         )
 
         icon = { str = icon_str }
 
         if opts.colored_icon == nil or opts.colored_icon then
-            local fg = api.nvim_get_hl_by_name(icon_hlname, true).foreground
-
-            if fg then
-                icon.hl = { fg = string.format('#%06x', fg) }
-            end
+            icon.hl = { fg = icon_color }
         end
     end
 
