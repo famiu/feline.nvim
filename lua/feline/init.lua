@@ -98,7 +98,7 @@ function M.setup(config)
     M.providers = require('feline.providers')
 
     for k, v in pairs(parse_config(config, 'custom_providers', 'table', {})) do
-        M.providers.add_provider(k, v)
+        M.providers[k] = v
     end
 
     local components = parse_config(config, 'components', 'table')

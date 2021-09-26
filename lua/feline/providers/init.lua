@@ -38,23 +38,6 @@ local get_provider_category = {
 -- Providers that have been loaded
 local loaded_providers = {}
 
--- Utility functions to manage providers
-local utilities = {
-    -- Add a custom provider with specified name
-    add_provider = function(name, provider)
-        if get_provider_category[name] then
-            vim.api.nvim_err_writeln(string.format(
-                "Feline: error while adding provider: " ..
-                "Provider %s already exists! Please try using another name",
-                name
-            ))
-        else
-            provider_categories.custom[name] = provider
-            get_provider_category[name] = 'custom'
-        end
-    end
-}
-
 -- Return a metatable that automatically loads and returns providers when their name is indexed
 return setmetatable({}, {
     __index = function(_, key)
@@ -63,15 +46,25 @@ return setmetatable({}, {
         if not loaded_providers[key] then
             local category = get_provider_category[key]
 
-            -- If a provider with that name isn't found, assume it's a utility function
-            -- and return that instead
             if category then
                 loaded_providers[key] = provider_categories[category][key]
-            else
-                return utilities[key]
             end
         end
 
         return loaded_providers[key]
+    end,
+    -- Add new custom providers by appending their value to the custom provider category and setting
+    -- the category of their name to 'custom'
+    __newindex = function(_, name, provider)
+        if get_provider_category[name] then
+            vim.api.nvim_err_writeln(string.format(
+                "Feline: error while adding provider: " ..
+                "Provider '%s' already exists! Please try using another name",
+                name
+            ))
+        else
+            provider_categories.custom[name] = provider
+            get_provider_category[name] = 'custom'
+        end
     end
 })
