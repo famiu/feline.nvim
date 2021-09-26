@@ -146,7 +146,7 @@ end
 -- Parse component seperator
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
-local function parse_sep(sep, parent_bg, is_component_empty)
+local function parse_sep(sep, parent_bg, is_component_empty, winid)
     if sep == nil then return '' end
 
     local hl
@@ -161,7 +161,7 @@ local function parse_sep(sep, parent_bg, is_component_empty)
         if is_component_empty and not sep.always_visible then return '' end
 
         str = sep.str or ''
-        hl = sep.hl or {fg = parent_bg, bg = colors.bg}
+        hl = evaluate_if_function(sep.hl, winid) or {fg = parent_bg, bg = colors.bg}
     end
 
     if separators[str] then str = separators[str] end
@@ -181,13 +181,14 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
             sep_strs[#sep_strs+1] = parse_sep(
                 evaluate_if_function(v, winid),
                 parent_bg,
-                is_component_empty
+                is_component_empty,
+                winid
             )
         end
 
         return table.concat(sep_strs)
     else
-        return parse_sep(evaluate_if_function(sep_list, winid), parent_bg, is_component_empty)
+        return parse_sep(evaluate_if_function(sep_list, winid), parent_bg, is_component_empty, winid)
     end
 end
 
