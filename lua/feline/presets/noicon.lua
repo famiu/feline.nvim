@@ -174,6 +174,9 @@ M.inactive[1] = {
             },
             ' '
         }
+    },
+    -- Empty component to fix the highlight till the end of the statusline
+    {
     }
 }
 

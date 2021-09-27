@@ -167,6 +167,9 @@ M.inactive[1] = {
             },
             'slant_right'
         }
+    },
+    -- Empty component to fix the highlight till the end of the statusline
+    {
     }
 }
 
