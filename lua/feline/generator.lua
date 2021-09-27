@@ -242,8 +242,6 @@ local function parse_component(component, winid)
 
     if not enabled then return '' end
 
-    local str, icon = parse_provider(component.provider, winid, component)
-
     local hl = evaluate_if_function(component.hl, winid) or {}
     local hlname
 
@@ -256,6 +254,14 @@ local function parse_component(component, winid)
     -- parse_sep_list and parse_icon
     else
         hl = parse_hl(hl)
+    end
+
+    local str, icon
+
+    if component.provider then
+        str, icon = parse_provider(component.provider, winid, component)
+    else
+        str = ''
     end
 
     local is_component_empty = str == ''
@@ -274,25 +280,20 @@ local function parse_component(component, winid)
         winid
     )
 
-    icon = parse_icon(evaluate_if_function(component.icon or icon, winid), hl, is_component_empty)
+    icon = parse_icon(
+        evaluate_if_function(component.icon or icon, winid),
+        hl,
+        is_component_empty
+    )
 
-    if is_component_empty then
-        return string.format(
-            '%s%s%s',
-            left_sep_str,
-            icon,
-            right_sep_str
-        )
-    else
-        return string.format(
-            '%s%s%%#%s#%s%s',
-            left_sep_str,
-            icon,
-            hlname or get_hlname(hl),
-            str,
-            right_sep_str
-        )
-    end
+    return string.format(
+        '%s%s%%#%s#%s%s',
+        left_sep_str,
+        icon,
+        hlname or get_hlname(hl),
+        str,
+        right_sep_str
+    )
 end
 
 -- Parse components of a section of the statusline
