@@ -897,18 +897,13 @@ have to make use of the `default_hl` option in Feline’s
 statusline to `'underline'` and the default background of the inactive
 statusline to `'NONE'`. You can also optionally get the foreground color of the
 `VertSplit` highlight and apply it to the highlight of the inactive statusline
-so that the thin line looks like the vertical split separator.
+so that the thin line looks like the vertical split separator. You also have to
+make sure that the inactive statusline contains no components, otherwise this
+trick will not work.
 
-Note that you have to make sure that the inactive statusline contains no
-components, otherwise this trick will not work. Here’s an example showing you
-how to do it:
+Here’s an example showing you how to do it:
 
 >
-    local api = vim.api
-    
-    -- Get foreground of the VertSplit highlight
-    local VertSplitFG = string.format('#%06x', api.nvim_get_hl_by_name('VertSplit', true).foreground)
-    
     -- Remove all inactive statusline components
     components.inactive = {}
     
@@ -917,7 +912,8 @@ how to do it:
         -- Insert other configuration options here
         default_hl = {
             inactive = {
-                fg = VertSplitFG, 
+                -- Apply the foreground of the VertSplit highlight to this highlight (optional)
+                fg = string.format('#%06x', vim.api.nvim_get_hl_by_name('VertSplit', true).foreground),
                 bg = 'NONE',
                 style = 'underline'
             }
