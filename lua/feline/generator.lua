@@ -4,6 +4,7 @@ local api = vim.api
 local feline = require('feline')
 local providers = feline.providers
 local components = feline.components
+local default_hl = feline.default_hl
 local colors = feline.colors
 local separators = feline.separators
 local disable = feline.disable
@@ -63,15 +64,6 @@ local function add_hl(name, fg, bg, style)
     ))
 
     M.highlights[name] = true
-end
-
--- Return default highlight
-local function defhl()
-    if not M.highlights['StatusComponentDefault'] then
-        add_hl('StatusComponentDefault', colors.fg, colors.bg, 'NONE')
-    end
-
-    return 'StatusComponentDefault'
 end
 
 -- Parse highlight table, inherit default/parent values if values are not given
@@ -141,6 +133,23 @@ local function get_hlname(hl, parent_hl)
     end
 
     return hlname
+end
+
+-- Generates StatusLine and StatusLineNC highlights based on the user configuration
+local function generate_defhl(winid)
+    for statusline_type, hlname in pairs({active = 'StatusLine', inactive = 'StatusLineNC'}) do
+        -- If default hl for the current statusline type is not defined, just set it to an empty
+        -- table so that it can be populated by parse_hl later on
+        if not default_hl[statusline_type] then
+            default_hl[statusline_type] = {}
+        end
+
+        -- Only re-evaluate and add the highlight if it's a function or when it's not cached
+        if type(default_hl[statusline_type]) == 'function' or not M.highlights[hlname] then
+            local hl = parse_hl(evaluate_if_function(default_hl[statusline_type], winid))
+            add_hl(hlname, hl.fg, hl.bg, hl.style)
+        end
+    end
 end
 
 -- Parse component seperator
@@ -318,6 +327,9 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(winid)
+    -- Generate default highlights for the statusline
+    generate_defhl(winid)
+
     local statusline_str = ''
 
     if components and not is_disabled(winid) then
@@ -345,7 +357,7 @@ function M.generate_statusline(winid)
     -- Never return an empty string since setting statusline to an empty string will make it
     -- use the global statusline value (same as active statusline) for inactive windows
     if statusline_str == '' then
-        return string.format('%%#%s#', defhl())
+        return ' '
     else
         return statusline_str
     end

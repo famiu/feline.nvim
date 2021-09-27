@@ -120,6 +120,7 @@ function M.setup(config)
     end
 
     M.components = components
+    M.default_hl = parse_config(config, 'default_hl', 'table', {})
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true

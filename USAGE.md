@@ -422,6 +422,8 @@ custom_providers = {
 
 - `colors` - A table containing custom [color value presets](#value-presets). The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
 - `separators` - A table containing custom [separator value presets](#value-presets).
+- `default_hl` - A table defining the default highlights for the active and inactive statusline. It can contain two values inside of it, `active` and `inactive`. They define values of the `StatusLine` and `StatusLineNC` highlight groups, respectively. These two values are configured the same way as a component's `hl` value. For most users this configuration option won't be of any use, but it allows you to do some neat things like [using a thin line instead of the inactive statusline](#thin-line-for-horizontal-splits).<br>
+  By default, both of these highlights use `colors.fg` as foreground color and `colors.bg` as background color, and have no styling option set.
 - `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
   Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
@@ -669,33 +671,27 @@ It's even simpler if you want to use the default `bg` color for the gap between 
 
 ### Thin line for horizontal splits
 
-If you want, you can have a thin line instead of the inactive statusline to separate your windows, like the vertical window split separator, except in this case it would act as a horizontal window separator of sorts. You can do this through:
+It's possible to replace the inactive statusline with a thin line that acts as a separator for your horizontal splits. In order to achieve it, you just have to make use of the `default_hl` option in Feline's [setup function](#setup-function) and set the default highlight style of the inactive statusline to `'underline'` and the default background of the inactive statusline to `'NONE'`. You can also optionally get the foreground color of the `VertSplit` highlight and apply it to the highlight of the inactive statusline so that the thin line looks like the vertical split separator. 
+
+Note that you have to make sure that the inactive statusline contains no components, otherwise this trick will not work. Here's an example showing you how to do it:
 
 ```lua
-local nvim_exec = vim.api.nvim_exec
+local api = vim.api
 
--- Get highlight of inactive statusline by parsing the style, fg and bg of VertSplit
-local InactiveStatusHL = {
-    fg = nvim_exec('highlight VertSplit', true):match('guifg=(#[0-9A-Fa-f]+)') or '#444444',
-    bg = 'NONE',
-    style = nvim_exec('highlight VertSplit', true):match('gui=(#[0-9A-Fa-f]+)') or '',
-}
+-- Get foreground of the VertSplit highlight
+local VertSplitFG = string.format('#%06x', api.nvim_get_hl_by_name('VertSplit', true).foreground)
 
--- Add underline to inactive statusline highlight style
--- in order to have a thin line instead of the statusline
-if InactiveStatusHL.style == '' then
-    InactiveStatusHL.style = 'underline'
-else
-    InactiveStatusHL.style = InactiveStatusHL.style .. ',underline'
-end
+-- Remove all inactive statusline components
+components.inactive = {}
 
--- Apply the highlight to the statusline
--- by having an empty provider with the highlight
-components.inactive = {
-    {
-        {
-            provider = ' ',
-            hl = InactiveStatusHL
+-- Apply the highlight to the inactive statusline
+require('feline').setup {
+    -- Insert other configuration options here
+    default_hl = {
+        inactive = {
+            fg = VertSplitFG, 
+            bg = 'NONE',
+            style = 'underline'
         }
     }
 }
