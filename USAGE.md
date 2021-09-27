@@ -157,7 +157,7 @@ end
 
 Functions that are added as [custom providers](#setup-function) can also take a third argument, `opts`, which represents the provider options given to the provider (if any). For example:
 
-```
+```lua
 provider = function(_, _, opts)
     if opts.return_two then
         return 2
@@ -671,16 +671,11 @@ It's even simpler if you want to use the default `bg` color for the gap between 
 
 ### Thin line for horizontal splits
 
-It's possible to replace the inactive statusline with a thin line that acts as a separator for your horizontal splits. In order to achieve it, you just have to make use of the `default_hl` option in Feline's [setup function](#setup-function) and set the default highlight style of the inactive statusline to `'underline'` and the default background of the inactive statusline to `'NONE'`. You can also optionally get the foreground color of the `VertSplit` highlight and apply it to the highlight of the inactive statusline so that the thin line looks like the vertical split separator. 
+It's possible to replace the inactive statusline with a thin line that acts as a separator for your horizontal splits. In order to achieve it, you just have to make use of the `default_hl` option in Feline's [setup function](#setup-function) and set the default highlight style of the inactive statusline to `'underline'` and the default background of the inactive statusline to `'NONE'`. You can also optionally get the foreground color of the `VertSplit` highlight and apply it to the highlight of the inactive statusline so that the thin line looks like the vertical split separator. You also have to make sure that the inactive statusline contains no components, otherwise this trick will not work.
 
-Note that you have to make sure that the inactive statusline contains no components, otherwise this trick will not work. Here's an example showing you how to do it:
+Here's an example showing you how to do it:
 
 ```lua
-local api = vim.api
-
--- Get foreground of the VertSplit highlight
-local VertSplitFG = string.format('#%06x', api.nvim_get_hl_by_name('VertSplit', true).foreground)
-
 -- Remove all inactive statusline components
 components.inactive = {}
 
@@ -689,7 +684,8 @@ require('feline').setup {
     -- Insert other configuration options here
     default_hl = {
         inactive = {
-            fg = VertSplitFG, 
+            -- Apply the foreground of the VertSplit highlight to this highlight (optional)
+            fg = string.format('#%06x', vim.api.nvim_get_hl_by_name('VertSplit', true).foreground),
             bg = 'NONE',
             style = 'underline'
         }
