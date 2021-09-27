@@ -338,7 +338,7 @@ function M.generate_statusline(winid)
                 sections[#sections+1] = parse_statusline_section(section, winid, statusline_type, i)
             end
 
-            statusline_str = table.concat(sections, string.format('%%#%s#%%=', defhl()))
+            statusline_str = table.concat(sections, '%=')
         end
     end
 

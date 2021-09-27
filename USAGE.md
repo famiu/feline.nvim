@@ -96,7 +96,7 @@ You can use component values to customize each component to your liking. Most va
 
 Feline will automatically evaluate the function if it is one. In case a function is provided, the type of the value the function returns must be the same as the type of value required by the component. For example, since [`enabled`](#conditionally-enable-components) requires a boolean value, if you set it to a function, the function must also return a boolean value.
 
-Note that you can omit all of the component values except `provider`, in which case the defaults would be used instead. The different kinds of component values are discussed below.
+Note that you can omit all of the component values, in which case the defaults would be used instead. The different kinds of component values are discussed below.
 
 #### Component providers
 
@@ -166,6 +166,8 @@ provider = function(_, _, opts)
     end
 end
 ```
+
+If you omit the provider value, it will be set to an empty string. A component with no provider or an empty provider may be useful for things like [applying a highlight to section gaps](#highlight-section-gaps) or just having an icon or separator as a component.
 
 #### Conditionally enable components
 
@@ -637,6 +639,33 @@ require('feline').reset_highlights()
 ```
 
 And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
+
+### Highlight section gaps
+
+By default, gaps between two sections inherit the highlight of the last element of the section. If you wish to customize the highlight of the gap between two sections, you can just add a component with only an `hl` value to the end of the first section. 
+
+For example, if you had two sections in the active statusline and wanted the gap between the first and second section to use a certain background color, you could do this:
+
+```lua
+components.active[1] = {
+    {
+        -- Insert all components of first section here
+
+        -- Component for customizing highlight for the gap between section 1 and 2
+        {
+            hl = {
+                -- Replace 'oceanblue' with whatever color you want the gap to be.
+                bg = 'oceanblue'
+            }
+        }
+    },
+    {
+        -- Insert all components of second section here
+    }
+}
+```
+
+It's even simpler if you want to use the default `bg` color for the gap between sections. In that case, you can just put an empty component at the end of the first section. You don't even have the define the `hl` manually since `hl` by default uses the default `bg` as its background.
 
 ### Thin line for horizontal splits
 
