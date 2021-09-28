@@ -157,8 +157,10 @@ end
 -- Parse component seperator to return parsed string and length
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
-local function parse_sep(sep, parent_bg, is_component_empty)
+local function parse_sep(sep, parent_bg, is_component_empty, winid)
     if sep == nil then return {str = '', len = 0} end
+
+    sep = evaluate_if_function(sep, winid)
 
     local hl
     local str
@@ -171,8 +173,8 @@ local function parse_sep(sep, parent_bg, is_component_empty)
     else
         if is_component_empty and not sep.always_visible then return {str = '', len = 0} end
 
-        str = sep.str or ''
-        hl = sep.hl or {fg = parent_bg, bg = colors.bg}
+        str = evaluate_if_function(sep.str, winid) or ''
+        hl = evaluate_if_function(sep.hl, winid) or {fg = parent_bg, bg = colors.bg}
     end
 
     if separators[str] then str = separators[str] end
@@ -194,9 +196,10 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
 
         for _,v in ipairs(sep_list) do
             local sep = parse_sep(
-                evaluate_if_function(v, winid),
+                v,
                 parent_bg,
-                is_component_empty
+                is_component_empty,
+                winid
             )
 
             sep_strs[#sep_strs+1] = sep.str
@@ -205,14 +208,16 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
 
         return {str = table.concat(sep_strs), len = total_len}
     else
-        return parse_sep(evaluate_if_function(sep_list, winid), parent_bg, is_component_empty)
+        return parse_sep(sep_list, parent_bg, is_component_empty, winid)
     end
 end
 
 -- Parse component icon and return parsed string alongside length
 -- By default, icon inherits component highlights
-local function parse_icon(icon, parent_hl, is_component_empty)
+local function parse_icon(icon, parent_hl, is_component_empty, winid)
     if icon == nil then return {str = '', len = 0} end
+
+    icon = evaluate_if_function(icon, winid)
 
     local hl
     local str
@@ -225,8 +230,8 @@ local function parse_icon(icon, parent_hl, is_component_empty)
     else
         if is_component_empty and not icon.always_visible then return {str = '', len = 0} end
 
-        str = icon.str or ''
-        hl = icon.hl or parent_hl
+        str = evaluate_if_function(icon.str, winid) or ''
+        hl = evaluate_if_function(icon.hl, winid) or parent_hl
     end
 
     return {
@@ -315,9 +320,10 @@ local function parse_component(component, winid, use_short_provider)
     )
 
     icon = parse_icon(
-        evaluate_if_function(component.icon or icon, winid),
+        component.icon or icon,
         hl,
-        is_component_empty
+        is_component_empty,
+        winid
     )
 
     return {
