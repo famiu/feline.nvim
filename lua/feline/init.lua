@@ -26,16 +26,14 @@ local function parse_config(config_dict, config_name, expected_type, default_val
     end
 end
 
--- Update statusline of inactive windows on the current tabpage
-function M.update_inactive_windows()
+-- Update statusline of all windows on the current tabpage
+function M.update_all_windows()
     -- Uses vim.schedule to defer executing the function until after
-    -- all other autocommands have run. This will ensure that inactive windows
+    -- all other autocommands have run. This will ensure that the windows
     -- are updated after any changes.
     vim.schedule(function()
-        local current_win = api.nvim_get_current_win()
-
         for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
-            if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
+            if api.nvim_win_get_config(winid).relative == ''
             then
                 vim.wo[winid].statusline = M.statusline(winid)
             end
@@ -56,7 +54,7 @@ function M.reset_highlights()
 
     gen.highlights = {}
 
-    M.update_inactive_windows()
+    M.update_all_windows()
 end
 
 -- Setup Feline using the provided configuration options
@@ -131,7 +129,7 @@ function M.setup(config)
         {
             table.concat(M.update_triggers, ','),
             '*',
-            'lua require("feline").update_inactive_windows()'
+            'lua require("feline").update_all_windows()'
         },
         {
             'SessionLoadPost,ColorScheme',
