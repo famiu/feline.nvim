@@ -169,9 +169,13 @@ end
 
 If you omit the provider value, it will be set to an empty string. A component with no provider or an empty provider may be useful for things like [applying a highlight to section gaps](#highlight-section-gaps) or just having an icon or separator as a component.
 
-#### Component short provider
+#### Truncation
 
-Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. In order to make use of this truncation system, you have to define the `short_provider` component value.
+Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. There's a few component values associated with truncation.
+
+##### Component short provider
+
+`short_provider` is an optional component value that allows you to take advantage of Feline's truncation system. Note that this should only be defined if you want to enable truncation for the component, otherwise it's absolutely fine to omit it.
 
 `short_provider` works just like the `provider` value, but is activated only when the component is being truncated due to the statusline not fitting within the window. `short_provider` is independent from the `provider` value so it can be a different provider altogether, or it can be a shortened version of the same provider or the same provider but with a different `opts` value. For example:
 
@@ -201,11 +205,11 @@ local my_component = {
 
 Feline doesn't set `short_provider` to any component by default, so it must be provided manually.
 
-#### Hide components during truncation
+##### Hide components during truncation
 
 If you wish to allow Feline to hide a component entirely if necessary during truncation, you may set the `truncate_hide` component value to `true`. By default, `truncate_hide` is `false` for every component.
 
-#### Component priority
+##### Component priority
 
 When components are being truncated by Feline, you can choose to give some components a higher priority over the other components. The `priority` component value just takes a number. By default, the priority of a component is `0`. Components are truncated in ascending order of priority. So components with lower priority are truncated first, while components with higher priority are truncated later on. For example:
 
@@ -224,6 +228,8 @@ local high_priority_component = {
 ```
 
 Priority can also be set to a negative number, which can be used to make a component be truncated earlier than the ones with default priority.
+
+**WARNING:** As of now, Feline's truncation system does not work properly if you use Vim's built-in statusline modifiers in any of your component values. This is due to Feline not being able to get the correct length of your component if you use Vim's statusline modifiers. If you use Vim's statusline modifiers for a feature that's not available in Feline, consider making a feature request for it. And if you still have to use Vim's statusline modifiers for whatever reason, it's recommended to not enable truncation for any of your components.
 
 #### Conditionally enable components
 
