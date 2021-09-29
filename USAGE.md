@@ -229,8 +229,6 @@ local high_priority_component = {
 
 Priority can also be set to a negative number, which can be used to make a component be truncated earlier than the ones with default priority.
 
-**WARNING:** As of now, Feline's truncation system does not work properly if you use Vim's built-in statusline modifiers in any of your component values. This is due to Feline not being able to get the correct length of your component if you use Vim's statusline modifiers. If you use Vim's statusline modifiers for a feature that's not available in Feline, consider making a feature request for it. And if you still have to use Vim's statusline modifiers for whatever reason, it's recommended to not enable truncation for any of your components.
-
 #### Conditionally enable components
 
 The `enabled` value of a component can be a boolean or function. This value determines if the component is enabled or not. If false, the component is not shown in the statusline. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
