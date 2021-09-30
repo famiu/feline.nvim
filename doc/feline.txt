@@ -327,15 +327,6 @@ are truncated later on. For example:
 Priority can also be set to a negative number, which can be used to make a
 component be truncated earlier than the ones with default priority.
 
-**WARNING:** As of now, Feline’s truncation system does not work properly if
-you use Vim’s built-in statusline modifiers in any of your component values.
-This is due to Feline not being able to get the correct length of your
-component if you use Vim’s statusline modifiers. If you use Vim’s
-statusline modifiers for a feature that’s not available in Feline, consider
-making a feature request for it. And if you still have to use Vim’s
-statusline modifiers for whatever reason, it’s recommended to not enable
-truncation for any of your components.
-
                                       *feline-Conditionally-enable-components*
 
 Conditionally enable components        The `enabled` value of a component can
