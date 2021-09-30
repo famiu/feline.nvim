@@ -87,10 +87,12 @@ end
 local function get_hl_properties(hlname)
     local hl = api.nvim_get_hl_by_name(hlname, true)
     local styles = {}
+    local styles_len = 1
 
     for k, v in ipairs(hl) do
         if v == true then
-            styles[#styles+1] = k
+            styles[styles_len] = k
+            styles_len = styles_len + 1
         end
     end
 
@@ -192,6 +194,7 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
     if (type(sep_list) == 'table' and sep_list[1] and (type(sep_list[1]) == 'function' or
     type(sep_list[1]) == 'table' or type(sep_list[1]) == 'string')) then
         local sep_strs = {}
+        local sep_strs_len = 1
         local total_len = 0
 
         for _,v in ipairs(sep_list) do
@@ -202,7 +205,8 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
                 winid
             )
 
-            sep_strs[#sep_strs+1] = sep.str
+            sep_strs[sep_strs_len] = sep.str
+            sep_strs_len = sep_strs_len + 1
             total_len = total_len + sep.len
         end
 
