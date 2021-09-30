@@ -160,7 +160,7 @@ end
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
 local function parse_sep(sep, parent_bg, is_component_empty, winid)
-    if sep == nil then return {str = '', len = 0} end
+    if sep == nil then return '', 0 end
 
     sep = evaluate_if_function(sep, winid)
 
@@ -168,12 +168,12 @@ local function parse_sep(sep, parent_bg, is_component_empty, winid)
     local str
 
     if type(sep) == 'string' then
-        if is_component_empty then return {str = '', len = 0} end
+        if is_component_empty then return '', 0 end
 
         str = sep
         hl = {fg = parent_bg, bg = colors.bg}
     else
-        if is_component_empty and not sep.always_visible then return {str = '', len = 0} end
+        if is_component_empty and not sep.always_visible then return '', 0 end
 
         str = evaluate_if_function(sep.str, winid) or ''
         hl = evaluate_if_function(sep.hl, winid) or {fg = parent_bg, bg = colors.bg}
@@ -181,15 +181,13 @@ local function parse_sep(sep, parent_bg, is_component_empty, winid)
 
     if separators[str] then str = separators[str] end
 
-    return {
-        str = string.format('%%#%s#%s', get_hlname(hl), str),
-        len = strwidth(str)
-    }
+    return string.format('%%#%s#%s', get_hlname(hl), str), strwidth(str)
 end
 
--- Either parse a single separator or a list of separators with different highlights
+-- Either parse a single separator or a list of separators returning the parsed string alongside the
+-- display length of the string
 local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
-    if sep_list == nil then return {str = '', len = 0} end
+    if sep_list == nil then return '', 0 end
 
     if (type(sep_list) == 'table' and sep_list[1] and (type(sep_list[1]) == 'function' or
     type(sep_list[1]) == 'table' or type(sep_list[1]) == 'string')) then
@@ -198,19 +196,19 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
         local total_len = 0
 
         for _,v in ipairs(sep_list) do
-            local sep = parse_sep(
+            local sep_str, sep_len = parse_sep(
                 v,
                 parent_bg,
                 is_component_empty,
                 winid
             )
 
-            sep_strs[sep_strs_len] = sep.str
+            sep_strs[sep_strs_len] = sep_str
             sep_strs_len = sep_strs_len + 1
-            total_len = total_len + sep.len
+            total_len = total_len + sep_len
         end
 
-        return {str = table.concat(sep_strs), len = total_len}
+        return table.concat(sep_strs), total_len
     else
         return parse_sep(sep_list, parent_bg, is_component_empty, winid)
     end
@@ -219,7 +217,7 @@ end
 -- Parse component icon and return parsed string alongside length
 -- By default, icon inherits component highlights
 local function parse_icon(icon, parent_hl, is_component_empty, winid)
-    if icon == nil then return {str = '', len = 0} end
+    if icon == nil then return '', 0 end
 
     icon = evaluate_if_function(icon, winid)
 
@@ -227,24 +225,21 @@ local function parse_icon(icon, parent_hl, is_component_empty, winid)
     local str
 
     if type(icon) == 'string' then
-        if is_component_empty then return {str = '', len = 0} end
+        if is_component_empty then return '', 0 end
 
         str = icon
         hl = parent_hl
     else
-        if is_component_empty and not icon.always_visible then return {str = '', len = 0} end
+        if is_component_empty and not icon.always_visible then return '', 0 end
 
         str = evaluate_if_function(icon.str, winid) or ''
         hl = evaluate_if_function(icon.hl, winid) or parent_hl
     end
 
-    return {
-        str = string.format('%%#%s#%s', get_hlname(hl, parent_hl), str),
-        len = strwidth(str)
-    }
+    return string.format('%%#%s#%s', get_hlname(hl, parent_hl), str), strwidth(str)
 end
 
--- Parse component provider to return the provider string, icon and length of provider string
+-- Parse component provider to return the provider string, provider length and default icon
 local function parse_provider(provider, winid, component)
     local icon
 
@@ -266,7 +261,7 @@ local function parse_provider(provider, winid, component)
         ))
     end
 
-    return {str = provider, len = strwidth(provider)}, icon
+    return provider, strwidth(provider), icon
 end
 
 -- Parses a component alongside its highlight to return the component string and length
@@ -277,7 +272,7 @@ local function parse_component(component, winid, use_short_provider)
 
     enabled = evaluate_if_function(enabled, winid)
 
-    if not enabled then return {str = '', len = 0} end
+    if not enabled then return '', 0 end
 
     local hl = evaluate_if_function(component.hl, winid) or {}
     local hlname
@@ -293,7 +288,7 @@ local function parse_component(component, winid, use_short_provider)
         hl = parse_hl(hl)
     end
 
-    local provider, icon
+    local provider, provider_len, icon, icon_len
 
     if use_short_provider then
         provider = component.short_provider
@@ -302,45 +297,43 @@ local function parse_component(component, winid, use_short_provider)
     end
 
     if provider then
-        provider, icon = parse_provider(provider, winid, component)
+        provider, provider_len, icon = parse_provider(provider, winid, component)
     else
-        provider = {str = '', len = 0}
+        provider, provider_len = '', 0
     end
 
-    local is_component_empty = provider.str == ''
+    local is_component_empty = provider == ''
 
-    local left_sep = parse_sep_list(
+    local left_sep_str, left_sep_len = parse_sep_list(
         component.left_sep,
         hl.bg,
         is_component_empty,
         winid
     )
 
-    local right_sep = parse_sep_list(
+    local right_sep_str, right_sep_len = parse_sep_list(
         component.right_sep,
         hl.bg,
         is_component_empty,
         winid
     )
 
-    icon = parse_icon(
+    icon, icon_len = parse_icon(
         component.icon or icon,
         hl,
         is_component_empty,
         winid
     )
 
-    return {
-        str = string.format(
+    return string.format(
             '%s%s%%#%s#%s%s',
-            left_sep.str,
-            icon.str,
+            left_sep_str,
+            icon,
             hlname or get_hlname(hl),
-            provider.str,
-            right_sep.str
+            provider,
+            right_sep_str
         ),
-        len = left_sep.len + icon.len + provider.len + right_sep.len
-    }
+        left_sep_len + icon_len + provider_len + right_sep_len
 end
 
 -- Parse component while handling any errors and returning an empty component in case of an error
@@ -352,34 +345,38 @@ local function parse_component_handle_errors(
     section_number,
     component_number
 )
-    local ok, result = pcall(parse_component, component, winid, use_short_provider)
+    local ok, str, str_len = pcall(parse_component, component, winid, use_short_provider)
 
     if not ok then
         api.nvim_err_writeln(string.format(
             "Feline: error while processing component number %d on section %d of type '%s': %s",
-            component_number, section_number, statusline_type, result
+            component_number, section_number, statusline_type, str
         ))
 
-        result = {str = '', len = 0}
+        str, str_len = '', 0
     end
 
-    return result
+    return str, str_len
 end
 
 -- Parse statusline sections and truncate the components when necessary
 local function parse_statusline_sections(sections, statusline_type, winid)
-    local parsed_sections = {}
+    local component_strs = {}
+    local component_lengths = {}
     local statusline_length = 0
 
-    -- Parse every component and calculate statusline length while doing that
+    -- Parse every component, storing their value and length in separate tables and calculate
+    -- statusline length while doing that
     for i, section in ipairs(sections) do
-        parsed_sections[i] = {}
+        component_strs[i] = {}
+        component_lengths[i] = {}
 
         for j, component in ipairs(section) do
-            parsed_sections[i][j] = parse_component_handle_errors(
+            component_strs[i][j], component_lengths[i][j] = parse_component_handle_errors(
                 component, winid, false, statusline_type, i, j
             )
-            statusline_length = statusline_length + parsed_sections[i][j].len
+
+            statusline_length = statusline_length + component_lengths[i][j]
         end
     end
 
@@ -415,15 +412,16 @@ local function parse_statusline_sections(sections, statusline_type, winid)
             local i, j = unpack(indices)
 
             if sections[i][j].short_provider then
-                local parsed_component = parse_component_handle_errors(
+                local str, len = parse_component_handle_errors(
                     sections[i][j], winid, true, statusline_type, i, j
                 )
 
-                local length_difference = parsed_sections[i][j].len - parsed_component.len
+                local length_difference = component_lengths[i][j] - len
 
                 if length_difference > 0 then
                     statusline_length = statusline_length - length_difference
-                    parsed_sections[i][j] = parsed_component
+                    component_strs[i][j] = str
+                    component_lengths[i][j] = len
                 end
             end
 
@@ -440,8 +438,9 @@ local function parse_statusline_sections(sections, statusline_type, winid)
                 local i, j = unpack(indices)
 
                 if sections[i][j].truncate_hide then
-                    statusline_length = statusline_length - parsed_sections[i][j].len
-                    parsed_sections[i][j] = {str = '', len = 0}
+                    statusline_length = statusline_length - component_lengths[i][j]
+                    component_strs[i][j] = ''
+                    component_lengths[i][j] = 0
                 end
 
                 if statusline_length <= win_width then
@@ -454,13 +453,7 @@ local function parse_statusline_sections(sections, statusline_type, winid)
     -- Concatenate all components strings of each section to get a string for each section
     local section_strs = {}
 
-    for i, parsed_section in ipairs(parsed_sections) do
-        local section_component_strs = {}
-
-        for j, parsed_component in ipairs(parsed_section) do
-            section_component_strs[j] = parsed_component.str
-        end
-
+    for i, section_component_strs in ipairs(component_strs) do
         section_strs[i] = table.concat(section_component_strs)
     end
 
