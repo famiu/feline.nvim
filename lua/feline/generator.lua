@@ -343,105 +343,121 @@ local function parse_component(component, winid, use_short_provider)
     }
 end
 
+-- Parse component while handling any errors and returning an empty component in case of an error
+local function parse_component_handle_errors(
+    component,
+    winid,
+    use_short_provider,
+    statusline_type,
+    section_number,
+    component_number
+)
+    local ok, result = pcall(parse_component, component, winid, use_short_provider)
+
+    if not ok then
+        api.nvim_err_writeln(string.format(
+            "Feline: error while processing component number %d on section %d of type '%s': %s",
+            component_number, section_number, statusline_type, result
+        ))
+
+        result = {str = '', len = 0}
+    end
+
+    return result
+end
+
 -- Parse statusline sections and truncate the components when necessary
 local function parse_statusline_sections(sections, statusline_type, winid)
-    -- Parse all components in the sections and also store the indices of every component so
-    -- both the sections and parsed_sections tables can be accessed later on after components
-    -- are sorted in order of priority
-    -- Also calculate statusline length while doing all of that
     local parsed_sections = {}
     local component_indices = {}
+    local component_indices_len = 1
     local statusline_length = 0
 
+    -- Parse every component, storing their parsed values and indices in separate tables
+    -- Also calculate statusline length while doing that
     for i, section in ipairs(sections) do
         parsed_sections[i] = {}
 
         for j, component in ipairs(section) do
-            local ok, result = pcall(parse_component, component, winid)
-
-            if not ok then
-                api.nvim_err_writeln(string.format(
-                    "Feline: error while processing component number %d on section %d "..
-                    "of type '%s': %s",
-                    j, i, statusline_type, result
-                ))
-
-                result = { str = '', len = 0 }
-            end
-
-            parsed_sections[i][j] = result
-            component_indices[#component_indices+1] = {i, j}
-            statusline_length = statusline_length + result.len
+            parsed_sections[i][j] = parse_component_handle_errors(
+                component, winid, false, statusline_type, i, j
+            )
+            component_indices[component_indices_len] = {i, j}
+            component_indices_len = component_indices_len + 1
+            statusline_length = statusline_length + parsed_sections[i][j].len
         end
     end
 
     local win_width = api.nvim_win_get_width(winid)
 
-    -- If statusline length is larger than the window width, sort the component indices
-    -- in ascending order of priority of the components they refer to
-    -- Then truncate the components one by one using by their short_provider or hiding them
-    -- entirely until the statusline fits within the window
+    -- If statusline doesn't fit within window, truncate the components
     if statusline_length > win_width then
+        -- Sort component indices in ascending order of priority of the components they refer to
         table.sort(component_indices, function(a, b)
-            -- Access the original component through the sections table using the indices
-            local first_component_priority = sections[a[1]][a[2]].priority or 0
-            local second_component_priority = sections[b[1]][b[2]].priority or 0
+            -- Get the priority of each component by accessing the sections table using the indices
+            -- Use the default priority of 0 if priority isn't defined
+            local a_priority = sections[a[1]][a[2]].priority or 0
+            local b_priority = sections[b[1]][b[2]].priority or 0
 
-            return first_component_priority < second_component_priority
+            return a_priority < b_priority
         end)
 
+        -- Iterate the components in order of priority using the sorted indices and truncate them
+        -- using the short_provider until the statusline fits within the window
         for _, indices in ipairs(component_indices) do
-            -- Access the original and parsed values using the indices
-            local component = sections[indices[1]][indices[2]]
-            local parsed_component = parsed_sections[indices[1]][indices[2]]
+            local i, j = unpack(indices)
 
-            -- If short_provider exists, use it
-            if component.short_provider then
-                -- Get new parsed component value using the short_provider and calculate the
-                -- length difference between the two values, and if it's greater than 0, use
-                -- the new value instead of the old one
-                local parsed_component_new = parse_component(component, winid, true)
-                local length_difference = parsed_component.len - parsed_component_new.len
+            if sections[i][j].short_provider then
+                local parsed_component = parse_component_handle_errors(
+                    sections[i][j], winid, true, statusline_type, i, j
+                )
+
+                local length_difference = parsed_sections[i][j].len - parsed_component.len
 
                 if length_difference > 0 then
-                    -- Update statusline length and replace old parsed value with new one
                     statusline_length = statusline_length - length_difference
-                    parsed_sections[indices[1]][indices[2]] = parsed_component_new
+                    parsed_sections[i][j] = parsed_component
                 end
             end
 
-            if statusline_length <= win_width then break end
+            if statusline_length <= win_width then
+                break
+            end
         end
 
-        -- If statusline still doesn't fit, start removing components with truncate_hide
+        -- If statusline still doesn't fit within window, iterate through components in order of
+        -- priority once again and remove components with truncate_hide set to true until statusline
+        -- fits within window
         if statusline_length > win_width then
             for _, indices in ipairs(component_indices) do
-                if sections[indices[1]][indices[2]].truncate_hide then
-                    statusline_length = statusline_length -
-                        parsed_sections[indices[1]][indices[2]].len
+                local i, j = unpack(indices)
 
-                    parsed_sections[indices[1]][indices[2]] = {str = '', len = 0}
+                if sections[i][j].truncate_hide then
+                    statusline_length = statusline_length - parsed_sections[i][j].len
+                    parsed_sections[i][j] = {str = '', len = 0}
                 end
 
-                if statusline_length <= win_width then break end
+                if statusline_length <= win_width then
+                    break
+                end
             end
         end
     end
 
-    -- Concatenate all components in each section to get a string for each section
+    -- Concatenate all components strings of each section to get a string for each section
     local section_strs = {}
 
     for i, parsed_section in ipairs(parsed_sections) do
-        local component_strs = {}
+        local section_component_strs = {}
 
         for j, parsed_component in ipairs(parsed_section) do
-            component_strs[j] = parsed_component.str
+            section_component_strs[j] = parsed_component.str
         end
 
-        section_strs[i] = table.concat(component_strs)
+        section_strs[i] = table.concat(section_component_strs)
     end
 
-    -- Finally, concatenate all sections to get the statusline string
+    -- Then concatenate all the sections to get the statusline string, and return it
     return table.concat(section_strs, '%=')
 end
 
