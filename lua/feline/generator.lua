@@ -369,12 +369,9 @@ end
 -- Parse statusline sections and truncate the components when necessary
 local function parse_statusline_sections(sections, statusline_type, winid)
     local parsed_sections = {}
-    local component_indices = {}
-    local component_indices_len = 1
     local statusline_length = 0
 
-    -- Parse every component, storing their parsed values and indices in separate tables
-    -- Also calculate statusline length while doing that
+    -- Parse every component and calculate statusline length while doing that
     for i, section in ipairs(sections) do
         parsed_sections[i] = {}
 
@@ -382,16 +379,26 @@ local function parse_statusline_sections(sections, statusline_type, winid)
             parsed_sections[i][j] = parse_component_handle_errors(
                 component, winid, false, statusline_type, i, j
             )
-            component_indices[component_indices_len] = {i, j}
-            component_indices_len = component_indices_len + 1
             statusline_length = statusline_length + parsed_sections[i][j].len
         end
     end
 
+    -- Get window width
     local win_width = api.nvim_win_get_width(winid)
 
-    -- If statusline doesn't fit within window, truncate the components
+    -- If statusline doesn't fit within window, start the truncation process
     if statusline_length > win_width then
+        -- Get all component indices so they can be sorted in ascending order of priority
+        local component_indices = {}
+        local component_indices_len = 0
+
+        for i, section in ipairs(sections) do
+            for j, _ in ipairs(section) do
+                component_indices_len = component_indices_len + 1
+                component_indices[component_indices_len] = {i, j}
+            end
+        end
+
         -- Sort component indices in ascending order of priority of the components they refer to
         table.sort(component_indices, function(a, b)
             -- Get the priority of each component by accessing the sections table using the indices
