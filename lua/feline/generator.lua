@@ -349,19 +349,30 @@ local function get_statusline_str_length(statusline_str)
     local length = 0
     local i = 1
 
+    -- Since the statusline can contain Unicode characters, the # operator only gives the
+    -- amount of bytes in the statusline string, not the actual amount of characters
+    local statusline_str_bytecount = #statusline_str
+
     -- Get UTF-32 character in index `i` from statusline string
     local function getchar()
-        local char = statusline_str:sub(
-            vim.str_byteindex(statusline_str, i-1) + 1,
-            vim.str_byteindex(statusline_str, i)
-        )
+        if i <= statusline_str_bytecount then
+            -- Find the utfindex of the character that contains the current byte
+            -- Then use it to find the index of the last byte of the UTF-32 character
+            local utfindex = vim.str_utfindex(statusline_str, i)
+            local byteindex_end = vim.str_byteindex(statusline_str, utfindex)
 
-        i = i + 1
+            -- Get UTF-32 character by making a substring of the string starting from i to the last
+            -- byte of the character
+            local char = statusline_str:sub(i, byteindex_end)
 
-        return char
+            -- Put the index one character after the end of the last byte of the current character
+            i = byteindex_end + 1
+
+            return char
+        end
     end
 
-    while i <= strwidth(statusline_str) do
+    repeat
         local char = getchar()
 
         -- If character is '%', treat it as a statusline modifiers
@@ -370,7 +381,7 @@ local function get_statusline_str_length(statusline_str)
 
             -- Treat characters inside %# as highlight names and ignore them
             if char == '#' then
-                while i <= strwidth(statusline_str) do
+                while char do
                     char = getchar()
 
                     if char == '#' then
@@ -381,12 +392,13 @@ local function get_statusline_str_length(statusline_str)
             elseif char == '%' then
                 length = length + 1
             end
-        -- If it's not a statusline modifier, treat it like a normal character
-        -- and append 1 to the length
-        else
-            length = length + 1
+        -- If it's not a statusline modifier and isn't nil, treat it like a normal character
+        elseif char ~= nil then
+            -- It's not correct to just append 1 to the length since the character can be
+            -- multi-width, instead find out the width of the character and append that instead
+            length = length + strwidth(char)
         end
-    end
+    until char == nil
 
     return length
 end
