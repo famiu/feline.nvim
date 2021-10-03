@@ -76,4 +76,9 @@ M.force_inactive = {
 
 M.disable = {}
 
+M.highlight_reset_triggers = {
+    'SessionLoadPost',
+    'ColorScheme'
+}
+
 return M

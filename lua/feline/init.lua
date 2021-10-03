@@ -99,13 +99,23 @@ function M.setup(config)
 
     vim.o.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
 
-    utils.create_augroup({
-        {
-            'SessionLoadPost,ColorScheme',
-            '*',
-            'lua require("feline").reset_highlights()'
-        }
-    }, 'feline')
+    local highlight_reset_triggers = parse_config(
+        config,
+        'highlight_reset_triggers',
+        'table',
+        defaults.highlight_reset_triggers
+    )
+
+    -- Autocommand to reset highlights according to the `highlight_reset_triggers` configuration
+    if next(highlight_reset_triggers) then
+        utils.create_augroup({
+            {
+                table.concat(highlight_reset_triggers, ','),
+                '*',
+                'lua require("feline").reset_highlights()'
+            }
+        }, 'feline')
+    end
 end
 
 function M.statusline()

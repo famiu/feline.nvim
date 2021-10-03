@@ -517,6 +517,9 @@ Here is a list of all possible vi_mode names used with the default color associa
 | `TERM`      | Terminal mode         | `'green'`   |
 | `NONE`      | None                  | `'yellow'`  |
 
+- `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that'll trigger a highlight reset.<br>
+  Default: `{'SessionLoadPost', 'ColorScheme'}`
+
 ## Example configuration
 
 You can check out the code in the [default preset](lua/feline/presets/default.lua) to see how the components in it are set up so you can get a good practical idea of how to use the tools that Feline gives you to create all kinds of different statusline components.
