@@ -129,22 +129,20 @@ Lua indices start at `1` instead of `0`.
 
 COMPONENT VALUES ~
 
-You can use component values to customize each component to your liking. Most
-values that a component requires can also use a function. These functions can
-take either no arguments or exactly one argument, the window id (`winid`) of
-the window for which the statusline is being generated. However, the
-|feline-`provider`| value is an exception because it can take more than one
-argument (more on that below).
+You can use component values to customize each component to your liking.
+Providing the values isn’t necessary and you can omit all of the component
+values, in which case the defaults would be used instead. The component values
+can either be set to a fixed value or a function that generates the value
+everytime the statusline is being generated.
 
-Feline will automatically evaluate the function if it is one. In case a
-function is provided, the type of the value the function returns must be the
-same as the type of value required by the component. For example, since
-|feline-`enabled`| requires a boolean value, if you set it to a function, the
-function must also return a boolean value.
+Though you should keep in mind that if a component value is set to a function,
+the function can take no arguments. The |feline-`provider`| value is an
+exception to this rule (more on that below). The return type of the function
+must also be the same as the type of value required by the component. For
+example, since |feline-`enabled`| requires a boolean value, if you set it to a
+function, the function must also return a boolean value.
 
-Note that you can omit all of the component values, in which case the defaults
-would be used instead. The different kinds of component values are discussed
-below.
+The different kinds of component values are discussed below.
 
                                                   *feline-Component-providers*
 
@@ -191,11 +189,10 @@ as the default providers.
 The value of `provider` can also be set to a function. The function must return
 a string when called. The function may also optionally return an
 |feline-`icon`| value alongside the string, which would represent the
-provider’s default icon. The provider functions can take up to three
-arguments: `winid`, which is the window handler, `component`, which represents
-the component itself and can be used to access the component values from within
-the provider, and `opts`, which represents the provider options discussed
-above.
+provider’s default icon. The provider functions can take two arguments:
+`component`, which represents the component itself and can be used to access
+the component values from within the provider, and `opts`, which represents the
+provider options discussed above.
 
 Here are a few examples of setting the provider to a function:
 
@@ -205,14 +202,9 @@ Here are a few examples of setting the provider to a function:
         return tostring(#vim.api.nvim_list_wins())
     end
     
-    -- Provider functions can take the window handler as the first argument
-    provider = function(winid)
-        return tostring(vim.api.nvim_win_get_buf(winid))
-    end
-    
-    -- Providers can also take the component itself as an argument to access the component values
-    -- using the second argument passed to the provider function
-    provider = function(_, component)
+    -- Providers can take the component itself as an argument to access the component values using the
+    -- first argument passed to the provider function
+    provider = function(component)
         if component.icon then
             return component.icon
         else
@@ -222,12 +214,12 @@ Here are a few examples of setting the provider to a function:
 <
 
 
-Functions that are added as |feline-custom-providers| can also take a third
+Functions that are added as |feline-custom-providers| can also take a second
 argument, `opts`, which represents the provider options given to the provider
 (if any). For example:
 
 >
-    provider = function(_, _, opts)
+    provider = function(_, opts)
         if opts.return_two then
             return 2
         else
@@ -248,10 +240,7 @@ Conditionally enable components        The `enabled` value of a component can
                                        be a boolean or function. This value
                                        determines if the component is enabled
                                        or not. If false, the component is not
-                                       shown in the statusline. If it’s a
-                                       function, it can take either the window
-                                       handler as an argument, or it can take
-                                       no arguments. For example:
+                                       shown in the statusline. For example:
 
 
 >
@@ -261,8 +250,8 @@ Conditionally enable components        The `enabled` value of a component can
     end
     
     -- Enable if current window width is higher than 80
-    enabled = function(winid)
-        return vim.api.nvim_win_get_width(winid) > 80
+    enabled = function()
+        return vim.api.nvim_win_get_width(0) > 80
     end
 <
 
@@ -290,9 +279,6 @@ There’s also another value you can set if the value of `icon` is a table,
 which is `always_visible`. By default, the icon is not shown if the value
 returned by the provider is empty. If you want the icon to be shown even when
 the provider string is empty, you need to set `always_visible` to `true`.
-
-If the value of `icon` a function, it can take either the window handler as an
-argument, or it can take no arguments. For example:
 
 >
     -- Setting icon to a string
@@ -354,13 +340,12 @@ provide a performance improvement since Feline caches highlight names and
 doesn’t take the time to generate a name if the name is already provided by
 the user.
 
-If the value of `hl` is a function, it can take either the window handler as an
-argument, or it can take no arguments. Note that if `hl` is a function that can
-return different values, the highlight is not redefined if the name stays the
-same. Feline only creates highlights when they don’t exist, it never
-redefines existing highlights. So if `hl` is a function that can return
-different values for `fg`, `bg` or `style`, make sure to return a different
-value for `name` as well if you want the highlight to actually change.
+Note that if `hl` is a function that can return different values, the highlight
+is not redefined if the name stays the same. Feline only creates highlights
+when they don’t exist, it never redefines existing highlights. So if `hl` is
+a function that can return different values for `fg`, `bg` or `style`, make
+sure to return a different value for `name` as well if you want the highlight
+to actually change.
 
 Here are a few examples using the `hl` value:
 
@@ -384,11 +369,11 @@ Here are a few examples using the `hl` value:
     
     -- As a function returning a string
     hl = function()
-      if require("feline.providers.vi_mode").get_vim_mode() == "NORMAL" then
-        return "MyStatuslineNormal"
-      else
-        return "MyStatuslineOther"
-      end
+        if require("feline.providers.vi_mode").get_vim_mode() == "NORMAL" then
+            return "MyStatuslineNormal"
+        else
+            return "MyStatuslineOther"
+        end
     end
 <
 
@@ -414,10 +399,6 @@ returning a table. Inside the table there can be three values, `str`, `hl` and
 separator highlight. The separator’s highlight works just like the
 component’s `hl` value. The only difference is that the separator’s `hl` by
 default uses the parent’s background color as its foreground color.
-
-If the separator is a function that returns a table, it can take either the
-window handler of the window for which the statusline is being generated for as
-an argument, or it can take no arguments.
 
 By default, Feline doesn’t show a separator if the value returned by the
 provider is empty. If you want the separator to be shown even when the
@@ -572,8 +553,8 @@ listed below:
 
 >
     custom_providers = {
-        window_number = function(_, winid)
-            return vim.api.nvim_win_get_number(winid)
+        window_number = function()
+            return tostring(vim.api.nvim_win_get_number(0))
         end
     }
 <
@@ -584,8 +565,6 @@ listed below:
 - `separators` - A table containing custom |feline-separator-value-presets|.
 - `default_hl` - A table defining the default highlights for the active and inactive statusline. It can contain two values inside of it, `active` and `inactive`. They define values of the `StatusLine` and `StatusLineNC` highlight groups, respectively. These two values are configured the same way as a component’s `hl` value. For most users this configuration option won’t be of any use, but it allows you to do some neat things like |feline-using-a-thin-line-instead-of-the-inactive-statusline|.<br>
     By default, both of these highlights use `colors.fg` as foreground color and `colors.bg` as background color, and have no styling option set.
-- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
-    Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
     Default:
 
@@ -753,9 +732,8 @@ The git providers all require gitsigns.nvim
 when you use those providers, otherwise they’ll have no output.
 
 The git provider also provides a utility function
-`require('feline.providers.git').git_info_exists(winid)` (where `winid` is the
-window handler) for checking if any git information exists in the window
-through this utility function.
+`require('feline.providers.git').git_info_exists()` for checking if any git
+information exists.
 
 DIAGNOSTICS ~
 
@@ -764,11 +742,9 @@ configured and at least one LSP client to be attached to the current buffer,
 else they’ll have no output.
 
 The diagnostics provider also provides a utility function
-`require('feline.providers.lsp').diagnostics_exist(type, winid)` (where `type`
-represents the type of diagnostic and `winid` is the window handler) for
-checking if any diagnostics of the provided type exists in the window. The
-values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or
-`'Information'`.
+`require('feline.providers.lsp').diagnostics_exist(type)` for checking if any
+diagnostics of the provided type exists. The values of `type` must be one of
+`'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
 
 VALUE PRESETS                                           *feline-value-presets*
 
@@ -837,6 +813,38 @@ DEFAULT SEPARATORS ~
 
 
 TIPS AND TRICKS                                       *feline-tips-and-tricks*
+
+GET CURRENT WINDOW OR BUFFER ~
+
+When the statusline for a window is being generated, Neovim temporarily sets
+the current window and buffer to the window and buffer for which the statusline
+is being generated.
+
+This is important to note when you set a component value to a function. Inside
+a component value that’s set to a function, functions like
+`vim.api.nvim_get_current_win()` and `vim.api.nvim_get_current_buf()` will
+return the statusline window and buffer instead of the actual current window
+and buffer number. In order to access the actual current window or buffer, you
+have to use `vim.g.actual_curbuf` or `vim.g.actual_curwin` (respectively)
+inside the function instead. For example:
+
+>
+    -- Provider function that shows current window number
+    provider = function()
+        return vim.g.actual_curwin
+    end
+    
+    -- Provider function that shows name of current buffer
+    provider = function()
+        return vim.api.nvim_buf_get_name(tonumber(vim.g.actual_curbuf))
+    end
+<
+
+
+Note that the values of both `vim.g.actual_curwin` and `vim.g.actual_curbuf`
+are strings, not numbers. So if you want to use them as a number, use
+`tonumber()` to convert the string to a number first, as shown in the second
+example.
 
 RESET HIGHLIGHT ~
 
