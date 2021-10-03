@@ -10,6 +10,8 @@ local separators = feline.separators
 local disable = feline.disable
 local force_inactive = feline.force_inactive
 
+local get_statusline_expr_width = require('feline.statusline_ffi').get_statusline_expr_width
+
 local M = {
     highlights = {}
 }
@@ -253,8 +255,7 @@ local function parse_provider(provider, component)
     return provider, icon
 end
 
--- Parses a component to return the component string
-local function parse_component(component)
+local function parse_component(component, use_short_provider)
     local enabled
 
     if component.enabled then enabled = component.enabled else enabled = true end
@@ -277,10 +278,16 @@ local function parse_component(component)
         hl = parse_hl(hl)
     end
 
-    local str, icon
+    local provider, str, icon
 
-    if component.provider then
-        str, icon = parse_provider(component.provider, component)
+    if use_short_provider then
+        provider = component.short_provider
+    else
+        provider = component.provider
+    end
+
+    if provider then
+        str, icon = parse_provider(provider, component)
     else
         str = ''
     end
@@ -315,6 +322,32 @@ local function parse_component(component)
     )
 end
 
+-- Wrapper around parse_component that handles any errors that happen while parsing the components
+-- and points to the location of the component in case of any errors
+local function parse_component_handle_errors(
+    component,
+    use_short_provider,
+    statusline_type,
+    component_section,
+    component_number
+)
+    local ok, result = pcall(parse_component, component, use_short_provider)
+
+    if not ok then
+        api.nvim_err_writeln(string.format(
+            "Feline: error while processing component number %d on section %d of type '%s': %s",
+            component_number,
+            component_section,
+            statusline_type,
+            result
+        ))
+
+        return ''
+    end
+
+    return result
+end
+
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
     -- Generate default highlights for the statusline
@@ -338,34 +371,100 @@ function M.generate_statusline(is_active)
         return ''
     end
 
-    -- Concatenate all components strings of each section to get a string for each section
-    local section_strs = {}
+    -- Iterate through all the components, parse them and store the component strings, each
+    -- component's indices and width in separate tables, while also calculating the statusline width
+    local component_strs = {}
+    local component_indices = {}
+    local component_widths = {}
+    local statusline_width = 0
 
     for i, section in ipairs(sections) do
-        local component_strs = {}
+        component_strs[i] = {}
+        component_widths[i] = {}
 
         for j, component in ipairs(section) do
-            -- Handle any errors that happen while parsing the components
-            -- and point to the location of the component in case of any erros
-            local ok, result = pcall(parse_component, component)
+            local component_str = parse_component_handle_errors(
+                component, false, statusline_type, i, j
+            )
 
-            if not ok then
-                api.nvim_err_writeln(string.format(
-                    "Feline: error while processing component number %d on section %d " ..
-                    "of type '%s': %s",
-                    j, i, statusline_type, result
-                ))
+            local component_width = get_statusline_expr_width(component_str)
 
-                result = ''
-            end
+            component_strs[i][j] = component_str
+            component_widths[i][j] = component_width
+            statusline_width = statusline_width + component_width
 
-            component_strs[j] = result
+            component_indices[#component_indices+1] = {i, j}
         end
-
-        section_strs[i] = table.concat(component_strs)
     end
 
-    -- Then concatenate all the sections to get the statusline string and return it
+    local window_width = api.nvim_win_get_width(0)
+
+    -- If statusline width is greater than the window width, begin the truncation process
+    if statusline_width > window_width then
+        -- First, sort the component indices in ascending order of the priority of the components
+        -- that the indices refer to
+        table.sort(component_indices, function(first, second)
+            local first_priority = sections[first[1]][first[2]].priority or 0
+            local second_priority = sections[second[1]][second[2]].priority or 0
+
+            return first_priority < second_priority
+        end)
+
+        -- Then, iterate through the sorted indices to access the components in order of priority,
+        -- and if the component has a short_provider, use it instead of the normal provider to
+        -- truncate the component
+        for _, indices in ipairs(component_indices) do
+            local section, number = indices[1], indices[2]
+            local component = sections[section][number]
+
+            if component.short_provider then
+                local component_str = parse_component_handle_errors(
+                    component, true, statusline_type, section, number
+                )
+
+                local component_width = get_statusline_expr_width(component_str)
+
+                -- Calculate how much the width of the statusline decreases if the provider is
+                -- replaced with the short_provider, and if it's greater than 0 (which implies that
+                -- the statusline decreased in width), replace the provider with the short_provider
+                -- and update the statusline_width variable to reflect the change
+                local width_difference = component_widths[section][number] - component_width
+
+                if width_difference > 0 then
+                    statusline_width = statusline_width - width_difference
+                    component_strs[section][number] = component_str
+                    component_widths[section][number] = component_width
+                end
+            end
+
+            if statusline_width <= window_width then break end
+        end
+    end
+
+    -- If statusline still doesn't fit within window, remove components with truncate_hide set to
+    -- true until it does
+    if statusline_width > window_width then
+        for _, indices in ipairs(component_indices) do
+            local section, number = indices[1], indices[2]
+
+            if sections[section][number].truncate_hide then
+                statusline_width = statusline_width - component_widths[section][number]
+                component_strs[section][number] = ''
+                component_widths[section][number] = 0
+            end
+
+            if statusline_width <= window_width then break end
+        end
+    end
+
+    -- Concatenate all component strings in each section to get a string for each section
+    local section_strs = {}
+
+    for i, section_component_strs in ipairs(component_strs) do
+        section_strs[i] = table.concat(section_component_strs)
+    end
+
+    -- Finally, concatenate all sections to get the statusline string, and return it
     return table.concat(section_strs, '%=')
 end
 
