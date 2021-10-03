@@ -4,7 +4,6 @@ local M = {}
 local ffi = require('ffi')
 
 -- Definitions required to use Neovim's build_stl_str_hl function to expand statusline expressions
--- And also other definitions used by this module
 ffi.cdef [[
 typedef unsigned char char_u;
 typedef struct window_S win_T;
@@ -31,8 +30,8 @@ local char_u_buf_t = ffi.typeof('char_u[?]')
 local char_u_str_t = ffi.typeof('char_u*')
 
 -- Statusline string buffer
-local stlbuf = char_u_buf_t(256)
 local stlbuf_len = 256
+local stlbuf = char_u_buf_t(stlbuf_len)
 
 -- Expand statusline expression, returns a Lua string containing plaintext with only the characters
 -- that'll be displayed in the statusline
@@ -68,5 +67,3 @@ function M.get_statusline_expr_width(expr)
 end
 
 return M
-
-
