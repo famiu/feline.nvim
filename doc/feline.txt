@@ -697,6 +697,11 @@ listed below:
 │NONE         │None                 │'yellow'     │
 
 
+
+- `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that’ll trigger a highlight reset.<br>
+    Default: `{'SessionLoadPost', 'ColorScheme'}`
+
+
 EXAMPLE CONFIGURATION                           *feline-example-configuration*
 
 You can check out the code in the default preset
