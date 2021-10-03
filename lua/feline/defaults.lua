@@ -76,11 +76,4 @@ M.force_inactive = {
 
 M.disable = {}
 
-M.update_triggers = {
-    'VimEnter',
-    'WinEnter',
-    'WinClosed',
-    'FileChangedShellPost'
-}
-
 return M

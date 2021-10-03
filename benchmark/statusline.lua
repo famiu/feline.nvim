@@ -17,7 +17,11 @@ end
 
 -- Start benchmark
 local benchmark = require('plenary.benchmark')
-local statusline_generator = require('feline').statusline
+local gen = require('feline.generator')
+
+local function statusline_generator()
+    gen.generate_statusline(true)
+end
 
 benchmark("Feline statusline generation benchmark", {
     runs = 10000,

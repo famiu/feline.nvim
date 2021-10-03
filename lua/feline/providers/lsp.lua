@@ -1,41 +1,33 @@
 local M = {}
 
-local api = vim.api
 local lsp = vim.lsp
 
-function M.is_lsp_attached(bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
-
-    return next(lsp.buf_get_clients(bufnr)) ~= nil
+function M.is_lsp_attached()
+    return next(lsp.buf_get_clients(0)) ~= nil
 end
 
-function M.get_diagnostics_count(severity, bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
+function M.get_diagnostics_count(severity)
+    local active_clients = lsp.buf_get_clients(0)
 
-    local active_clients = lsp.buf_get_clients(bufnr)
-
-    if not active_clients then return nil end
+    if not active_clients then return 0 end
 
     local count = 0
 
     for _, client in pairs(active_clients) do
-        count = count + lsp.diagnostic.get_count(bufnr, severity, client.id)
+        count = count + lsp.diagnostic.get_count(0, severity, client.id)
     end
 
     return count
 end
 
-function M.diagnostics_exist(severity, bufnr)
-    bufnr = bufnr or api.nvim_get_current_buf()
-
-    local diagnostics_count = M.get_diagnostics_count(severity, bufnr)
-    return diagnostics_count and diagnostics_count > 0
+function M.diagnostics_exist(severity)
+    return M.get_diagnostics_count(severity) > 0
 end
 
-function M.lsp_client_names(winid)
+function M.lsp_client_names()
     local clients = {}
 
-    for _, client in pairs(lsp.buf_get_clients(api.nvim_win_get_buf(winid))) do
+    for _, client in pairs(lsp.buf_get_clients(0)) do
         clients[#clients+1] = client.name
     end
 
@@ -43,27 +35,26 @@ function M.lsp_client_names(winid)
 end
 
 -- Common function used by the diagnostics providers
-local function diagnostics(winid, severity)
-    local count = M.get_diagnostics_count(severity, api.nvim_win_get_buf(winid))
+local function diagnostics(severity)
+    local count = M.get_diagnostics_count(severity)
 
-    if not count or count == 0 then return '' end
-    return tostring(count)
+    return count ~= 0 and tostring(count) or ''
 end
 
-function M.diagnostic_errors(winid)
-    return diagnostics(winid, 'Error'), '  '
+function M.diagnostic_errors()
+    return diagnostics('Error'), '  '
 end
 
-function M.diagnostic_warnings(winid)
-    return diagnostics(winid, 'Warning'), '  '
+function M.diagnostic_warnings()
+    return diagnostics('Warning'), '  '
 end
 
-function M.diagnostic_hints(winid)
-    return diagnostics(winid, 'Hint'), '  '
+function M.diagnostic_hints()
+    return diagnostics('Hint'), '  '
 end
 
-function M.diagnostic_info(winid)
-    return diagnostics(winid, 'Information'), '  '
+function M.diagnostic_info()
+    return diagnostics('Information'), '  '
 end
 
 return M

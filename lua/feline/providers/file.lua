@@ -70,8 +70,8 @@ local function get_unique_filename(filename, shorten)
     return string.reverse(string.sub(filename, 1, index))
 end
 
-function M.file_info(winid, component, opts)
-    local filename = api.nvim_buf_get_name(api.nvim_win_get_buf(winid))
+function M.file_info(component, opts)
+    local filename = api.nvim_buf_get_name(0)
     local type = opts.type or 'base-only'
 
     if type == 'short-path' then
@@ -110,15 +110,13 @@ function M.file_info(winid, component, opts)
 
     if filename == '' then filename = 'unnamed' end
 
-    local bufnr = api.nvim_win_get_buf(winid)
-
-    if bo[bufnr].readonly then
+    if bo.readonly then
         readonly_str = opts.file_readonly_icon or '🔒'
     else
         readonly_str = ''
     end
 
-    if bo[bufnr].modified then
+    if bo.modified then
         modified_str = opts.file_modified_icon or '●'
 
         if modified_str ~= '' then modified_str = modified_str .. ' ' end
@@ -126,14 +124,14 @@ function M.file_info(winid, component, opts)
         modified_str = ''
     end
 
-    return ' ' .. readonly_str .. filename .. ' ' .. modified_str, icon
+    return string.format(' %s%s %s', readonly_str, filename, modified_str), icon
 end
 
-function M.file_size(winid)
+function M.file_size()
     local suffix = {'b', 'k', 'M', 'G', 'T', 'P', 'E'}
     local index = 1
 
-    local fsize = fn.getfsize(api.nvim_buf_get_name(api.nvim_win_get_buf(winid)))
+    local fsize = fn.getfsize(api.nvim_buf_get_name(0))
 
     if fsize < 0 then fsize = 0 end
 
@@ -142,17 +140,15 @@ function M.file_size(winid)
         index = index + 1
     end
 
-    return string.format(index == 1 and '%g' or '%.2f', fsize) .. suffix[index]
+    return string.format(index == 1 and '%g%s' or '%.2f%s', fsize, suffix[index])
 end
 
-function M.file_type(winid)
-    return bo[api.nvim_win_get_buf(winid)].filetype:upper()
+function M.file_type()
+    return bo.filetype:upper()
 end
 
-function M.file_encoding(winid)
-    local bufnr = api.nvim_win_get_buf(winid)
-    local enc = (bo[bufnr].fenc ~= '' and bo[bufnr].fenc) or vim.o.enc
-    return enc:upper()
+function M.file_encoding()
+    return ((bo.fenc ~= '' and bo.fenc) or vim.o.enc):upper()
 end
 
 return M

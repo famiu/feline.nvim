@@ -2,13 +2,15 @@ local api = vim.api
 
 local M = {}
 
-function M.position(winid)
-    return string.format('%3d:%-2d', unpack(api.nvim_win_get_cursor(winid)))
+local scroll_bar_blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
+
+function M.position()
+    return string.format('%3d:%-2d', unpack(api.nvim_win_get_cursor(0)))
 end
 
-function M.line_percentage(winid)
-    local curr_line = api.nvim_win_get_cursor(winid)[1]
-    local lines = api.nvim_buf_line_count(api.nvim_win_get_buf(winid))
+function M.line_percentage()
+    local curr_line = api.nvim_win_get_cursor(0)[1]
+    local lines = api.nvim_buf_line_count(0)
 
     if curr_line == 1 then
         return "Top"
@@ -19,16 +21,11 @@ function M.line_percentage(winid)
     end
 end
 
-function M.scroll_bar(winid)
-    local blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
-    local width = 2
+function M.scroll_bar()
+    local curr_line = api.nvim_win_get_cursor(0)[1]
+    local lines = api.nvim_buf_line_count(0)
 
-    local curr_line = api.nvim_win_get_cursor(winid)[1]
-    local lines = api.nvim_buf_line_count(api.nvim_win_get_buf(winid))
-
-    local index = math.floor(curr_line / lines * (#blocks - 1)) + 1
-
-    return string.rep(blocks[index], width)
+    return string.rep(scroll_bar_blocks[math.floor(curr_line / lines * 7) + 1], 2)
 end
 
 return M
