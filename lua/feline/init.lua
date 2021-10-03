@@ -3,7 +3,8 @@ local fn = vim.fn
 local api = vim.api
 local cmd = api.nvim_command
 
-local create_augroup = require('feline.utils').create_augroup
+local utils = require('feline.utils')
+local gen = utils.lazy_require('feline.generator')
 
 local M = {}
 
@@ -26,32 +27,13 @@ local function parse_config(config_dict, config_name, expected_type, default_val
     end
 end
 
--- Update the statusline of inactive windows on the current tabpage
-function M.update_inactive_windows()
-    local current_win = api.nvim_get_current_win()
-
-    for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
-        if api.nvim_win_get_config(winid).relative == '' and winid ~= current_win
-        then
-            vim.wo[winid].statusline = M.statusline(winid)
-        end
-    end
-
-    -- Reset local statusline of current window to use the global statusline for it
-    vim.wo[current_win].statusline = nil
-end
-
 -- Clear all highlights created by Feline and remove them from cache
 function M.reset_highlights()
-    local gen = require('feline.generator')
-
     for hl, _ in pairs(gen.highlights) do
         cmd('highlight clear ' .. hl)
     end
 
     gen.highlights = {}
-
-    M.update_inactive_windows()
 end
 
 -- Setup Feline using the provided configuration options
@@ -84,11 +66,6 @@ function M.setup(config)
 
     M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
     M.disable = parse_config(config, 'disable', 'table', defaults.disable)
-    M.update_triggers = defaults.update_triggers
-
-    for _, trigger in ipairs(parse_config(config, 'update_triggers', 'table', {})) do
-        M.update_triggers[#M.update_triggers+1] = trigger
-    end
 
     M.providers = require('feline.providers')
 
@@ -120,14 +97,9 @@ function M.setup(config)
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
 
-    vim.o.statusline = '%!v:lua.require\'feline\'.statusline()'
+    vim.o.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
 
-    create_augroup({
-        {
-            table.concat(M.update_triggers, ','),
-            '*',
-            'lua require("feline").update_inactive_windows()'
-        },
+    utils.create_augroup({
         {
             'SessionLoadPost,ColorScheme',
             '*',
@@ -136,8 +108,8 @@ function M.setup(config)
     }, 'feline')
 end
 
-function M.statusline(winid)
-    return require('feline.generator').generate_statusline(winid or api.nvim_get_current_win())
+function M.statusline()
+    return gen.generate_statusline(api.nvim_get_current_win() == tonumber(g.actual_curwin))
 end
 
 return M

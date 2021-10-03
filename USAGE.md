@@ -92,11 +92,11 @@ components.active[3][2] = {
 
 ### Component values
 
-You can use component values to customize each component to your liking. Most values that a component requires can also use a function. These functions can take either no arguments or exactly one argument, the window id (`winid`) of the window for which the statusline is being generated. However, the [`provider`](#component-providers) value is an exception because it can take more than one argument (more on that below).
+You can use component values to customize each component to your liking. Providing the values isn't necessary and you can omit all of the component values, in which case the defaults would be used instead. The component values can either be set to a fixed value or a function that generates the value everytime the statusline is being generated.
 
-Feline will automatically evaluate the function if it is one. In case a function is provided, the type of the value the function returns must be the same as the type of value required by the component. For example, since [`enabled`](#conditionally-enable-components) requires a boolean value, if you set it to a function, the function must also return a boolean value.
+Though you should keep in mind that if a component value is set to a function, the function can take no arguments. The [`provider`](#component-providers) value is an exception to this rule (more on that below). The return type of the function must also be the same as the type of value required by the component. For example, since [`enabled`](#conditionally-enable-components) requires a boolean value, if you set it to a function, the function must also return a boolean value.
 
-Note that you can omit all of the component values, in which case the defaults would be used instead. The different kinds of component values are discussed below.
+The different kinds of component values are discussed below.
 
 #### Component providers
 
@@ -129,7 +129,7 @@ provider = {
 
 Note that you can also use your [manually added providers](#setup-function) the same way as the default providers.
 
-The value of `provider` can also be set to a function. The function must return a string when called. The function may also optionally return an [`icon`](#component-icon) value alongside the string, which would represent the provider's default icon. The provider functions can take up to three arguments: `winid`, which is the window handler, `component`, which represents the component itself and can be used to access the component values from within the provider, and `opts`, which represents the provider options discussed above.
+The value of `provider` can also be set to a function. The function must return a string when called. The function may also optionally return an [`icon`](#component-icon) value alongside the string, which would represent the provider's default icon. The provider functions can take two arguments: `component`, which represents the component itself and can be used to access the component values from within the provider, and `opts`, which represents the provider options discussed above.
 
 Here are a few examples of setting the provider to a function:
 
@@ -139,14 +139,9 @@ provider = function()
     return tostring(#vim.api.nvim_list_wins())
 end
 
--- Provider functions can take the window handler as the first argument
-provider = function(winid)
-    return tostring(vim.api.nvim_win_get_buf(winid))
-end
-
--- Providers can also take the component itself as an argument to access the component values
--- using the second argument passed to the provider function
-provider = function(_, component)
+-- Providers can take the component itself as an argument to access the component values using the
+-- first argument passed to the provider function
+provider = function(component)
     if component.icon then
         return component.icon
     else
@@ -155,10 +150,10 @@ provider = function(_, component)
 end
 ```
 
-Functions that are added as [custom providers](#setup-function) can also take a third argument, `opts`, which represents the provider options given to the provider (if any). For example:
+Functions that are added as [custom providers](#setup-function) can also take a second argument, `opts`, which represents the provider options given to the provider (if any). For example:
 
 ```lua
-provider = function(_, _, opts)
+provider = function(_, opts)
     if opts.return_two then
         return 2
     else
@@ -171,7 +166,7 @@ If you omit the provider value, it will be set to an empty string. A component w
 
 #### Conditionally enable components
 
-The `enabled` value of a component can be a boolean or function. This value determines if the component is enabled or not. If false, the component is not shown in the statusline. If it's a function, it can take either the window handler as an argument, or it can take no arguments. For example:
+The `enabled` value of a component can be a boolean or function. This value determines if the component is enabled or not. If false, the component is not shown in the statusline. For example:
 
 ```lua
 -- Enable if opened file has a valid size
@@ -180,8 +175,8 @@ enabled = function()
 end
 
 -- Enable if current window width is higher than 80
-enabled = function(winid)
-    return vim.api.nvim_win_get_width(winid) > 80
+enabled = function()
+    return vim.api.nvim_win_get_width(0) > 80
 end
 ```
 
@@ -192,8 +187,6 @@ Some inbuilt providers such as `git_branch` provide default icons. If you either
 The component's icon can be a table, string or function. By default, the icon inherits the component's highlight, but you can also change the highlight specifically for the icon. To do this, you need to pass a table containing `str` and `hl`, where `str` would represent the icon and `hl` would represent the icon highlight. The icon's highlight works just like the `hl` component's values.
 
 There's also another value you can set if the value of `icon` is a table, which is `always_visible`. By default, the icon is not shown if the value returned by the provider is empty. If you want the icon to be shown even when the provider string is empty, you need to set `always_visible` to `true`.
-
-If the value of `icon` a function, it can take either the window handler as an argument, or it can take no arguments. For example:
 
 ```lua
 -- Setting icon to a string
@@ -230,12 +223,11 @@ If it's a table, it'll automatically generate a highlight group for you based on
 
 The `fg` and `bg` values are strings that represent the RGB hex or [name](#value-presets) of the foreground and background color of the highlight, respectively. (eg: `'#FFFFFF'`, `'white'`). If `fg` or `bg` is not provided, it uses the default foreground or background color provided in the `setup()` function, respectively.
 
-The `style` value is a string that determines the formatting style of the component's text (do
-`:help attr-list` in Neovim for more info). By default it is set to `'NONE'`
+The `style` value is a string that determines the formatting style of the component's text (do `:help attr-list` in Neovim for more info). By default it is set to `'NONE'`
 
 The `name` value is a string that determines the name of highlight group created by Feline (eg: `'StatusComponentVimInsert'`). If a name is not provided, Feline automatically generates a unique name for the highlight group based on the other values, so you can also just omit the `name` and Feline will create new highlights for you when required. However, setting `name` may provide a performance improvement since Feline caches highlight names and doesn't take the time to generate a name if the name is already provided by the user.
 
-If the value of `hl` is a function, it can take either the window handler as an argument, or it can take no arguments. Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `fg`, `bg` or `style`, make sure to return a different value for `name` as well if you want the highlight to actually change.
+Note that if `hl` is a function that can return different values, the highlight is not redefined if the name stays the same. Feline only creates highlights when they don't exist, it never redefines existing highlights. So if `hl` is a function that can return different values for `fg`, `bg` or `style`, make sure to return a different value for `name` as well if you want the highlight to actually change.
 
 Here are a few examples using the `hl` value:
 
@@ -259,11 +251,11 @@ end
 
 -- As a function returning a string
 hl = function()
-  if require("feline.providers.vi_mode").get_vim_mode() == "NORMAL" then
-    return "MyStatuslineNormal"
-  else
-    return "MyStatuslineOther"
-  end
+    if require("feline.providers.vi_mode").get_vim_mode() == "NORMAL" then
+        return "MyStatuslineNormal"
+    else
+        return "MyStatuslineOther"
+    end
 end
 ```
 
@@ -274,8 +266,6 @@ There are two types of separator values that you can put in a component, which a
 The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets).
 
 The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there can be three values, `str`, `hl` and `always_visible`. `str` represents the separator string and `hl` represents the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
-
-If the separator is a function that returns a table, it can take either the window handler of the window for which the statusline is being generated for as an argument, or it can take no arguments.
 
 By default, Feline doesn't show a separator if the value returned by the provider is empty. If you want the separator to be shown even when the component string is empty, you can set the `always_visible` value in the separator table to `true`. If unset or set to `false`, the separator is not shown if the component string is empty.
 
@@ -414,8 +404,8 @@ Now that you know about the components table and how Feline components work, you
 
 ```lua
 custom_providers = {
-    window_number = function(_, winid)
-        return vim.api.nvim_win_get_number(winid)
+    window_number = function()
+        return tostring(vim.api.nvim_win_get_number(0))
     end
 }
 ```
@@ -424,8 +414,6 @@ custom_providers = {
 - `separators` - A table containing custom [separator value presets](#value-presets).
 - `default_hl` - A table defining the default highlights for the active and inactive statusline. It can contain two values inside of it, `active` and `inactive`. They define values of the `StatusLine` and `StatusLineNC` highlight groups, respectively. These two values are configured the same way as a component's `hl` value. For most users this configuration option won't be of any use, but it allows you to do some neat things like [using a thin line instead of the inactive statusline](#thin-line-for-horizontal-splits).<br>
   By default, both of these highlights use `colors.fg` as foreground color and `colors.bg` as background color, and have no styling option set.
-- `update_triggers` - A list of autocmds that trigger an update of the statusline in inactive windows.<br>
-  Default: `{'VimEnter', 'WinEnter', 'WinClosed', 'FileChangedShellPost'}`
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
   Default:
 
@@ -564,13 +552,13 @@ The `file_info` provider has some special provider options that can be passed th
 
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll have no output.
 
-The git provider also provides a utility function `require('feline.providers.git').git_info_exists(winid)` (where `winid` is the window handler) for checking if any git information exists in the window through this utility function.
+The git provider also provides a utility function `require('feline.providers.git').git_info_exists()` for checking if any git information exists.
 
 ### Diagnostics
 
 The diagnostics and LSP providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
-The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type, winid)` (where `type` represents the type of diagnostic and `winid` is the window handler) for checking if any diagnostics of the provided type exists in the window. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
+The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type)` for checking if any diagnostics of the provided type exists. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
 
 ## Value presets
 
@@ -631,6 +619,26 @@ Below is a list of all the default value names and their values:
 | `circle`             | `'●'` |
 
 ## Tips and tricks
+
+### Get current window or buffer
+
+When the statusline for a window is being generated, Neovim temporarily sets the current window and buffer to the window and buffer for which the statusline is being generated.
+
+This is important to note when you set a component value to a function. Inside a component value that's set to a function, functions like `vim.api.nvim_get_current_win()` and `vim.api.nvim_get_current_buf()` will return the statusline window and buffer instead of the actual current window and buffer number. In order to access the actual current window or buffer, you have to use `vim.g.actual_curbuf` or `vim.g.actual_curwin` (respectively) inside the function instead. For example:
+
+```
+-- Provider function that shows current window number
+provider = function()
+    return vim.g.actual_curwin
+end
+
+-- Provider function that shows name of current buffer
+provider = function()
+    return vim.api.nvim_buf_get_name(tonumber(vim.g.actual_curbuf))
+end
+```
+
+Note that the values of both `vim.g.actual_curwin` and `vim.g.actual_curbuf` are strings, not numbers. So if you want to use them as a number, use `tonumber()` to convert the string to a number first, as shown in the second example.
 
 ### Reset highlight
 

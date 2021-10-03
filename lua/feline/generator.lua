@@ -30,13 +30,11 @@ local function is_forced_inactive()
         (force_inactive.bufnames and find_pattern_match(force_inactive.bufnames, bufname))
 end
 
--- Check if buffer contained in window is configured to have statusline disabled
-local function is_disabled(winid)
-    local bufnr = api.nvim_win_get_buf(winid)
-
-    local buftype = bo[bufnr].buftype
-    local filetype = bo[bufnr].filetype
-    local bufname = api.nvim_buf_get_name(bufnr)
+-- Check if buffer is configured to have statusline disabled
+local function is_disabled()
+    local buftype = bo.buftype
+    local filetype = bo.filetype
+    local bufname = api.nvim_buf_get_name(0)
 
     return (disable.filetypes and find_pattern_match(disable.filetypes, filetype)) or
         (disable.buftypes and find_pattern_match(disable.buftypes, buftype)) or
@@ -136,7 +134,7 @@ local function get_hlname(hl, parent_hl)
 end
 
 -- Generates StatusLine and StatusLineNC highlights based on the user configuration
-local function generate_defhl(winid)
+local function generate_defhl()
     for statusline_type, hlname in pairs({active = 'StatusLine', inactive = 'StatusLineNC'}) do
         -- If default hl for the current statusline type is not defined, just set it to an empty
         -- table so that it can be populated by parse_hl later on
@@ -146,7 +144,7 @@ local function generate_defhl(winid)
 
         -- Only re-evaluate and add the highlight if it's a function or when it's not cached
         if type(default_hl[statusline_type]) == 'function' or not M.highlights[hlname] then
-            local hl = parse_hl(evaluate_if_function(default_hl[statusline_type], winid))
+            local hl = parse_hl(evaluate_if_function(default_hl[statusline_type]))
             add_hl(hlname, hl.fg, hl.bg, hl.style)
         end
     end
@@ -155,10 +153,10 @@ end
 -- Parse component seperator to return parsed string
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
-local function parse_sep(sep, parent_bg, is_component_empty, winid)
+local function parse_sep(sep, parent_bg, is_component_empty)
     if sep == nil then return '' end
 
-    sep = evaluate_if_function(sep, winid)
+    sep = evaluate_if_function(sep)
 
     local hl
     local str
@@ -171,8 +169,8 @@ local function parse_sep(sep, parent_bg, is_component_empty, winid)
     else
         if is_component_empty and not sep.always_visible then return '' end
 
-        str = evaluate_if_function(sep.str, winid) or ''
-        hl = evaluate_if_function(sep.hl, winid) or {fg = parent_bg, bg = colors.bg}
+        str = evaluate_if_function(sep.str) or ''
+        hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = colors.bg}
     end
 
     if separators[str] then str = separators[str] end
@@ -181,7 +179,7 @@ local function parse_sep(sep, parent_bg, is_component_empty, winid)
 end
 
 -- Either parse a single separator or a list of separators returning the parsed string
-local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
+local function parse_sep_list(sep_list, parent_bg, is_component_empty)
     if sep_list == nil then return '' end
 
     if (type(sep_list) == 'table' and sep_list[1] and (
@@ -195,23 +193,22 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty, winid)
             sep_strs[#sep_strs+1] = parse_sep(
                 v,
                 parent_bg,
-                is_component_empty,
-                winid
+                is_component_empty
             )
         end
 
         return table.concat(sep_strs)
     else
-        return parse_sep(sep_list, parent_bg, is_component_empty, winid)
+        return parse_sep(sep_list, parent_bg, is_component_empty)
     end
 end
 
 -- Parse component icon and return parsed string
 -- By default, icon inherits component highlights
-local function parse_icon(icon, parent_hl, is_component_empty, winid)
+local function parse_icon(icon, parent_hl, is_component_empty)
     if icon == nil then return '' end
 
-    icon = evaluate_if_function(icon, winid)
+    icon = evaluate_if_function(icon)
 
     local hl
     local str
@@ -224,26 +221,26 @@ local function parse_icon(icon, parent_hl, is_component_empty, winid)
     else
         if is_component_empty and not icon.always_visible then return '' end
 
-        str = evaluate_if_function(icon.str, winid) or ''
-        hl = evaluate_if_function(icon.hl, winid) or parent_hl
+        str = evaluate_if_function(icon.str) or ''
+        hl = evaluate_if_function(icon.hl) or parent_hl
     end
 
     return string.format('%%#%s#%s', get_hlname(hl, parent_hl), str)
 end
 
 -- Parse component provider to return the provider string and default icon
-local function parse_provider(provider, winid, component)
+local function parse_provider(provider, component)
     local icon
 
     -- If provider is a string and its name matches the name of a registered provider, use it
     if type(provider) == 'string' and providers[provider] then
-        provider, icon = providers[provider](winid, component, {})
+        provider, icon = providers[provider](component, {})
     -- If provider is a function, just evaluate it normally
     elseif type(provider) == 'function' then
-        provider, icon = provider(winid, component)
+        provider, icon = provider(component)
     -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == 'table' then
-        provider, icon = providers[provider.name](winid, component, provider.opts or {})
+        provider, icon = providers[provider.name](component, provider.opts or {})
     end
 
     if type(provider) ~= 'string' then
@@ -257,16 +254,16 @@ local function parse_provider(provider, winid, component)
 end
 
 -- Parses a component to return the component string
-local function parse_component(component, winid)
+local function parse_component(component)
     local enabled
 
     if component.enabled then enabled = component.enabled else enabled = true end
 
-    enabled = evaluate_if_function(enabled, winid)
+    enabled = evaluate_if_function(enabled)
 
     if not enabled then return '' end
 
-    local hl = evaluate_if_function(component.hl, winid) or {}
+    local hl = evaluate_if_function(component.hl) or {}
     local hlname
 
     -- If highlight is a string, then accept it as an external highlight group and
@@ -283,7 +280,7 @@ local function parse_component(component, winid)
     local str, icon
 
     if component.provider then
-        str, icon = parse_provider(component.provider, winid, component)
+        str, icon = parse_provider(component.provider, component)
     else
         str = ''
     end
@@ -293,22 +290,19 @@ local function parse_component(component, winid)
     local left_sep_str = parse_sep_list(
         component.left_sep,
         hl.bg,
-        is_component_empty,
-        winid
+        is_component_empty
     )
 
     local right_sep_str = parse_sep_list(
         component.right_sep,
         hl.bg,
-        is_component_empty,
-        winid
+        is_component_empty
     )
 
     icon = parse_icon(
         component.icon or icon,
         hl,
-        is_component_empty,
-        winid
+        is_component_empty
     )
 
     return string.format(
@@ -322,63 +316,57 @@ local function parse_component(component, winid)
 end
 
 -- Generate statusline by parsing all components and return a string
-function M.generate_statusline(winid)
+function M.generate_statusline(is_active)
     -- Generate default highlights for the statusline
-    generate_defhl(winid)
+    generate_defhl()
 
-    local statusline_str = ''
+    if not components_table or is_disabled() then
+        return ''
+    end
 
-    if components_table and not is_disabled(winid) then
-        local statusline_type
+    local statusline_type
 
-        if winid == api.nvim_get_current_win() and not is_forced_inactive() then
-            statusline_type='active'
-        else
-            statusline_type='inactive'
-        end
+    if is_active and not is_forced_inactive() then
+        statusline_type='active'
+    else
+        statusline_type='inactive'
+    end
 
-        local sections = components_table[statusline_type]
+    local sections = components_table[statusline_type]
 
-        if sections then
-            -- Concatenate all components strings of each section to get a string for each section
-            local section_strs = {}
+    if not sections then
+        return ''
+    end
 
-            for i, section in ipairs(sections) do
-                local component_strs = {}
+    -- Concatenate all components strings of each section to get a string for each section
+    local section_strs = {}
 
-                for j, component in ipairs(section) do
-                    -- Handle any errors that happen while parsing the components
-                    -- and point to the location of the component in case of any erros
-                    local ok, result = pcall(parse_component, component, winid)
+    for i, section in ipairs(sections) do
+        local component_strs = {}
 
-                    if not ok then
-                        api.nvim_err_writeln(string.format(
-                            "Feline: error while processing component number %d on section %d " ..
-                            "of type '%s': %s",
-                            j, i, statusline_type, result
-                        ))
+        for j, component in ipairs(section) do
+            -- Handle any errors that happen while parsing the components
+            -- and point to the location of the component in case of any erros
+            local ok, result = pcall(parse_component, component)
 
-                        result = ''
-                    end
+            if not ok then
+                api.nvim_err_writeln(string.format(
+                    "Feline: error while processing component number %d on section %d " ..
+                    "of type '%s': %s",
+                    j, i, statusline_type, result
+                ))
 
-                    component_strs[j] = result
-                end
-
-                section_strs[i] = table.concat(component_strs)
+                result = ''
             end
 
-            -- Then concatenate all the sections to get the statusline string
-            statusline_str = table.concat(section_strs, '%=')
+            component_strs[j] = result
         end
+
+        section_strs[i] = table.concat(component_strs)
     end
 
-    -- Never return an empty string since setting statusline to an empty string will make it
-    -- use the global statusline value (same as active statusline) for inactive windows
-    if statusline_str == '' then
-        return ' '
-    else
-        return statusline_str
-    end
+    -- Then concatenate all the sections to get the statusline string and return it
+    return table.concat(section_strs, '%=')
 end
 
 return M
