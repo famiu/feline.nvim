@@ -11,21 +11,42 @@ local M = {}
 
 -- Parse configuration option with name config_name from config_dict and match its type
 -- Return a default value (if provided one) in case the configuration option doesn't exist
-local function parse_config(config_dict, config_name, expected_type, default_value)
-    if config_dict and config_dict[config_name] then
-        if type(config_dict[config_name]) == expected_type then
-            return config_dict[config_name]
-        else
+local function parse_config(config_dict, defaults)
+    local parsed_config = {}
+
+    -- Iterate through every possible configuration options, also checking their type to ensure the
+    -- validity of the configuration and also using the defaults if a custom configuration is not
+    -- provided
+    for config_name, config_info in pairs(defaults) do
+        if config_dict[config_name] == nil then
+            parsed_config[config_name] = config_info.default_value
+        elseif type(config_dict[config_name]) ~= config_info.type then
             api.nvim_err_writeln(string.format(
-                "Feline: Expected '%s' for config option '%s', got '%s'",
-                expected_type,
+                "Feline: expected type '%s' for config option '%s', got '%s'",
+                config_info.type,
                 config_name,
                 type(config_dict[config_name])
             ))
+
+            parsed_config[config_name] = config_info.default_value
+        elseif config_info.update_default then
+            local config_value = {}
+
+            for k, v in pairs(config_info.default_value) do
+                config_value[k] = v
+            end
+
+            for k, v in pairs(config_dict[config_name]) do
+                config_value[k] = v
+            end
+
+            parsed_config[config_name] = config_value
+        else
+            parsed_config[config_name] = config_dict[config_name]
         end
-    else
-        return default_value
     end
+
+    return parsed_config
 end
 
 -- Clear all highlights created by Feline and remove them from cache
@@ -54,73 +75,53 @@ function M.setup(config)
         return
     end
 
-    local defaults = require('feline.defaults')
+    config = parse_config(config, require('feline.defaults'))
 
-    -- Value presets
-    local value_presets = {
-        'colors',
-        'separators',
-        'vi_mode_colors',
-    }
-
-    -- Parse the opts in config_opts by getting the default values and
-    -- appending the custom values on top of them
-    for _, opt in ipairs(value_presets) do
-        local custom_val = parse_config(config, opt, 'table', {})
-        M[opt] = defaults[opt]
-
-        for k, v in pairs(custom_val) do
-            M[opt][k] = v
-        end
-    end
-
-    M.force_inactive = parse_config(config, 'force_inactive', 'table', defaults.force_inactive)
-    M.disable = parse_config(config, 'disable', 'table', defaults.disable)
+    M.colors = config.colors
+    M.separators = config.separators
+    M.vi_mode_colors = config.vi_mode_colors
+    M.force_inactive = config.force_inactive
+    M.disable = config.disable
+    M.default_hl = config.default_hl
 
     M.providers = require('feline.providers')
 
-    for k, v in pairs(parse_config(config, 'custom_providers', 'table', {})) do
+    -- Register custom providers
+    for k, v in pairs(config.custom_providers) do
         M.providers[k] = v
     end
 
-    local components = parse_config(config, 'components', 'table')
-
-    if not components then
+    -- If components table is provided, use it, else use a preset
+    if config.components then
+        M.components = config.components
+    else
+        local preset = config.preset
         local presets = require('feline.presets')
 
-        if parse_config(config, 'preset', 'string') and presets[config.preset] then
-            components = presets[config.preset]
-        else
-            local has_devicons = pcall(require,'nvim-web-devicons')
-
-            if has_devicons then
-                components = presets['default']
+        -- If a valid preset isn't provided, then use the default preset if nvim-web-devicons
+        -- exists, else use the noicons preset
+        if not (preset and presets[preset]) then
+            if pcall(require, 'nvim-web-devicons') then
+                preset = 'default'
             else
-                components = presets['noicon']
+                preset = 'noicon'
             end
         end
-    end
 
-    M.components = components
-    M.default_hl = parse_config(config, 'default_hl', 'table', {})
+        M.components = presets[preset]
+    end
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
 
+    -- Set the value of the statusline option to Feline's statusline generation function
     opt.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
 
-    local highlight_reset_triggers = parse_config(
-        config,
-        'highlight_reset_triggers',
-        'table',
-        defaults.highlight_reset_triggers
-    )
-
     -- Autocommand to reset highlights according to the `highlight_reset_triggers` configuration
-    if next(highlight_reset_triggers) then
+    if next(config.highlight_reset_triggers) then
         utils.create_augroup({
             {
-                table.concat(highlight_reset_triggers, ','),
+                table.concat(config.highlight_reset_triggers, ','),
                 '*',
                 'lua require("feline").reset_highlights()'
             }
