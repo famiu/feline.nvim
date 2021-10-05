@@ -28,7 +28,7 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
 
 - Necessary
   - Neovim v0.5 or greater
-  - Truecolor support for Neovim (do `:help 'termguicolors'` in Neovim for more info)
+  - You must have 24-bit RGB color enabled in Neovim (do `:help 'termguicolors'` in Neovim for more info)
 - Optional
   - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icon support
   - [A patched font](https://github.com/ryanoasis/nerd-fonts/) - For icon support
