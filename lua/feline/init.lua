@@ -1,4 +1,5 @@
 local g = vim.g
+local opt = vim.opt
 local fn = vim.fn
 local api = vim.api
 local cmd = api.nvim_command
@@ -41,6 +42,15 @@ function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
     if fn.has('nvim-0.5') ~= 1 then
         api.nvim_err_writeln('Feline is only available for Neovim versions 0.5 and above')
+        return
+    end
+
+    -- Check if termguicolors is enabled
+    if not opt.termguicolors:get() then
+        api.nvim_err_writeln(
+            'Feline needs \'termguicolors\' to be enabled to work properly\n' ..
+            'Please do `:help \'termguicolors\'` in Neovim for more information'
+        )
         return
     end
 
@@ -97,7 +107,7 @@ function M.setup(config)
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
 
-    vim.o.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
+    opt.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
 
     local highlight_reset_triggers = parse_config(
         config,
