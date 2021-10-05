@@ -13,7 +13,14 @@ local force_inactive = feline.force_inactive
 local get_statusline_expr_width = require('feline.statusline_ffi').get_statusline_expr_width
 
 local M = {
+    -- Cached highlights
     highlights = {}
+}
+
+-- Default highlight name corresponding to each statusline type
+local statusline_type_hl = {
+    active = 'StatusLine',
+    inactive = 'StatusLineNC'
 }
 
 -- Return true if any pattern in tbl matches provided value
@@ -137,15 +144,13 @@ end
 
 -- Generates StatusLine and StatusLineNC highlights based on the user configuration
 local function generate_defhl()
-    for statusline_type, hlname in pairs({active = 'StatusLine', inactive = 'StatusLineNC'}) do
-        -- If default hl for the current statusline type is not defined, just set it to an empty
-        -- table so that it can be populated by parse_hl later on
-        if not default_hl[statusline_type] then
-            default_hl[statusline_type] = {}
-        end
-
+    for statusline_type, hlname in pairs(statusline_type_hl) do
         -- Only re-evaluate and add the highlight if it's a function or when it's not cached
         if type(default_hl[statusline_type]) == 'function' or not M.highlights[hlname] then
+            -- If default hl for the statusline type is not defined, just set it to an empty table
+            -- so that it can be populated by parse_hl later on
+            if not default_hl[statusline_type] then default_hl[statusline_type] = {} end
+
             local hl = parse_hl(evaluate_if_function(default_hl[statusline_type]))
             add_hl(hlname, hl.fg, hl.bg, hl.style)
         end
