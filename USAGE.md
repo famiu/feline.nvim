@@ -472,8 +472,9 @@ custom_providers = {
 
 - `colors` - A table containing custom [color value presets](#value-presets). The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
 - `separators` - A table containing custom [separator value presets](#value-presets).
-- `default_hl` - A table defining the default highlights for the active and inactive statusline. It can contain two values inside of it, `active` and `inactive`. They define values of the `StatusLine` and `StatusLineNC` highlight groups, respectively. These two values are configured the same way as a component's `hl` value. For most users this configuration option won't be of any use, but it allows you to do some neat things like [using a thin line instead of the inactive statusline](#thin-line-for-horizontal-splits).<br>
-  By default, both of these highlights use `colors.fg` as foreground color and `colors.bg` as background color, and have no styling option set.
+- `default_hl` - A table defining the default highlights for the active and inactive statusline. It can contain two values inside of it, `active` and `inactive`. They define values of the `StatusLine` and `StatusLineNC` highlight groups, respectively. These two values are configured the same way as a component's `hl` value.<br>
+  By default, both of these highlights use `colors.fg` as foreground color and `colors.bg` as background color, and have no styling option set.<br><br>
+  For most users this configuration option probably won't be of any use since it already inherits the default `fg` and `bg` colors by default, but it can be used if you want the highlight for the statusline to be different from the default `fg` or `bg`. You can also use it to set `style` attributes to the default statusline highlight, which allows for some neat things like [using a thin line instead of the inactive statusline](#thin-line-for-horizontal-splits).
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
   Default:
 
@@ -517,7 +518,7 @@ Here is a list of all possible vi_mode names used with the default color associa
 | `TERM`      | Terminal mode         | `'green'`   |
 | `NONE`      | None                  | `'yellow'`  |
 
-- `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that'll trigger a highlight reset.<br>
+- `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that'll trigger a highlight reset.<br><br>
   Default: `{'SessionLoadPost', 'ColorScheme'}`
 
 ## Example configuration
