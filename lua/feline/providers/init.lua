@@ -7,6 +7,7 @@ local provider_categories = {
     file = lazy_require('feline.providers.file'),
     lsp = lazy_require('feline.providers.lsp'),
     git = lazy_require('feline.providers.git'),
+    misc = lazy_require('feline.providers.misc'),
     custom = {}
 }
 
@@ -32,7 +33,9 @@ local get_provider_category = {
     diagnostic_errors = 'lsp',
     diagnostic_warnings = 'lsp',
     diagnostic_hints = 'lsp',
-    diagnostic_info = 'lsp'
+    diagnostic_info = 'lsp',
+
+    spacer = 'misc'
 }
 
 -- Providers that have been loaded
