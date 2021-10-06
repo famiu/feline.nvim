@@ -102,6 +102,7 @@ return {
     },
     custom_providers = {
         type = 'table',
+        default_value = {}
     },
     default_hl = {
         type = 'table',
