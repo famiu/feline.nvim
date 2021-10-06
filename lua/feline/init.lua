@@ -12,6 +12,8 @@ local M = {}
 -- Parse configuration option with name config_name from config_dict and match its type
 -- Return a default value (if provided one) in case the configuration option doesn't exist
 local function parse_config(config_dict, defaults)
+    if not config_dict then config_dict = {} end
+
     local parsed_config = {}
 
     -- Iterate through every possible configuration options, also checking their type to ensure the
