@@ -166,7 +166,11 @@ If you omit the provider value, it will be set to an empty string. A component w
 
 #### Truncation
 
-Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. There's a few component values associated with truncation.
+Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. It can be useful if you want to make better use of screen space. It also allows you to better manage which providers are truncated, how they are truncated and in which order they are truncated.
+
+**NOTE:** Due to some internal limitations, truncation does not work on Windows. As a result, all configurations related to truncation will be ignored on Windows and components won't be truncated.
+
+There are a few component values associated with truncation which are described below.
 
 ##### Component short provider
 
