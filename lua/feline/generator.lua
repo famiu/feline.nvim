@@ -46,7 +46,7 @@ end
 -- Evaluate a component key if it is a function, else return the value
 -- If the key is a function, every argument after the first one is passed to it
 local function evaluate_if_function(key, ...)
-    if type(key) == "function" then
+    if type(key) == 'function' then
         return key(...)
     else
         return key
@@ -215,27 +215,39 @@ end
 
 -- Parse component provider to return the provider string and default icon
 local function parse_provider(provider, component)
+    local str = ''
     local icon
 
     -- If provider is a string and its name matches the name of a registered provider, use it
     if type(provider) == 'string' and providers[provider] then
-        provider, icon = providers[provider](component, {})
+        str, icon = providers[provider](component, {})
     -- If provider is a function, just evaluate it normally
     elseif type(provider) == 'function' then
-        provider, icon = provider(component)
+        str, icon = provider(component)
     -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == 'table' then
-        provider, icon = providers[provider.name](component, provider.opts or {})
+        if not provider.name then
+            api.nvim_err_writeln("Provider table doesn't have the provider name")
+        elseif not providers[provider.name] then
+            api.nvim_err_writeln(string.format(
+                "Provider with name '%s' doesn't exist",
+                provider.name
+            ))
+        else
+            str, icon = providers[provider.name](component, provider.opts or {})
+        end
     end
 
-    if type(provider) ~= 'string' then
+    if type(str) ~= 'string' then
         api.nvim_err_writeln(string.format(
             "Provider must evaluate to string, got type '%s' instead",
             type(provider)
         ))
+
+        str = ''
     end
 
-    return provider, icon
+    return str, icon
 end
 
 local function parse_component(component, use_short_provider)
