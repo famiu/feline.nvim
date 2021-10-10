@@ -104,10 +104,6 @@ return {
         type = 'table',
         default_value = {}
     },
-    default_hl = {
-        type = 'table',
-        default_value = {}
-    },
     components = {
         type = 'table'
     },

@@ -4,7 +4,6 @@ local api = vim.api
 local feline = require('feline')
 local providers = feline.providers
 local components_table = feline.components
-local default_hl = feline.default_hl
 local colors = feline.colors
 local separators = feline.separators
 local disable = feline.disable
@@ -15,12 +14,6 @@ local get_statusline_expr_width = require('feline.statusline_ffi').get_statuslin
 local M = {
     -- Cached highlights
     highlights = {}
-}
-
--- Default highlight name corresponding to each statusline type
-local statusline_type_hl = {
-    active = 'StatusLine',
-    inactive = 'StatusLineNC'
 }
 
 -- Return true if any pattern in tbl matches provided value
@@ -140,21 +133,6 @@ local function get_hlname(hl, parent_hl)
     end
 
     return hlname
-end
-
--- Generates StatusLine and StatusLineNC highlights based on the user configuration
-local function generate_defhl()
-    for statusline_type, hlname in pairs(statusline_type_hl) do
-        -- Only re-evaluate and add the highlight if it's a function or when it's not cached
-        if type(default_hl[statusline_type]) == 'function' or not M.highlights[hlname] then
-            -- If default hl for the statusline type is not defined, just set it to an empty table
-            -- so that it can be populated by parse_hl later on
-            if not default_hl[statusline_type] then default_hl[statusline_type] = {} end
-
-            local hl = parse_hl(evaluate_if_function(default_hl[statusline_type]))
-            add_hl(hlname, hl.fg, hl.bg, hl.style)
-        end
-    end
 end
 
 -- Parse component seperator to return parsed string
@@ -355,9 +333,6 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
-    -- Generate default highlights for the statusline
-    generate_defhl()
-
     if not components_table or is_disabled() then
         return ''
     end

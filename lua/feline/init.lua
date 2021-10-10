@@ -84,7 +84,6 @@ function M.setup(config)
     M.vi_mode_colors = config.vi_mode_colors
     M.force_inactive = config.force_inactive
     M.disable = config.disable
-    M.default_hl = config.default_hl
 
     M.providers = require('feline.providers')
 
