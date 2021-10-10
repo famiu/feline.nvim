@@ -219,8 +219,12 @@ local function parse_provider(provider, component)
     local icon
 
     -- If provider is a string and its name matches the name of a registered provider, use it
-    if type(provider) == 'string' and providers[provider] then
-        str, icon = providers[provider](component, {})
+    if type(provider) == 'string' then
+        if providers[provider] then
+            str, icon = providers[provider](component, {})
+        else
+            str = provider
+        end
     -- If provider is a function, just evaluate it normally
     elseif type(provider) == 'function' then
         str, icon = provider(component)
@@ -253,9 +257,11 @@ end
 local function parse_component(component, use_short_provider)
     local enabled
 
-    if component.enabled then enabled = component.enabled else enabled = true end
-
-    enabled = evaluate_if_function(enabled)
+    if component.enabled ~= nil then
+        enabled = evaluate_if_function(component.enabled)
+    else
+        enabled = true
+    end
 
     if not enabled then return '' end
 
