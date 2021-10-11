@@ -1,4 +1,15 @@
--- This module provides an interface to Neovim's statusline generator using Lua FFI
+-- This module provides an interface to Neovim's statusline generator using LuaJIT FFI
+
+-- Since LuaJIT FFI doesn't work properly on Windows when referring to Neovim internals,
+-- return dummy functions instead on Windows.
+if vim.fn.has('win32') then
+    return {
+        get_statusline_expr_width = function(_)
+            return 0
+        end
+    }
+end
+
 local M = {}
 
 local ffi = require('ffi')
@@ -26,12 +37,11 @@ int build_stl_str_hl(
 ]]
 
 -- Used CType values stored in a local variable to avoid redefining them and improve performance
-local char_u_buf_t = ffi.typeof('char_u[?]')
 local char_u_str_t = ffi.typeof('char_u*')
 
 -- Statusline string buffer
 local stlbuf_len = 1024
-local stlbuf = char_u_buf_t(stlbuf_len)
+local stlbuf = ffi.new('char_u[?]', stlbuf_len)
 
 -- Get display width of statusline expression
 function M.get_statusline_expr_width(expr)
