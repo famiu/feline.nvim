@@ -232,6 +232,11 @@ local function parse_provider(provider, component)
     elseif type(provider) == 'table' then
         if not provider.name then
             api.nvim_err_writeln("Provider table doesn't have the provider name")
+        elseif type(provider.name) ~= 'string' then
+            api.nvim_err_writeln(string.format(
+                "Expected 'string' for provider name, got '%s' instead",
+                type(provider.name)
+            ))
         elseif not providers[provider.name] then
             api.nvim_err_writeln(string.format(
                 "Provider with name '%s' doesn't exist",
