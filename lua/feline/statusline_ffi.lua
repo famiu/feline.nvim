@@ -3,7 +3,6 @@
 -- Since LuaJIT FFI doesn't work properly on Windows when referring to Neovim internals,
 -- return dummy functions instead on Windows.
 if vim.fn.has('win32') == 1 then
-    print('a')
     return {
         get_statusline_expr_width = function(_)
             return 0
