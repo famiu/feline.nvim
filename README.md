@@ -76,6 +76,14 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
 **[Config by iBhagwan:](https://github.com/ibhagwan/nvim-lua/blob/main/lua/plugins/feline.lua)**
 ![image](https://user-images.githubusercontent.com/59988195/133922136-3d037c37-7a3f-4e1b-b42e-c50b22fedfdb.png)
 
+**[Config by EdenEast](https://github.com/EdenEast/nyx/blob/8a9819e/config/.config/nvim/lua/eden/modules/ui/feline/init.lua)** (Colors generated from applied colorscheme)
+
+**Nightfox**
+![image](https://user-images.githubusercontent.com/2746374/137549252-333f074e-47a0-464f-ac8a-7ce0ee43433c.png)
+
+**Dayfox**
+![image](https://user-images.githubusercontent.com/2746374/137549328-eb5f51c2-bd7b-4c9e-9080-b6132b688459.png)
+
 You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
 ## Installation
