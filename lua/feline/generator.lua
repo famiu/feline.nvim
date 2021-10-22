@@ -9,8 +9,6 @@ local separators = feline.separators
 local disable = feline.disable
 local force_inactive = feline.force_inactive
 
-local get_statusline_expr_width = require('feline.statusline_ffi').get_statusline_expr_width
-
 local M = {
     -- Cached highlights
     highlights = {}
@@ -354,6 +352,17 @@ local function parse_component_handle_errors(
     return result
 end
 
+-- Prevent reinitializing the options table everytime `nvim_eval_statusline` is called
+local eval_statusline_opts = { maxwidth = 0 }
+
+local function get_component_width(component_str)
+    if not api.nvim_eval_statusline then
+        return 0
+    end
+
+    return api.nvim_eval_statusline(component_str, eval_statusline_opts).width
+end
+
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
     if not components_table or is_disabled() then
@@ -390,7 +399,7 @@ function M.generate_statusline(is_active)
                 component, false, statusline_type, i, j
             )
 
-            local component_width = get_statusline_expr_width(component_str)
+            local component_width = get_component_width(component_str)
 
             component_strs[i][j] = component_str
             component_widths[i][j] = component_width
@@ -425,7 +434,7 @@ function M.generate_statusline(is_active)
                     component, true, statusline_type, section, number
                 )
 
-                local component_width = get_statusline_expr_width(component_str)
+                local component_width = get_component_width(component_str)
 
                 -- Calculate how much the width of the statusline decreases if the provider is
                 -- replaced with the short_provider, and if it's greater than 0 (which implies that
