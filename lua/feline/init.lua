@@ -6,6 +6,7 @@ local cmd = api.nvim_command
 
 local utils = require('feline.utils')
 local gen = utils.lazy_require('feline.generator')
+local presets = utils.lazy_require('feline.presets')
 
 local M = {}
 
@@ -60,6 +61,23 @@ function M.reset_highlights()
     gen.highlights = {}
 end
 
+-- Add a new preset for Feline (useful for plugins which intend to extend Feline)
+function M.add_preset(name, value)
+    presets[name] = value
+end
+
+-- Use a preset
+function M.use_preset(name)
+    if presets[name] then
+        M.components = presets[name]
+    else
+        api.nvim_err_writeln(string.format(
+            "Preset '%s' not found!",
+            name
+        ))
+    end
+end
+
 -- Setup Feline using the provided configuration options
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
@@ -71,8 +89,8 @@ function M.setup(config)
     -- Check if termguicolors is enabled
     if not opt.termguicolors:get() then
         api.nvim_err_writeln(
-            'Feline needs \'termguicolors\' to be enabled to work properly\n' ..
-            'Please do `:help \'termguicolors\'` in Neovim for more information'
+            "Feline needs 'termguicolors' to be enabled to work properly\n" ..
+            "Please do `:help 'termguicolors'` in Neovim for more information"
         )
         return
     end
@@ -97,7 +115,6 @@ function M.setup(config)
         M.components = config.components
     else
         local preset = config.preset
-        local presets = require('feline.presets')
 
         -- If a valid preset isn't provided, then use the default preset if nvim-web-devicons
         -- exists, else use the noicons preset
