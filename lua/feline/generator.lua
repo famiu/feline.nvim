@@ -2,9 +2,6 @@ local bo = vim.bo
 local api = vim.api
 
 local feline = require('feline')
-local providers = feline.providers
-local colors = feline.colors
-local separators = feline.separators
 
 local M = {
     -- Cached highlights
@@ -13,31 +10,31 @@ local M = {
 
 -- Return true if any pattern in tbl matches provided value
 local function find_pattern_match(tbl, val)
-    return next(vim.tbl_filter(function(pattern) return val:match(pattern) end, tbl))
+    return tbl and next(vim.tbl_filter(function(pattern) return val:match(pattern) end, tbl))
 end
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
-    local force_inactive = feline.force_inactive
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
 
-    return (force_inactive.filetypes and find_pattern_match(force_inactive.filetypes, filetype)) or
-        (force_inactive.buftypes and find_pattern_match(force_inactive.buftypes, buftype)) or
-        (force_inactive.bufnames and find_pattern_match(force_inactive.bufnames, bufname))
+    return
+        find_pattern_match(feline.force_inactive.filetypes, filetype) or
+        find_pattern_match(feline.force_inactive.buftypes, buftype) or
+        find_pattern_match(feline.force_inactive.bufnames, bufname)
 end
 
 -- Check if buffer is configured to have statusline disabled
 local function is_disabled()
-    local disable = feline.disable
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
 
-    return (disable.filetypes and find_pattern_match(disable.filetypes, filetype)) or
-        (disable.buftypes and find_pattern_match(disable.buftypes, buftype)) or
-        (disable.bufnames and find_pattern_match(disable.bufnames, bufname))
+    return
+        find_pattern_match(feline.disable.filetypes, filetype) or
+        find_pattern_match(feline.disable.buftypes, buftype) or
+        find_pattern_match(feline.disable.bufnames, bufname)
 end
 
 -- Evaluate a component key if it is a function, else return the value
@@ -67,14 +64,18 @@ end
 local function parse_hl(hl, parent_hl)
     parent_hl = parent_hl or {}
 
-    hl.fg = hl.fg or parent_hl.fg or colors.fg
-    hl.bg = hl.bg or parent_hl.bg or colors.bg
-    hl.style = hl.style or parent_hl.style or 'NONE'
+    local fg = hl.fg or parent_hl.fg or feline.colors.fg
+    local bg = hl.bg or parent_hl.bg or feline.colors.bg
+    local style = hl.style or parent_hl.style or 'NONE'
 
-    if colors[hl.fg] then hl.fg = colors[hl.fg] end
-    if colors[hl.bg] then hl.bg = colors[hl.bg] end
+    if feline.colors[fg] then fg = feline.colors[fg] end
+    if feline.colors[bg] then bg = feline.colors[bg] end
 
-    return hl
+    return {
+        fg = fg,
+        bg = bg,
+        style = style
+    }
 end
 
 -- If highlight is a string, use it as highlight name and
@@ -147,15 +148,15 @@ local function parse_sep(sep, parent_bg, is_component_empty)
         if is_component_empty then return '' end
 
         str = sep
-        hl = {fg = parent_bg, bg = colors.bg}
+        hl = {fg = parent_bg, bg = feline.colors.bg}
     else
         if is_component_empty and not sep.always_visible then return '' end
 
         str = evaluate_if_function(sep.str) or ''
-        hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = colors.bg}
+        hl = evaluate_if_function(sep.hl) or {fg = parent_bg, bg = feline.colors.bg}
     end
 
-    if separators[str] then str = separators[str] end
+    if feline.separators[str] then str = feline.separators[str] end
 
     return string.format('%%#%s#%s', get_hlname(hl), str)
 end
@@ -217,8 +218,8 @@ local function parse_provider(provider, component)
 
     -- If provider is a string and its name matches the name of a registered provider, use it
     if type(provider) == 'string' then
-        if providers[provider] then
-            str, icon = providers[provider](component, {})
+        if feline.providers[provider] then
+            str, icon = feline.providers[provider](component, {})
         else
             str = provider
         end
@@ -234,13 +235,13 @@ local function parse_provider(provider, component)
                 "Expected 'string' for provider name, got '%s' instead",
                 type(provider.name)
             ))
-        elseif not providers[provider.name] then
+        elseif not feline.providers[provider.name] then
             api.nvim_err_writeln(string.format(
                 "Provider with name '%s' doesn't exist",
                 provider.name
             ))
         else
-            str, icon = providers[provider.name](component, provider.opts or {})
+            str, icon = feline.providers[provider.name](component, provider.opts or {})
         end
     end
 
@@ -364,9 +365,7 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
-    local components_table = feline.components
-
-    if not components_table or is_disabled() then
+    if not feline.components or is_disabled() then
         return ''
     end
 
@@ -378,7 +377,7 @@ function M.generate_statusline(is_active)
         statusline_type='inactive'
     end
 
-    local sections = components_table[statusline_type]
+    local sections = feline.components[statusline_type]
 
     if not sections then
         return ''
