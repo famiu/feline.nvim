@@ -522,6 +522,39 @@ Here is a list of all possible vi_mode names used with the default color associa
 - `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that'll trigger a highlight reset.<br><br>
   Default: `{'SessionLoadPost', 'ColorScheme'}`
 
+## Utility functions
+
+Feline provides a few utility functions that allow you to customize or modify Feline on the fly. These are discussed below.
+
+### Reset highlight
+
+If, for some reason, you want to clear all highlights that Feline sets (useful if you want to reload your entire Neovim config which may mess up highlights), you can do:
+
+```lua
+require('feline').reset_highlights()
+```
+
+And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
+
+### Adding and using presets
+
+If you want to add your own presets, you can do this through the `require('feline').add_preset` function, like this:
+
+```lua
+-- Components table for the preset
+local my_preset = {
+    -- Insert components here
+}
+
+require('feline').add_preset('my_preset_name', my_preset)
+```
+
+You can also use a preset using `require('feline').use_preset`, like this:
+
+```lua
+require('feline').use_preset('my_preset_name')
+```
+
 ## Example configuration
 
 You can check out the code in the [default preset](lua/feline/presets/default.lua) to see how the components in it are set up so you can get a good practical idea of how to use the tools that Feline gives you to create all kinds of different statusline components.
@@ -710,16 +743,6 @@ end
 ```
 
 Note that the values of both `vim.g.actual_curwin` and `vim.g.actual_curbuf` are strings, not numbers. So if you want to use them as a number, use `tonumber()` to convert the string to a number first, as shown in the second example.
-
-### Reset highlight
-
-If, for some reason, you want to clear all highlights that Feline sets (useful if you want to reload your entire Neovim config which may mess up highlights), you can do:
-
-```lua
-require('feline').reset_highlights()
-```
-
-And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
 
 ### Highlight section gaps
 

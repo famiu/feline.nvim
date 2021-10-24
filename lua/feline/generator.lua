@@ -3,11 +3,8 @@ local api = vim.api
 
 local feline = require('feline')
 local providers = feline.providers
-local components_table = feline.components
 local colors = feline.colors
 local separators = feline.separators
-local disable = feline.disable
-local force_inactive = feline.force_inactive
 
 local M = {
     -- Cached highlights
@@ -21,6 +18,7 @@ end
 
 -- Check if current buffer is forced to have inactive statusline
 local function is_forced_inactive()
+    local force_inactive = feline.force_inactive
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
@@ -32,6 +30,7 @@ end
 
 -- Check if buffer is configured to have statusline disabled
 local function is_disabled()
+    local disable = feline.disable
     local buftype = bo.buftype
     local filetype = bo.filetype
     local bufname = api.nvim_buf_get_name(0)
@@ -365,6 +364,8 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
+    local components_table = feline.components
+
     if not components_table or is_disabled() then
         return ''
     end
