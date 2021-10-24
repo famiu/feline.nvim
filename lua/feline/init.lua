@@ -4,9 +4,10 @@ local fn = vim.fn
 local api = vim.api
 local cmd = api.nvim_command
 
+local presets = require('feline.presets')
+local themes = require('feline.themes')
 local utils = require('feline.utils')
 local gen = utils.lazy_require('feline.generator')
-local presets = utils.lazy_require('feline.presets')
 
 local M = {}
 
@@ -17,13 +18,32 @@ local function parse_config(config_dict, defaults)
 
     local parsed_config = {}
 
+    local function config_has_correct_type(config_name, possible_types)
+        local config_type = type(config_dict[config_name])
+
+        -- If there's only one possible type (which means that `possible_types is a string`)
+        -- just check for type equality and return the result
+        if type(possible_types) == 'string' then
+            return config_type == possible_types
+        end
+
+        -- Otherwise, iterate through every possible type until a match is found
+        for _, v in ipairs(possible_types) do
+            if config_type == v then
+                return true
+            end
+        end
+
+        return false
+    end
+
     -- Iterate through every possible configuration options, also checking their type to ensure the
     -- validity of the configuration and also using the defaults if a custom configuration is not
     -- provided
     for config_name, config_info in pairs(defaults) do
         if config_dict[config_name] == nil then
             parsed_config[config_name] = config_info.default_value
-        elseif type(config_dict[config_name]) ~= config_info.type then
+        elseif not config_has_correct_type(config_name, config_info.type) then
             api.nvim_err_writeln(string.format(
                 "Feline: expected type '%s' for config option '%s', got '%s'",
                 config_info.type,
@@ -78,6 +98,47 @@ function M.use_preset(name)
     end
 end
 
+-- Add a Feline color theme
+function M.add_theme(name, value)
+    themes[name] = value
+end
+
+-- Use a theme (can be either a string containing theme name or a table containing theme colors)
+function M.use_theme(name_or_tbl)
+    local theme_colors
+
+    if type(name_or_tbl) == 'string' then
+        if not themes[name_or_tbl] then
+            api.nvim_err_writeln(string.format(
+                "Theme '%s' not found!",
+                name_or_tbl
+            ))
+
+            return
+        end
+
+        theme_colors = themes[name_or_tbl]
+    else
+        theme_colors = name_or_tbl
+    end
+
+    local colors = {}
+
+    -- To make sure Feline falls back to default theme for missing colors, first iterate through the
+    -- default colors and put their values in the colors table, and then iterate through the
+    -- theme colors to update the default values
+    for k, v in pairs(themes.default) do
+        colors[k] = v
+    end
+
+    for k, v in pairs(theme_colors) do
+        colors[k] = v
+    end
+
+    M.colors = colors
+    M.reset_highlights()
+end
+
 -- Setup Feline using the provided configuration options
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater
@@ -97,7 +158,6 @@ function M.setup(config)
 
     config = parse_config(config, require('feline.defaults'))
 
-    M.colors = config.colors
     M.separators = config.separators
     M.vi_mode_colors = config.vi_mode_colors
     M.force_inactive = config.force_inactive
@@ -109,6 +169,9 @@ function M.setup(config)
     for k, v in pairs(config.custom_providers) do
         M.providers[k] = v
     end
+
+    -- Use configured theme
+    M.use_theme(config.theme)
 
     -- If components table is provided, use it, else use a preset
     if config.components then
@@ -126,7 +189,7 @@ function M.setup(config)
             end
         end
 
-        M.components = presets[preset]
+        M.use_preset(preset)
     end
 
     -- Ensures custom quickfix statusline isn't loaded

@@ -285,7 +285,7 @@ If a string, it'll use the given string as the name of the component highlight g
 
 If it's a table, it'll automatically generate a highlight group for you based on the given values. The hl table can have four values: `fg`, `bg`, `style` and `name`.
 
-The `fg` and `bg` values are strings that represent the RGB hex or [name](#value-presets) of the foreground and background color of the highlight, respectively. (eg: `'#FFFFFF'`, `'white'`). If `fg` or `bg` is not provided, it uses the default foreground or background color provided in the `setup()` function, respectively.
+The `fg` and `bg` values are strings that represent the RGB hex or [name](#themes) of the foreground and background color of the highlight, respectively. (eg: `'#FFFFFF'`, `'white'`). If `fg` or `bg` is not provided, it uses the default foreground or background color provided in the `setup()` function, respectively.
 
 The `style` value is a string that determines the formatting style of the component's text (do `:help attr-list` in Neovim for more info). By default it is set to `'NONE'`
 
@@ -327,7 +327,7 @@ end
 
 There are two types of separator values that you can put in a component, which are `left_sep` and `right_sep`, which represent the separator on the left and the right side of the component, respectively.
 
-The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#value-presets).
+The value of `left_sep` and `right_sep` can just be set to a string that's displayed. You can use a function that returns a string just like the other component values. The value can also be equal to the name of one of the [separator presets](#separator-presets).
 
 The value of `left_sep` and `right_sep` can also be a table or a function returning a table. Inside the table there can be three values, `str`, `hl` and `always_visible`. `str` represents the separator string and `hl` represents the separator highlight. The separator's highlight works just like the component's `hl` value. The only difference is that the separator's `hl` by default uses the parent's background color as its foreground color.
 
@@ -474,8 +474,8 @@ custom_providers = {
 }
 ```
 
-- `colors` - A table containing custom [color value presets](#value-presets). The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
-- `separators` - A table containing custom [separator value presets](#value-presets).
+- `theme` - Either a string containing the color theme name or a table containing the colors. The theme's `fg` and `bg` values also represent the default foreground and background colors, respectively. To know more about Feline themes, take a look at the [Themes](#themes) section
+- `separators` - A table containing custom [separator presets](#separator-presets).
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
   Default:
 
@@ -664,22 +664,60 @@ The diagnostics and LSP providers all require the Neovim built-in LSP to be conf
 
 The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type)` for checking if any diagnostics of the provided type exists. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
 
-## Value presets
+## Themes
 
-Value presets are names for colors and separators that you can use instead of the hex code or separator string, respectively.
+Feline supports different themes to customize your statusline colors on the fly. A theme is a Lua table associating color names with their RGB hex codes. Feline only has one theme built-in, which is the default theme. However, it's possible to add new themes to Feline. See the [Adding new themes](#adding-new-themes) section for more info.
 
-For your ease of use, Feline has some default color and separator values set. You can manually access them through `require('feline.defaults').colors` and `require('feline.defaults').separators` respectively. But there's a much easier way to use them, which is to just directly assign the name of the color or separator to the value, eg:
+There are mainly two ways of using a theme. The first is to set the value of `theme` in the [setup function](#setup-function) to the theme name or value. The second way is through the `require('feline').use_theme` function. `use_theme` can take the theme name as an argument. For example, this is how to use the default theme:
 
 ```lua
-hl = {bg = 'oceanblue'},
-right_sep = 'slant_right'
+require('feline').use_theme('default')
 ```
 
-Not only that, you can add your own custom colors and separators through the [setup function](#setup-function) which allows you to just use the name of the color or separator to refer to it.
+`use_theme` can also take the theme table directly as argument, like this:
 
-Below is a list of all the default value names and their values:
+```lua
+-- Theme table
+local my_theme = {
+    red = '#FF0000',
+    green = '#00FF00',
+    blue = '#0000FF'
+}
 
-### Default colors
+require('feline').use_theme(my_theme)
+```
+
+### Adding new themes
+
+If you're developing a plugin or colorscheme and wish to support Feline for that plugin / colorscheme or if you're just a user who wants to be able to quickly switch your statusline colors, you'd be glad to know that it's possible to add custom color themes for Feline. You just have to call `require('feline').add_theme` with the theme name and the colors table. Like this:
+
+```
+-- Theme table
+local my_theme = {
+    red = '#FF0000',
+    green = '#00FF00',
+    blue = '#0000FF'
+}
+
+require('feline').add_theme('my_theme_name', my_theme)
+```
+
+The user can then later use that theme through one of the two ways mentioned above.
+
+### Using theme colors
+
+To use colors from a theme, just use the color name instead of the RGB hex code in your component's `hl` value, like this:
+
+```lua
+hl = {
+    bg = 'oceanblue',
+    fg = 'white'
+}
+```
+
+### Default color theme
+
+Feline comes with a default color theme by default, and it falls back to this theme if a color name is not found in the current theme. Here are the colors available in the default theme and their values:
 
 | Name        | Value       |
 | ----------- | ----------- |
@@ -696,6 +734,16 @@ Below is a list of all the default value names and their values:
 | `violet`    | `'#9E93E8'` |
 | `white`     | `'#FFFFFF'` |
 | `yellow`    | `'#E1E120'` |
+
+## Separator presets
+
+Instead of having to remember unicode values for separator glyphs or having to constantly copy-paste them, you can use Feline's separator presets instead. They allow you to either use Feline's [default separators](#default-separators) or your own manually defined separators (added through the [setup function](#setup-function)) by just using their name. For example:
+
+```lua
+right_sep = 'slant_right'
+```
+
+Below is a list of all the default separator names and their values:
 
 ### Default Separators
 
