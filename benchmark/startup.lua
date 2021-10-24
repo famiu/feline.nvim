@@ -3,17 +3,22 @@
 -- run from Feline top-level directory using:
 -- env AK_PROFILER=1 nvim --noplugin -u benchmark/startup.lua > /dev/null 2>&1 | less
 
-local opt = vim.opt
-local fn = vim.fn
+local tmpdir
+
+if vim.fn.has('win32') == 1 then
+    tmpdir = os.getenv('TEMP')
+else
+    tmpdir = '/tmp'
+end
 
 -- Automatically install profiler.nvim if it doesn't exist
 if not pcall(require, 'profiler') then
-    local install_path = '/tmp/nvim/site/pack/feline/start/profiler.nvim'
+    local install_path = tmpdir .. '/nvim/site/pack/feline/start/profiler.nvim'
 
-    opt.packpath:append('/tmp/nvim/site')
+    vim.opt.packpath:append(tmpdir .. '/nvim/site')
 
-    if fn.isdirectory(install_path) == 0 then
-        fn.system({'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path})
+    if vim.fn.isdirectory(install_path) == 0 then
+        vim.fn.system({'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path})
     end
 end
 
