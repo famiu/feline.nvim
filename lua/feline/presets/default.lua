@@ -20,8 +20,7 @@ M.active[1] = {
                 fg = vi_mode_utils.get_mode_color(),
                 style = 'bold'
             }
-        end,
-        right_sep = ' '
+        end
     },
     {
         provider = 'file_info',
@@ -31,7 +30,7 @@ M.active[1] = {
             style = 'bold'
         },
         left_sep = {
-            ' ', 'slant_left_2',
+            'slant_left_2',
             {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
         },
         right_sep = {'slant_right_2', ' '}

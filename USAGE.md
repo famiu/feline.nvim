@@ -589,6 +589,12 @@ components.active[1][1] = {
 
 The Vi-mode provider also provides a helper function `get_mode_highlight_name()` which can be used through `require('feline.providers.vi_mode').get_mode_highlight_name()`, it returns the highlight name for the current mode, which you can then use for the provider's `hl.name` to give its highlight groups meaningful names.
 
+The Vi-mode provider can take some provider options through the provider `opts`:
+- `show_mode_name` (boolean): If true, show the mode name regardless of whether the icon is set or not. Useful if you want to see both the indicator icon and the mode name.<br>
+  Default: `true` if component's icon is set to `''`, `false` otherwise.
+- `padding` (boolean): This setting determines if and how the mode name is padded. Note that this configuration is only valid when `show_mode_name` is `true` or if the component's icon is set to `''`. The value of this option can be either set to `false` to disable padding or be one of `'left'`, `'center'` or `'right'`.<br>
+  Default: `false`
+
 ### File Info
 
 The `file_info` provider has some special provider options that can be passed through the provider `opts`:

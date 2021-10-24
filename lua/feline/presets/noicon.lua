@@ -31,7 +31,6 @@ M.active[1] = {
             bg = 'oceanblue',
             style = 'bold'
         },
-        left_sep = '',
         right_sep = ' ',
         icon = ''
     },
