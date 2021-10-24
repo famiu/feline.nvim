@@ -2,13 +2,21 @@
 -- Run from Feline top-level directory using:
 -- nvim --noplugin -u minimal_init.lua
 
+local tmpdir
+
+if vim.fn.has('win32') == 1 then
+    tmpdir = os.getenv('TEMP')
+else
+    tmpdir = '/tmp'
+end
+
 local function load_plugins()
     local packer = require('packer')
     local use = packer.use
 
     packer.reset()
     packer.init {
-        package_root = '/tmp/nvim/site/pack',
+        package_root = tmpdir .. '/nvim/site/pack',
         git = {
             clone_timeout = -1
         }
@@ -46,9 +54,9 @@ _G.load_config = function()
     require('feline').setup()
 end
 
-local install_path = '/tmp/nvim/site/pack/packer/start/packer.nvim'
+local install_path = tmpdir .. '/nvim/site/pack/packer/start/packer.nvim'
 
-vim.opt.packpath = {'/tmp/nvim/site'}
+vim.opt.packpath = { tmpdir .. '/nvim/site'}
 
 if vim.fn.isdirectory(install_path) == 0 then
     vim.fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
