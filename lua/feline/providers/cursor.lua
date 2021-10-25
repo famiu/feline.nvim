@@ -4,13 +4,17 @@ local M = {}
 
 local scroll_bar_blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
 
-function M.position()
+function M.position(_, opts)
     local row, col = unpack(api.nvim_win_get_cursor(0))
 
     -- Turn col from byteindex to column number
     col = vim.str_utfindex(api.nvim_get_current_line(), col)
 
-    return string.format('%3d:%-2d', row, col)
+    if opts.padding then
+        return string.format('%3d:%-2d', row, col)
+    else
+        return string.format('%d:%d', row, col)
+    end
 end
 
 function M.line_percentage()
