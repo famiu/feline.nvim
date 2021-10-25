@@ -91,10 +91,7 @@ function M.use_preset(name)
     if presets[name] then
         M.components = presets[name]
     else
-        api.nvim_err_writeln(string.format(
-            "Preset '%s' not found!",
-            name
-        ))
+        api.nvim_err_writeln(string.format("Preset '%s' not found!", name))
     end
 end
 
@@ -109,11 +106,7 @@ function M.use_theme(name_or_tbl)
 
     if type(name_or_tbl) == 'string' then
         if not themes[name_or_tbl] then
-            api.nvim_err_writeln(string.format(
-                "Theme '%s' not found!",
-                name_or_tbl
-            ))
-
+            api.nvim_err_writeln(string.format("Theme '%s' not found!", name_or_tbl))
             return
         end
 
@@ -180,7 +173,7 @@ function M.setup(config)
         local preset = config.preset
 
         -- If a valid preset isn't provided, then use the default preset if nvim-web-devicons
-        -- exists, else use the noicons preset
+        -- exists, else use the noicon preset
         if not (preset and presets[preset]) then
             if pcall(require, 'nvim-web-devicons') then
                 preset = 'default'
