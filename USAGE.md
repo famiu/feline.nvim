@@ -578,7 +578,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 | Name                                  | Description                                    |
 | ------------------------------------- | ---------------------------------------------- |
 | [`vi_mode`](#vi-mode)                 | Current vim mode                               |
-| `position`                            | Get line and column number of cursor           |
+| [`position`](#position)               | Get line and column number of cursor           |
 | `line_percentage`                     | Current line percentage                        |
 | `scroll_bar`                          | Scroll bar that shows file progress            |
 | [`file_info`](#file-info)             | Get file icon, name and modified status        |
@@ -627,6 +627,10 @@ The Vi-mode provider can take some provider options through the provider `opts`:
   Default: `true` if component's icon is set to `''`, `false` otherwise.
 - `padding` (boolean): This setting determines if and how the mode name is padded. Note that this configuration is only valid when `show_mode_name` is `true` or if the component's icon is set to `''`. The value of this option can be either set to `false` to disable padding or be one of `'left'`, `'center'` or `'right'`.<br>
   Default: `false`
+
+### Position
+
+The `position` provider can take a `padding` provider option, which may be either `true` or `false` and will determine whether the position numbers are padded with spaces or not.
 
 ### File Info
 
