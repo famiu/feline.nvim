@@ -7,8 +7,8 @@ local scroll_bar_blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '�
 function M.position(_, opts)
     local row, col = unpack(api.nvim_win_get_cursor(0))
 
-    -- Turn col from byteindex to column number
-    col = vim.str_utfindex(api.nvim_get_current_line(), col)
+    -- Turn col from byteindex to column number and make it start from 1
+    col = vim.str_utfindex(api.nvim_get_current_line(), col) + 1
 
     if opts.padding then
         return string.format('%3d:%-2d', row, col)
