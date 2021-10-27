@@ -6,10 +6,12 @@ Table of Contents                                   *feline-table-of-contents*
 1. Usage                                                        |feline-usage|
   - Components                                             |feline-components|
   - Setup function                                     |feline-setup-function|
+  - Utility functions                               |feline-utility-functions|
   - Example configuration                       |feline-example-configuration|
   - Modifying an existing preset         |feline-modifying-an-existing-preset|
   - Default providers                               |feline-default-providers|
-  - Value presets                                       |feline-value-presets|
+  - Themes                                                     |feline-themes|
+  - Separator presets                               |feline-separator-presets|
   - Tips and tricks                                   |feline-tips-and-tricks|
 
 ==============================================================================
@@ -657,8 +659,8 @@ listed below:
 
 
 
-- `colors` - A table containing custom |feline-color-value-presets|. The value of `colors.fg` and `colors.bg` also represent the default foreground and background colors, respectively.
-- `separators` - A table containing custom |feline-separator-value-presets|.
+- `theme` - Either a string containing the color theme name or a table containing the colors. The theme’s `fg` and `bg` values also represent the default foreground and background colors, respectively. To know more about Feline themes, take a look at the |feline-themes| section
+- `separators` - A table containing custom |feline-separator-presets|.
 - `force_inactive` - A table that determines which buffers should always have the inactive statusline, even when they are active. It can have 3 values inside of it, `filetypes`, `buftypes` and `bufnames`, all three of them are tables which contain Lua patterns to match against file type, buffer type and buffer name respectively.<br><br>
     Default:
 
@@ -711,6 +713,47 @@ listed below:
     Default: `{'SessionLoadPost', 'ColorScheme'}`
 
 
+UTILITY FUNCTIONS                                   *feline-utility-functions*
+
+Feline provides a few utility functions that allow you to customize or modify
+Feline on the fly. These are discussed below.
+
+RESET HIGHLIGHT ~
+
+If, for some reason, you want to clear all highlights that Feline sets (useful
+if you want to reload your entire Neovim config which may mess up highlights),
+you can do:
+
+>
+    require('feline').reset_highlights()
+<
+
+
+And then Feline will automatically regenerate those highlights when it needs
+them, so you don’t have to worry about setting the highlights yourself.
+
+ADDING AND USING PRESETS ~
+
+If you want to add your own presets, you can do this through the
+`require('feline').add_preset` function, like this:
+
+>
+    -- Components table for the preset
+    local my_preset = {
+        -- Insert components here
+    }
+    
+    require('feline').add_preset('my_preset_name', my_preset)
+<
+
+
+You can also use a preset using `require('feline').use_preset`, like this:
+
+>
+    require('feline').use_preset('my_preset_name')
+<
+
+
 EXAMPLE CONFIGURATION                           *feline-example-configuration*
 
 You can check out the code in the default preset
@@ -740,7 +783,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 
 │             Name             │                Description                │
 │|feline-vi_mode|              │Current vim mode                           │
-│position                      │Get line and column number of cursor       │
+│|feline-position|             │Get line and column number of cursor       │
 │line_percentage               │Current line percentage                    │
 │scroll_bar                    │Scroll bar that shows file progress        │
 │|feline-file_info|            │Get file icon, name and modified status    │
@@ -798,6 +841,22 @@ The Vi-mode provider also provides a helper function
 highlight name for the current mode, which you can then use for the
 provider’s `hl.name` to give its highlight groups meaningful names.
 
+The Vi-mode provider can take some provider options through the provider
+`opts`: - `show_mode_name` (boolean): If true, show the mode name regardless of
+whether the icon is set or not. Useful if you want to see both the indicator
+icon and the mode name.<br> Default: `true` if component’s icon is set to
+`''`, `false` otherwise. - `padding` (boolean): This setting determines if and
+how the mode name is padded. Note that this configuration is only valid when
+`show_mode_name` is `true` or if the component’s icon is set to `''`. The
+value of this option can be either set to `false` to disable padding or be one
+of `'left'`, `'center'` or `'right'`.<br> Default: `false`
+
+POSITION ~
+
+The `position` provider can take a `padding` provider option, which may be
+either `true` or `false` and will determine whether the position numbers are
+padded with spaces or not.
+
 FILE INFO ~
 
 The `file_info` provider has some special provider options that can be passed
@@ -845,30 +904,81 @@ The diagnostics provider also provides a utility function
 diagnostics of the provided type exists. The values of `type` must be one of
 `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
 
-VALUE PRESETS                                           *feline-value-presets*
+THEMES                                                         *feline-themes*
 
-Value presets are names for colors and separators that you can use instead of
-the hex code or separator string, respectively.
+Feline supports different themes to customize your statusline colors on the
+fly. A theme is a Lua table associating color names with their RGB hex codes.
+Feline only has one theme built-in, which is the default theme. However, it’s
+possible to add new themes to Feline. See the |feline-adding-new-themes|
+section for more info.
 
-For your ease of use, Feline has some default color and separator values set.
-You can manually access them through `require('feline.defaults').colors` and
-`require('feline.defaults').separators` respectively. But there’s a much
-easier way to use them, which is to just directly assign the name of the color
-or separator to the value, eg:
+There are mainly two ways of using a theme. The first is to set the value of
+`theme` in the |feline-setup-function| to the theme name or value. The second
+way is through the `require('feline').use_theme` function. `use_theme` can take
+the theme name as an argument. For example, this is how to use the default
+theme:
 
 >
-    hl = {bg = 'oceanblue'},
-    right_sep = 'slant_right'
+    require('feline').use_theme('default')
 <
 
 
-Not only that, you can add your own custom colors and separators through the
-|feline-setup-function| which allows you to just use the name of the color or
-separator to refer to it.
+`use_theme` can also take the theme table directly as argument, like this:
 
-Below is a list of all the default value names and their values:
+>
+    -- Theme table
+    local my_theme = {
+        red = '#FF0000',
+        green = '#00FF00',
+        blue = '#0000FF'
+    }
+    
+    require('feline').use_theme(my_theme)
+<
 
-DEFAULT COLORS ~
+
+ADDING NEW THEMES ~
+
+If you’re developing a plugin or colorscheme and wish to support Feline for
+that plugin / colorscheme or if you’re just a user who wants to be able to
+quickly switch your statusline colors, you’d be glad to know that it’s
+possible to add custom color themes for Feline. You just have to call
+`require('feline').add_theme` with the theme name and the colors table. Like
+this:
+
+>
+    -- Theme table
+    local my_theme = {
+        red = '#FF0000',
+        green = '#00FF00',
+        blue = '#0000FF'
+    }
+    
+    require('feline').add_theme('my_theme_name', my_theme)
+<
+
+
+The user can then later use that theme through one of the two ways mentioned
+above.
+
+USING THEME COLORS ~
+
+To use colors from a theme, just use the color name instead of the RGB hex code
+in your component’s `hl` value, like this:
+
+>
+    hl = {
+        bg = 'oceanblue',
+        fg = 'white'
+    }
+<
+
+
+DEFAULT COLOR THEME ~
+
+Feline comes with a default color theme by default, and it falls back to this
+theme if a color name is not found in the current theme. Here are the colors
+available in the default theme and their values:
 
 │    Name     │    Value    │
 │fg           │'#D0D0D0'    │
@@ -885,6 +995,21 @@ DEFAULT COLORS ~
 │white        │'#FFFFFF'    │
 │yellow       │'#E1E120'    │
 
+
+SEPARATOR PRESETS                                   *feline-separator-presets*
+
+Instead of having to remember unicode values for separator glyphs or having to
+constantly copy-paste them, you can use Feline’s separator presets instead.
+They allow you to either use Feline’s |feline-default-separators| or your own
+manually defined separators (added through the |feline-setup-function|) by just
+using their name. For example:
+
+>
+    right_sep = 'slant_right'
+<
+
+
+Below is a list of all the default separator names and their values:
 
 DEFAULT SEPARATORS ~
 
@@ -944,20 +1069,6 @@ Note that the values of both `vim.g.actual_curwin` and `vim.g.actual_curbuf`
 are strings, not numbers. So if you want to use them as a number, use
 `tonumber()` to convert the string to a number first, as shown in the second
 example.
-
-RESET HIGHLIGHT ~
-
-If, for some reason, you want to clear all highlights that Feline sets (useful
-if you want to reload your entire Neovim config which may mess up highlights),
-you can do:
-
->
-    require('feline').reset_highlights()
-<
-
-
-And then Feline will automatically regenerate those highlights when it needs
-them, so you don’t have to worry about setting the highlights yourself.
 
 HIGHLIGHT SECTION GAPS ~
 
