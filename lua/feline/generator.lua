@@ -60,6 +60,22 @@ local function add_hl(name, fg, bg, style)
     M.highlights[name] = true
 end
 
+-- Resolves color_or_hl depending on its content. 
+-- 
+-- @param color_or_hl String with or hex color '#xxxxxx', or name of highlight group.
+-- @param what        Which exactly color should be used in case of highlight group:
+--                    - 'foreground' to take a foreground color; 
+--                    - 'background' to take a background color.
+local function resolve_color(color_or_hl, what)
+    if (color_or_hl:sub(1, 1) == '#') or (vim.fn.hlID(color_or_hl) == 0)  then
+        return color_or_hl
+    end
+
+    local hl = vim.api.nvim_get_hl_by_name(color_or_hl, true)
+
+    return hl[what] and string.format('#%06x', hl[what]) or color_or_hl
+end
+
 -- Parse highlight table, inherit default/parent values if values are not given
 local function parse_hl(hl, parent_hl)
     parent_hl = parent_hl or {}
@@ -72,8 +88,8 @@ local function parse_hl(hl, parent_hl)
     if feline.colors[bg] then bg = feline.colors[bg] end
 
     return {
-        fg = fg,
-        bg = bg,
+        fg = resolve_color(fg, 'foreground'),
+        bg = resolve_color(bg, 'background'),
         style = style
     }
 end
