@@ -119,12 +119,12 @@ function M.file_info(component, opts)
     if bo.modified then
         modified_str = opts.file_modified_icon or '●'
 
-        if modified_str ~= '' then modified_str = modified_str .. ' ' end
+        if modified_str ~= '' then modified_str = ' ' .. modified_str end
     else
         modified_str = ''
     end
 
-    return string.format(' %s%s %s', readonly_str, filename, modified_str), icon
+    return string.format(' %s%s%s', readonly_str, filename, modified_str), icon
 end
 
 function M.file_size()
