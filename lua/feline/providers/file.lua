@@ -93,6 +93,7 @@ function M.file_info(component, opts)
     local extension = fn.fnamemodify(filename, ':e')
     local readonly_str, modified_str
 
+
     local icon
 
     -- Avoid loading nvim-web-devicons if an icon is provided already
@@ -101,12 +102,18 @@ function M.file_info(component, opts)
             filename, extension, { default = true }
         )
 
-        icon = { str = icon_str }
+        local devicons = opts.icons
+        if devicons == false then
+            icon = { str = '' }
+        elseif devicons == true then
+            icon = { str = icon_str }
+        end
 
         if opts.colored_icon == nil or opts.colored_icon then
             icon.hl = { fg = icon_color }
         end
     end
+
 
     if filename == '' then filename = 'unnamed' end
 
