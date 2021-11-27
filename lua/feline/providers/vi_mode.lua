@@ -33,6 +33,7 @@ local mode_alias = {
     ['r?'] = 'CONFIRM',
     ['!'] = 'SHELL',
     ['t'] = 'TERM',
+    ['nt'] = 'TERM',
     ['null'] = 'NONE',
 }
 
