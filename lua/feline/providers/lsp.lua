@@ -1,23 +1,14 @@
 local M = {}
 
 local lsp = vim.lsp
+local diagnostic = vim.diagnostic
 
 function M.is_lsp_attached()
     return next(lsp.buf_get_clients(0)) ~= nil
 end
 
 function M.get_diagnostics_count(severity)
-    local active_clients = lsp.buf_get_clients(0)
-
-    if not active_clients then return 0 end
-
-    local count = 0
-
-    for _, client in pairs(active_clients) do
-        count = count + lsp.diagnostic.get_count(0, severity, client.id)
-    end
-
-    return count
+  return vim.tbl_count(diagnostic.get(0, { severity = severity }))
 end
 
 function M.diagnostics_exist(severity)
@@ -42,19 +33,19 @@ local function diagnostics(severity)
 end
 
 function M.diagnostic_errors()
-    return diagnostics('Error'), '  '
+    return diagnostics(diagnostic.severity.ERROR), '  '
 end
 
 function M.diagnostic_warnings()
-    return diagnostics('Warning'), '  '
+    return diagnostics(diagnostic.severity.WARN), '  '
 end
 
 function M.diagnostic_hints()
-    return diagnostics('Hint'), '  '
+    return diagnostics(diagnostic.severity.HINT), '  '
 end
 
 function M.diagnostic_info()
-    return diagnostics('Information'), '  '
+    return diagnostics(diagnostic.severity.INFO), '  '
 end
 
 return M
