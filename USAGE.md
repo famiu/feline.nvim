@@ -667,7 +667,7 @@ The git provider also provides a utility function `require('feline.providers.git
 
 The diagnostics and LSP providers all require the Neovim built-in LSP to be configured and at least one LSP client to be attached to the current buffer, else they'll have no output.
 
-The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist(type)` for checking if any diagnostics of the provided type exists. The values of `type` must be one of `'Error'`, `'Warning'`, `'Hint'` or `'Information'`.
+The diagnostics provider also provides a utility function `require('feline.providers.lsp').diagnostics_exist` for checking if any diagnostics exists. You can also optionally provide a `severity` function argument to only check for diagnostics of that severity. The value of `severity` must be one of the Neovim diagnostic API severities (eg: `vim.diagnostic.severity.WARN`). For more info on diagnostic severities, do `:help vim.diagnostic.severity` in Neovim.
 
 ## Themes
 
