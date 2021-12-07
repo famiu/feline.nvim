@@ -22,6 +22,7 @@ local get_provider_category = {
     file_size = 'file',
     file_type = 'file',
     file_encoding = 'file',
+    file_format = 'file',
 
     git_branch = 'git',
     git_diff_added = 'git',
