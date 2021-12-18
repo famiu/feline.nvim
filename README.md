@@ -206,4 +206,4 @@ Feline uses [Semantic Versioning](https://semver.org/) for its version names. Th
 
 If you liked this plugin, also check out:
 
-- [bufdelete.nvim](https://github.com/feline-nvim/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
+- [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
