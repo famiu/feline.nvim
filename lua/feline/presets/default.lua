@@ -33,7 +33,10 @@ M.active[1] = {
             'slant_left_2',
             {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}}
         },
-        right_sep = {'slant_right_2', ' '}
+        right_sep = {
+            {str = ' ', hl = {bg = 'oceanblue', fg = 'NONE'}},
+            'slant_right_2', ' '
+        }
     },
     {
         provider = 'file_size',
