@@ -93,13 +93,13 @@ You can add your own configuration to this list. If you're interested, simply ma
 - [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 
 ```lua
-use 'famiu/feline.nvim'
+use 'feline-nvim/feline.nvim'
 ```
 
 - [vim-plug](https://github.com/junegunn/vim-plug/):
 
 ```vim
-Plug 'famiu/feline.nvim'
+Plug 'feline-nvim/feline.nvim'
 ```
 
 ### Install specific version
@@ -108,14 +108,14 @@ Plug 'famiu/feline.nvim'
 
 ```lua
 -- Replace 0.1 with your preferred version
-use { 'famiu/feline.nvim', tag = 'v0.1' }
+use { 'feline-nvim/feline.nvim', tag = 'v0.1' }
 ```
 
 - [vim-plug](https://github.com/junegunn/vim-plug/):
 
 ```vim
 "" Replace 0.1 with your preferred version
-Plug 'famiu/feline.nvim', { 'tag': 'v0.1' }
+Plug 'feline-nvim/feline.nvim', { 'tag': 'v0.1' }
 ```
 
 ### Install from develop branch
@@ -127,13 +127,13 @@ Moreover, commit history of the develop branch may be rewritten at any time. So 
 - [packer.nvim](https://github.com/wbthomason/packer.nvim/):
 
 ```lua
-use { 'famiu/feline.nvim', branch = 'develop' }
+use { 'feline-nvim/feline.nvim', branch = 'develop' }
 ```
 
 - [vim-plug](https://github.com/junegunn/vim-plug/):
 
 ```vim
-Plug 'famiu/feline.nvim', { 'branch': 'develop' }
+Plug 'feline-nvim/feline.nvim', { 'branch': 'develop' }
 ```
 
 ## Getting started
@@ -168,7 +168,7 @@ This can be caused if you forget to remove your other statusline plugins after i
 
 ### Reporting issues or feature requests
 
-If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [Issue](https://github.com/famiu/feline.nvim/issues) and I will try my best to look into it. If you want to contribute to Feline, you can make a Pull Request. For more details, please see: [CONTRIBUTING](CONTRIBUTING.md)
+If you have an issue that you can't find the fix to in the documentation or want to request a feature you think is absolutely necessary, feel free to make a new [Issue](https://github.com/feline-nvim/feline.nvim/issues) and I will try my best to look into it. If you want to contribute to Feline, you can make a Pull Request. For more details, please see: [CONTRIBUTING](CONTRIBUTING.md)
 
 ## Why Feline?
 
