@@ -585,6 +585,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 | `file_size`                           | Get file size                                  |
 | `file_type`                           | Get file type                                  |
 | `file_encoding`                       | Get file encoding                              |
+| `file_format`                         | Get file format                                |
 | [`git_branch`](#git)                  | Shows current git branch                       |
 | [`git_diff_added`](#git)              | Git diff added count                           |
 | [`git_diff_removed`](#git)            | Git diff removed count                         |
