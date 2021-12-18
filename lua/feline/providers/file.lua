@@ -151,4 +151,8 @@ function M.file_encoding()
     return ((bo.fenc ~= '' and bo.fenc) or vim.o.enc):upper()
 end
 
+function M.file_format()
+    return ((bo.fileformat ~= '' and bo.fileformat) or vim.o.fileformat):upper()
+end
+
 return M
