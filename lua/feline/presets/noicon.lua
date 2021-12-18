@@ -31,7 +31,17 @@ M.active[1] = {
             bg = 'oceanblue',
             style = 'bold'
         },
-        right_sep = ' ',
+        left_sep = '',
+        right_sep = {
+            {
+                str = ' ',
+                hl = {
+                    fg = 'NONE',
+                    bg = 'oceanblue'
+                },
+            },
+            ' '
+        },
         icon = ''
     },
     {
