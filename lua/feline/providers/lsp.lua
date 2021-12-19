@@ -8,7 +8,12 @@ function M.is_lsp_attached()
 end
 
 function M.get_diagnostics_count(severity)
-  return vim.tbl_count(diagnostic.get(0, { severity = severity }))
+    if vim.fn.has "nvim-0.6" then
+        return vim.tbl_count(diagnostic.get(0, { severity = severity }))
+    else
+        -- TODO: drop this when 0.5 is no longer used
+        return vim.lsp.diagnostic.get_count(0, ({ "Information", "Hint", "Warning", "Error" })[severity])
+    end
 end
 
 function M.diagnostics_exist(severity)
