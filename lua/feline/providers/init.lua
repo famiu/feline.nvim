@@ -7,7 +7,7 @@ local provider_categories = {
     file = lazy_require('feline.providers.file'),
     lsp = lazy_require('feline.providers.lsp'),
     git = lazy_require('feline.providers.git'),
-    custom = {}
+    custom = {},
 }
 
 -- Categories that each provider belongs to
@@ -33,7 +33,7 @@ local get_provider_category = {
     diagnostic_errors = 'lsp',
     diagnostic_warnings = 'lsp',
     diagnostic_hints = 'lsp',
-    diagnostic_info = 'lsp'
+    diagnostic_info = 'lsp',
 }
 
 -- Providers that have been loaded
@@ -58,14 +58,16 @@ return setmetatable({}, {
     -- the category of their name to 'custom'
     __newindex = function(_, name, provider)
         if get_provider_category[name] then
-            vim.api.nvim_err_writeln(string.format(
-                "Feline: error while adding provider: " ..
-                "Provider '%s' already exists! Please try using another name",
-                name
-            ))
+            vim.api.nvim_err_writeln(
+                string.format(
+                    'Feline: error while adding provider: '
+                        .. "Provider '%s' already exists! Please try using another name",
+                    name
+                )
+            )
         else
             provider_categories.custom[name] = provider
             get_provider_category[name] = 'custom'
         end
-    end
+    end,
 })

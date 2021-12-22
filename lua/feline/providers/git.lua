@@ -27,7 +27,7 @@ function M.git_diff_removed()
 end
 
 function M.git_diff_changed()
-    return git_diff('changed'),  ' 柳'
+    return git_diff('changed'), ' 柳'
 end
 
 -- Utility function to check if git provider information is available

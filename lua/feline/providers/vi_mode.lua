@@ -38,8 +38,9 @@ local mode_alias = {
 }
 
 -- Maximum possible length for a mode name (used for padding)
-local mode_name_max_length =
-    math.max(unpack(vim.tbl_map(function(str) return #str end, vim.tbl_values(mode_alias))))
+local mode_name_max_length = math.max(unpack(vim.tbl_map(function(str)
+    return #str
+end, vim.tbl_values(mode_alias))))
 
 -- Functions for statusline
 function M.get_vim_mode()
@@ -51,8 +52,7 @@ function M.get_mode_color()
 end
 
 function M.get_mode_highlight_name()
-    return 'StatusComponentVim' ..
-        string.gsub(string.lower(M.get_vim_mode()), '%a', string.upper, 1)
+    return 'StatusComponentVim' .. string.gsub(string.lower(M.get_vim_mode()), '%a', string.upper, 1)
 end
 
 function M.vi_mode(component, opts)
@@ -73,8 +73,9 @@ function M.vi_mode(component, opts)
             elseif opts.padding == 'right' then
                 str = str .. string.rep(' ', padding_length)
             elseif opts.padding == 'center' then
-                str = string.rep(' ', math.floor(padding_length / 2)) ..
-                    str .. string.rep(' ', math.ceil(padding_length / 2))
+                str = string.rep(' ', math.floor(padding_length / 2))
+                    .. str
+                    .. string.rep(' ', math.ceil(padding_length / 2))
             end
         end
     else

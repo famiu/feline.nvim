@@ -2,7 +2,7 @@ local api = vim.api
 
 local M = {}
 
-local scroll_bar_blocks =  {'▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'}
+local scroll_bar_blocks = { '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' }
 
 function M.position(_, opts)
     local row, col = unpack(api.nvim_win_get_cursor(0))
@@ -22,9 +22,9 @@ function M.line_percentage()
     local lines = api.nvim_buf_line_count(0)
 
     if curr_line == 1 then
-        return "Top"
+        return 'Top'
     elseif curr_line == lines then
-        return "Bot"
+        return 'Bot'
     else
         return string.format('%2d%%%%', math.ceil(curr_line / lines * 99))
     end

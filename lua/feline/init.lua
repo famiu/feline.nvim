@@ -14,7 +14,9 @@ local M = {}
 -- Parse configuration option with name config_name from config_dict and match its type
 -- Return a default value (if provided one) in case the configuration option doesn't exist
 local function parse_config(config_dict, defaults)
-    if not config_dict then config_dict = {} end
+    if not config_dict then
+        config_dict = {}
+    end
 
     local parsed_config = {}
 
@@ -44,12 +46,14 @@ local function parse_config(config_dict, defaults)
         if config_dict[config_name] == nil then
             parsed_config[config_name] = config_info.default_value
         elseif not config_has_correct_type(config_name, config_info.type) then
-            api.nvim_err_writeln(string.format(
-                "Feline: expected type '%s' for config option '%s', got '%s'",
-                config_info.type,
-                config_name,
-                type(config_dict[config_name])
-            ))
+            api.nvim_err_writeln(
+                string.format(
+                    "Feline: expected type '%s' for config option '%s', got '%s'",
+                    config_info.type,
+                    config_name,
+                    type(config_dict[config_name])
+                )
+            )
 
             parsed_config[config_name] = config_info.default_value
         elseif config_info.update_default then
@@ -143,8 +147,8 @@ function M.setup(config)
     -- Check if termguicolors is enabled
     if not opt.termguicolors:get() then
         api.nvim_err_writeln(
-            "Feline needs 'termguicolors' to be enabled to work properly\n" ..
-            "Please do `:help 'termguicolors'` in Neovim for more information"
+            "Feline needs 'termguicolors' to be enabled to work properly\n"
+                .. "Please do `:help 'termguicolors'` in Neovim for more information"
         )
         return
     end
@@ -189,7 +193,7 @@ function M.setup(config)
     g.qf_disable_statusline = true
 
     -- Set the value of the statusline option to Feline's statusline generation function
-    opt.statusline = '%{%v:lua.require\'feline\'.statusline()%}'
+    opt.statusline = "%{%v:lua.require'feline'.statusline()%}"
 
     -- Autocommand to reset highlights according to the `highlight_reset_triggers` configuration
     if next(config.highlight_reset_triggers) then
@@ -197,8 +201,8 @@ function M.setup(config)
             {
                 table.concat(config.highlight_reset_triggers, ','),
                 '*',
-                'lua require("feline").reset_highlights()'
-            }
+                'lua require("feline").reset_highlights()',
+            },
         }, 'feline')
     end
 end
