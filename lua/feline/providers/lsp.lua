@@ -3,9 +3,7 @@ local M = {}
 local lsp = vim.lsp
 local diagnostic = vim.diagnostic
 
--- Initialize a local table with severity names to prevent having to create a table in every call of
--- the diagnostic function to improve performance
-local severity_names = { "Information", "Hint", "Warning", "Error" }
+local severity_names = { "Error", "Warning", "Information", "Hint" }
 
 function M.is_lsp_attached()
     return next(lsp.buf_get_clients(0)) ~= nil
@@ -42,19 +40,23 @@ local function diagnostics(severity)
 end
 
 function M.diagnostic_errors()
-    return diagnostics(diagnostic.severity.ERROR), '  '
+    -- TODO: replace with diagnostic.severity.ERROR when 0.5 is no longer used
+    return diagnostics(1), '  '
 end
 
 function M.diagnostic_warnings()
-    return diagnostics(diagnostic.severity.WARN), '  '
+    -- TODO: replace with diagnostic.severity.WARN when 0.5 is no longer used
+    return diagnostics(2), '  '
 end
 
 function M.diagnostic_info()
-    return diagnostics(diagnostic.severity.INFO), '  '
+    -- TODO: replace with diagnostic.severity.INFO when 0.5 is no longer used
+    return diagnostics(3), '  '
 end
 
 function M.diagnostic_hints()
-    return diagnostics(diagnostic.severity.HINT), '  '
+    -- TODO: replace with diagnostic.severity.HINT when 0.5 is no longer used
+    return diagnostics(4), '  '
 end
 
 return M
