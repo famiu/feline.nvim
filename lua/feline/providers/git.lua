@@ -1,5 +1,4 @@
 local b = vim.b
-local g = vim.g
 
 local M = {}
 
