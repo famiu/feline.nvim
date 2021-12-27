@@ -3,14 +3,14 @@ local M = {}
 local lsp = vim.lsp
 local diagnostic = vim.diagnostic
 
-local severity_names = { "Error", "Warning", "Information", "Hint" }
+local severity_names = { 'Error', 'Warning', 'Information', 'Hint' }
 
 function M.is_lsp_attached()
     return next(lsp.buf_get_clients(0)) ~= nil
 end
 
 function M.get_diagnostics_count(severity)
-    if vim.fn.has("nvim-0.6") == 1 then
+    if vim.fn.has('nvim-0.6') == 1 then
         return vim.tbl_count(diagnostic.get(0, severity and { severity = severity }))
     else
         -- TODO: drop this when 0.5 is no longer used
@@ -26,10 +26,10 @@ function M.lsp_client_names()
     local clients = {}
 
     for _, client in pairs(lsp.buf_get_clients(0)) do
-        clients[#clients+1] = client.name
+        clients[#clients + 1] = client.name
     end
 
-    return table.concat(clients, ' '),  ' '
+    return table.concat(clients, ' '), ' '
 end
 
 -- Common function used by the diagnostics providers

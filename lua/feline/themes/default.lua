@@ -11,5 +11,5 @@ return {
     red = '#D10000',
     violet = '#9E93E8',
     white = '#FFFFFF',
-    yellow = '#E1E120'
+    yellow = '#E1E120',
 }

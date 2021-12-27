@@ -7,8 +7,8 @@
 
 return {
     theme = {
-        type = {'table', 'string'},
-        default_value = 'default'
+        type = { 'table', 'string' },
+        default_value = 'default',
     },
     separators = {
         type = 'table',
@@ -33,8 +33,8 @@ return {
             left_rounded_thin = '',
             right_rounded = '',
             right_rounded_thin = '',
-            circle = '●'
-        }
+            circle = '●',
+        },
     },
     vi_mode_colors = {
         type = 'table',
@@ -54,8 +54,8 @@ return {
             ['COMMAND'] = 'green',
             ['SHELL'] = 'green',
             ['TERM'] = 'green',
-            ['NONE'] = 'yellow'
-        }
+            ['NONE'] = 'yellow',
+        },
     },
     force_inactive = {
         type = 'table',
@@ -67,32 +67,32 @@ return {
                 '^fugitive$',
                 '^fugitiveblame$',
                 '^qf$',
-                '^help$'
+                '^help$',
             },
             buftypes = {
-                '^terminal$'
-            }
-        }
+                '^terminal$',
+            },
+        },
     },
     disable = {
         type = 'table',
-        default_value = {}
+        default_value = {},
     },
     highlight_reset_triggers = {
         type = 'table',
         default_value = {
             'SessionLoadPost',
-            'ColorScheme'
-        }
+            'ColorScheme',
+        },
     },
     custom_providers = {
         type = 'table',
-        default_value = {}
+        default_value = {},
     },
     components = {
-        type = 'table'
+        type = 'table',
     },
     preset = {
-        type = 'string'
-    }
+        type = 'string',
+    },
 }

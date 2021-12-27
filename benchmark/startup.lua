@@ -18,13 +18,15 @@ if not pcall(require, 'profiler') then
     vim.opt.packpath:append(tmpdir .. '/nvim/site')
 
     if vim.fn.isdirectory(install_path) == 0 then
-        vim.fn.system({'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path})
+        vim.fn.system({ 'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path })
     end
 end
 
 -- Setup gitsigns
 local ok, gitsigns = pcall(require, 'gitsigns')
-if ok then gitsigns.setup() end
+if ok then
+    gitsigns.setup()
+end
 
 -- Start benchmark
 require('profiler').wrap(require('feline').setup())

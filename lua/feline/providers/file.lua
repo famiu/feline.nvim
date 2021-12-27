@@ -6,24 +6,18 @@ local M = {}
 
 -- Get the names of all current listed buffers
 local function get_current_filenames()
-    local listed_buffers = vim.tbl_filter(
-        function(bufnr)
-            return bo[bufnr].buflisted and api.nvim_buf_is_loaded(bufnr)
-        end,
-        api.nvim_list_bufs()
-    )
+    local listed_buffers = vim.tbl_filter(function(bufnr)
+        return bo[bufnr].buflisted and api.nvim_buf_is_loaded(bufnr)
+    end, api.nvim_list_bufs())
 
     return vim.tbl_map(api.nvim_buf_get_name, listed_buffers)
 end
 
 -- Get unique name for the current buffer
 local function get_unique_filename(filename, shorten)
-    local filenames = vim.tbl_filter(
-        function(filename_other)
-            return filename_other ~= filename
-        end,
-        get_current_filenames()
-    )
+    local filenames = vim.tbl_filter(function(filename_other)
+        return filename_other ~= filename
+    end, get_current_filenames())
 
     if shorten then
         filename = fn.pathshorten(filename)
@@ -40,18 +34,15 @@ local function get_unique_filename(filename, shorten)
     -- find the minimum index `i` where the i-th character is different for the two filenames
     -- After doing it for every filename, get the maximum value of `i`
     if next(filenames) then
-        index = math.max(unpack(vim.tbl_map(
-            function(filename_other)
-                for i = 1, #filename do
-                    -- Compare i-th character of both names until they aren't equal
-                    if filename:sub(i, i) ~= filename_other:sub(i, i) then
-                        return i
-                    end
+        index = math.max(unpack(vim.tbl_map(function(filename_other)
+            for i = 1, #filename do
+                -- Compare i-th character of both names until they aren't equal
+                if filename:sub(i, i) ~= filename_other:sub(i, i) then
+                    return i
                 end
-                return 1
-            end,
-            filenames
-        )))
+            end
+            return 1
+        end, filenames)))
     else
         index = 1
     end
@@ -59,7 +50,7 @@ local function get_unique_filename(filename, shorten)
     -- Iterate backwards (since filename is reversed) until a "/" is found
     -- in order to show a valid file path
     while index <= #filename do
-        if filename:sub(index, index) == "/" then
+        if filename:sub(index, index) == '/' then
             index = index - 1
             break
         end
@@ -79,9 +70,9 @@ function M.file_info(component, opts)
     elseif type == 'base-only' then
         filename = fn.fnamemodify(filename, ':t')
     elseif type == 'relative' then
-        filename = fn.fnamemodify(filename, ":~:.")
+        filename = fn.fnamemodify(filename, ':~:.')
     elseif type == 'relative-short' then
-        filename = fn.pathshorten(fn.fnamemodify(filename, ":~:."))
+        filename = fn.pathshorten(fn.fnamemodify(filename, ':~:.'))
     elseif type == 'unique' then
         filename = get_unique_filename(filename)
     elseif type == 'unique-short' then
@@ -97,8 +88,10 @@ function M.file_info(component, opts)
 
     -- Avoid loading nvim-web-devicons if an icon is provided already
     if not component.icon then
-        local icon_str, icon_color = require("nvim-web-devicons").get_icon_color(
-            filename, extension, { default = true }
+        local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
+            filename,
+            extension,
+            { default = true }
         )
 
         icon = { str = icon_str }
@@ -108,7 +101,9 @@ function M.file_info(component, opts)
         end
     end
 
-    if filename == '' then filename = 'unnamed' end
+    if filename == '' then
+        filename = 'unnamed'
+    end
 
     if bo.readonly then
         readonly_str = opts.file_readonly_icon or '🔒'
@@ -119,7 +114,9 @@ function M.file_info(component, opts)
     if bo.modified then
         modified_str = opts.file_modified_icon or '●'
 
-        if modified_str ~= '' then modified_str = ' ' .. modified_str end
+        if modified_str ~= '' then
+            modified_str = ' ' .. modified_str
+        end
     else
         modified_str = ''
     end
@@ -128,12 +125,14 @@ function M.file_info(component, opts)
 end
 
 function M.file_size()
-    local suffix = {'b', 'k', 'M', 'G', 'T', 'P', 'E'}
+    local suffix = { 'b', 'k', 'M', 'G', 'T', 'P', 'E' }
     local index = 1
 
     local fsize = fn.getfsize(api.nvim_buf_get_name(0))
 
-    if fsize < 0 then fsize = 0 end
+    if fsize < 0 then
+        fsize = 0
+    end
 
     while fsize > 1024 and index < 7 do
         fsize = fsize / 1024

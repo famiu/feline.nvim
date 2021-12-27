@@ -16,7 +16,7 @@ if not pcall(require, 'plenary.benchmark') then
     vim.opt.packpath:append(tmpdir .. '/nvim/site')
 
     if vim.fn.isdirectory(install_path) == 0 then
-        vim.fn.system({'git', 'clone', 'https://github.com/nvim-lua/plenary.nvim', install_path})
+        vim.fn.system({ 'git', 'clone', 'https://github.com/nvim-lua/plenary.nvim', install_path })
     end
 end
 
@@ -28,12 +28,12 @@ local function statusline_generator()
     gen.generate_statusline(true)
 end
 
-benchmark("Feline statusline generation benchmark", {
+benchmark('Feline statusline generation benchmark', {
     runs = 10000,
     fun = {
         {
-            "Generating statusline",
-            statusline_generator
-        }
-    }
+            'Generating statusline',
+            statusline_generator,
+        },
+    },
 })
