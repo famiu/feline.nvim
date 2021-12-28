@@ -4,7 +4,7 @@ local lazy_require = require('feline.utils').lazy_require
 
 local default_presets = {
     default = lazy_require('feline.presets.default'),
-    noicon = lazy_require('feline.presets.noicon')
+    noicon = lazy_require('feline.presets.noicon'),
 }
 
 local custom_presets = {}
@@ -19,15 +19,12 @@ local presets_mt = {
     end,
     __newindex = function(_, key, val)
         if default_presets[key] or custom_presets[key] then
-            api.nvim_err_writeln(string.format(
-                "Preset '%s' already exists!",
-                key
-            ))
+            api.nvim_err_writeln(string.format("Preset '%s' already exists!", key))
         else
             custom_presets[key] = val
         end
     end,
-    __metatable = false
+    __metatable = false,
 }
 
 return setmetatable({}, presets_mt)

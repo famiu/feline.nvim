@@ -1,10 +1,9 @@
 local b = vim.b
-local g = vim.g
 
 local M = {}
 
 function M.git_branch()
-    return b.gitsigns_head or g.gitsigns_head or '', ' '
+    return b.gitsigns_head or '', ' '
 end
 
 -- Common function used by the git providers
@@ -27,12 +26,12 @@ function M.git_diff_removed()
 end
 
 function M.git_diff_changed()
-    return git_diff('changed'),  ' 柳'
+    return git_diff('changed'), ' 柳'
 end
 
 -- Utility function to check if git provider information is available
 function M.git_info_exists()
-    return g.gitsigns_head or b.gitsigns_head or b.gitsigns_status_dict
+    return b.gitsigns_head or b.gitsigns_status_dict
 end
 
 return M

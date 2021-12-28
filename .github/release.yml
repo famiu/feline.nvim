@@ -1,0 +1,41 @@
+changelog:
+  categories:
+    - title: New Features
+      labels:
+        - 'kind: feature'
+    - title: Fixed Issues
+      labels:
+        - 'kind: fix'
+    - title: Removes
+      labels:
+        - 'kind: deprecated'
+    - title: Refactor
+      labels:
+        - 'kind: refactor'
+    - title: Dependencies
+      labels:
+        - 'kind: dependencies'
+    - title: Tests
+      labels:
+        - 'kind: tests'
+    - title: Chore
+      labels:
+        - 'kind: chore'
+    - title: CI
+      labels:
+        - 'kind: ci'
+    - title: Documentation
+      labels:
+        - 'kind: documentation'
+    - title: Style
+      labels:
+        - 'kind: style'
+    - title: Performance
+      labels:
+        - 'kind: performance'
+    - title: Test
+      labels:
+        - 'kind: test'
+    - title: Other Changes
+      labels:
+        - '*'

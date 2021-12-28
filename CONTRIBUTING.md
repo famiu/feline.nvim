@@ -64,6 +64,5 @@ Before you make a Pull Request, always make sure to:
 
 ### Standards and Styleguides
 
-Feline has no strict coding standards or styleguides that you must follow while making changes. Just
-try to make sure that the styling in the new or modified code stays consistent with the old code.
+Feline uses [StyLua](https://github.com/JohnnyMorganz/StyLua) to format the code.
 For commits, always use [semantic commit messages](https://www.conventionalcommits.org/).

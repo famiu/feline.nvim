@@ -15,15 +15,15 @@ local function load_plugins()
     local use = packer.use
 
     packer.reset()
-    packer.init {
+    packer.init({
         package_root = tmpdir .. '/nvim/site/pack',
         git = {
-            clone_timeout = -1
-        }
-    }
+            clone_timeout = -1,
+        },
+    })
 
-    use 'wbthomason/packer.nvim'
-    use {
+    use('wbthomason/packer.nvim')
+    use({
         'famiu/feline.nvim',
 
         -- If you wish to use the develop branch, uncomment the next line
@@ -38,11 +38,11 @@ local function load_plugins()
                 requires = { 'nvim-lua/plenary.nvim' },
                 config = function()
                     require('gitsigns').setup()
-                end
+                end,
             },
-            'kyazdani42/nvim-web-devicons'
-        }
-    }
+            'kyazdani42/nvim-web-devicons',
+        },
+    })
 
     packer.sync()
 end
@@ -56,10 +56,10 @@ end
 
 local install_path = tmpdir .. '/nvim/site/pack/packer/start/packer.nvim'
 
-vim.opt.packpath = { tmpdir .. '/nvim/site'}
+vim.opt.packpath = { tmpdir .. '/nvim/site' }
 
 if vim.fn.isdirectory(install_path) == 0 then
-    vim.fn.system({'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.fn.system({ 'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path })
 end
 
 load_plugins()
