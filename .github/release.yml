@@ -1,4 +1,8 @@
 changelog:
+  exclude:
+    labels:
+      - 'release'
+      - 'yank'
   categories:
     - title: New Features
       labels:
