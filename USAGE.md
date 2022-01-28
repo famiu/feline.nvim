@@ -657,6 +657,17 @@ The `file_info` provider has some special provider options that can be passed th
 
   <br>Default: `'base-only'`
 
+### File Type
+
+The file type provider has the following options:
+
+- `filetype_icon` (boolean): Whether the file type icon is shown alongside the file type.
+  Default: `false`
+- `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
+  Default: `true`
+- `case` (string): The case of the file type string. Possible values are: `'uppercase'`, `'titlecase'` and `'lowercase'`.<br>
+  Default: `'uppercase'`
+
 ### Git
 
 The git providers all require [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/), make sure you have it installed when you use those providers, otherwise they'll have no output.
