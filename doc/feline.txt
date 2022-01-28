@@ -884,6 +884,19 @@ through the provider `opts`:
     <br>Default: `'base-only'`
 
 
+FILE TYPE ~
+
+The file type provider has the following options:
+
+
+- `filetype_icon` (boolean): Whether the file type icon is shown alongside the file type.
+    Default: `false`
+- `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
+    Default: `true`
+- `case` (string): The case of the file type string. Possible values are: `'uppercase'`, `'titlecase'` and `'lowercase'`.<br>
+    Default: `'uppercase'`
+
+
 GIT ~
 
 The git providers all require gitsigns.nvim
