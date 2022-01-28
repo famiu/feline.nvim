@@ -151,7 +151,7 @@ function M.file_type(component, opts)
             local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
                 filename,
                 extension,
-            { default = true }
+                { default = true }
             )
 
             icon = { str = icon_str }
