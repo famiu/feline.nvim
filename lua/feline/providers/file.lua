@@ -108,6 +108,11 @@ function M.file_info(component, opts)
         readonly_str = ''
     end
 
+    -- Add a space at the beginning of the provider if there is an icon
+    if (icon and icon ~= '') or (component.icon and component.icon ~= '') then
+        readonly_str = ' ' .. readonly_str
+    end
+
     if bo.modified then
         modified_str = opts.file_modified_icon or '●'
 
@@ -118,7 +123,7 @@ function M.file_info(component, opts)
         modified_str = ''
     end
 
-    return string.format(' %s%s%s', readonly_str, filename, modified_str), icon
+    return string.format('%s%s%s', readonly_str, filename, modified_str), icon
 end
 
 function M.file_size()
