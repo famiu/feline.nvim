@@ -99,7 +99,7 @@ function M.file_info(component, opts)
     end
 
     if filename == '' then
-        filename = 'unnamed'
+        filename = '[No Name]'
     end
 
     if bo.readonly then
