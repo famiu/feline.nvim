@@ -92,6 +92,9 @@ return {
     components = {
         type = 'table',
     },
+    conditional_components = {
+        type = 'table',
+    },
     preset = {
         type = 'string',
     },

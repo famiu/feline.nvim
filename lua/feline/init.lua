@@ -209,6 +209,8 @@ function M.setup(config)
         M.use_preset(preset)
     end
 
+    M.conditional_components = config.conditional_components
+
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
 
