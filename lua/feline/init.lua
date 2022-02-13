@@ -136,6 +136,26 @@ function M.use_theme(name_or_tbl)
     M.reset_highlights()
 end
 
+-- Check if component with `name` in the statusline of window `winid` is truncated or hidden
+function M.is_component_truncated(winid, name)
+    if gen.component_truncated[winid][name] == nil then
+        api.nvim_err_writeln(string.format("Component with name '%s' not found", name))
+        return
+    end
+
+    return gen.component_truncated[winid][name]
+end
+
+-- Check if component with `name` in the statusline of window `winid` is hidden
+function M.is_component_hidden(winid, name)
+    if gen.component_hidden[winid][name] == nil then
+        api.nvim_err_writeln(string.format("Component with name '%s' not found", name))
+        return
+    end
+
+    return gen.component_hidden[winid][name]
+end
+
 -- Setup Feline using the provided configuration options
 function M.setup(config)
     -- Check if Neovim version is 0.5 or greater

@@ -6,6 +6,10 @@ local feline = require('feline')
 local M = {
     -- Cached highlights
     highlights = {},
+    -- Used to check if a certain component is truncated
+    component_truncated = {},
+    -- Used to check if a certain component is hidden
+    component_hidden = {}
 }
 
 -- Return true if any pattern in tbl matches provided value
@@ -320,6 +324,7 @@ end
 -- Wrapper around parse_component that handles any errors that happen while parsing the components
 -- and points to the location of the component in case of any errors
 local function parse_component_handle_errors(
+    winid,
     component,
     use_short_provider,
     statusline_type,
@@ -331,10 +336,12 @@ local function parse_component_handle_errors(
     if not ok then
         api.nvim_err_writeln(
             string.format(
-                "Feline: error while processing component number %d on section %d of type '%s': %s",
+                "Feline: error while processing component number %d on section %d of type '%s' " ..
+                "for window %d: %s",
                 component_number,
                 component_section,
                 statusline_type,
+                winid,
                 result
             )
         )
@@ -358,6 +365,11 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
+    local winid = api.nvim_get_current_win()
+
+    M.component_truncated[winid] = {}
+    M.component_hidden[winid] = {}
+
     if not feline.components or is_disabled() then
         return ''
     end
@@ -388,7 +400,30 @@ function M.generate_statusline(is_active)
         component_widths[i] = {}
 
         for j, component in ipairs(section) do
-            local component_str = parse_component_handle_errors(component, false, statusline_type, i, j)
+            if component.name then
+                if M.component_truncated[winid][component.name] ~= nil then
+                    api.nvim_err_writeln(
+                        string.format(
+                            "Feline: error while parsing components for window %d: " ..
+                            "Multiple components with name '%s'",
+                            winid,
+                            component.name
+                        )
+                    )
+                    return ''
+                end
+                M.component_truncated[winid][component.name] = false
+                M.component_hidden[winid][component.name] = false
+            end
+
+            local component_str = parse_component_handle_errors(
+                winid,
+                component,
+                false,
+                statusline_type,
+                i,
+                j
+            )
 
             local component_width = get_component_width(component_str)
 
@@ -421,7 +456,14 @@ function M.generate_statusline(is_active)
             local component = sections[section][number]
 
             if component.short_provider then
-                local component_str = parse_component_handle_errors(component, true, statusline_type, section, number)
+                local component_str = parse_component_handle_errors(
+                    winid,
+                    component,
+                    true,
+                    statusline_type,
+                    section,
+                    number
+                )
 
                 local component_width = get_component_width(component_str)
 
@@ -435,6 +477,10 @@ function M.generate_statusline(is_active)
                     statusline_width = statusline_width - width_difference
                     component_strs[section][number] = component_str
                     component_widths[section][number] = component_width
+
+                    if component.name then
+                        M.component_truncated[winid][component.name] = true
+                    end
                 end
             end
 
@@ -449,11 +495,17 @@ function M.generate_statusline(is_active)
     if statusline_width > window_width then
         for _, indices in ipairs(component_indices) do
             local section, number = indices[1], indices[2]
+            local component = sections[section][number]
 
-            if sections[section][number].truncate_hide then
+            if component.truncate_hide then
                 statusline_width = statusline_width - component_widths[section][number]
                 component_strs[section][number] = ''
                 component_widths[section][number] = 0
+
+                if component.name then
+                    M.component_truncated[winid][component.name] = true
+                    M.component_hidden[winid][component.name] = true
+                end
             end
 
             if statusline_width <= window_width then
