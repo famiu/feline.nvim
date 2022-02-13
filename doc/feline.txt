@@ -680,6 +680,40 @@ listed below:
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don’t have to put any of the other values if you use a preset, but if you do, your settings will override the preset’s settings. To see more info such as how to modify a preset to build a statusline, see: |feline-modifying-an-existing-preset|
 - `components` - The |feline-components-table|.
+- `conditional_components` - An array-like table containing conditionally enabled components tables, each element of the table must be a components table with an additional key, `condition`, which would be a function without arguments that returns a boolean value. If the function returns `true` for a certain window, then that components table will be used for the statusline of that window instead of the default components table. If multiple conditional components match a certain window, the first one in the table will be used. An example usage of this option is shown below:
+
+
+>
+    conditional_components = {
+        {
+            -- Only use this components table for the 2nd window
+            condition = function()
+                return vim.api.nvim_win_get_number(0) == 2
+            end,
+            active = {
+                -- Components used for active window
+            },
+            inactive = {
+                -- Components used for inactive windows
+            },
+        },
+        {
+            -- Only use this components table for buffers of filetype 'lua'
+            condition = function()
+                return vim.api.nvim_buf_get_option(0, 'filetype') == 'lua'
+            end,
+            active = {
+                -- Components used for active window
+            },
+            inactive = {
+                -- Components used for inactive windows
+            },
+        }
+    }
+<
+
+
+
 - `custom_providers` - A table containing user-defined |feline-provider-functions|. For example:
 
 
