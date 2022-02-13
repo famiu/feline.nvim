@@ -403,8 +403,8 @@ function M.generate_statusline(is_active)
                 if M.component_truncated[winid][component.name] ~= nil then
                     api.nvim_err_writeln(
                         string.format(
-                            "Feline: error while parsing components for window %d: " ..
-                                "Multiple components with name '%s'",
+                            "Feline: error while parsing components for window %d: "
+                                .. "Multiple components with name '%s'",
                             winid,
                             component.name
                         )
@@ -415,15 +415,7 @@ function M.generate_statusline(is_active)
                 M.component_hidden[winid][component.name] = false
             end
 
-            local component_str = parse_component_handle_errors(
-                winid,
-                component,
-                false,
-                statusline_type,
-                i,
-                j
-            )
-
+            local component_str = parse_component_handle_errors( winid, component, false, statusline_type, i, j)
             local component_width = get_component_width(component_str)
 
             component_strs[i][j] = component_str
