@@ -63,7 +63,24 @@ end
 
 function M.file_info(component, opts)
     local filename = api.nvim_buf_get_name(0)
+    local extension = fn.fnamemodify(filename, ':e')
     local type = opts.type or 'base-only'
+    local readonly_str, modified_str, icon
+
+    -- Avoid loading nvim-web-devicons if an icon is provided already
+    if not component.icon then
+        local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
+            filename,
+            extension,
+            { default = true }
+        )
+
+        icon = { str = icon_str }
+
+        if opts.colored_icon == nil or opts.colored_icon then
+            icon.hl = { fg = icon_color }
+        end
+    end
 
     if type == 'short-path' then
         filename = fn.pathshorten(filename)
@@ -81,34 +98,19 @@ function M.file_info(component, opts)
         filename = fn.fnamemodify(filename, ':t')
     end
 
-    local extension = fn.fnamemodify(filename, ':e')
-    local readonly_str, modified_str
-
-    local icon
-
-    -- Avoid loading nvim-web-devicons if an icon is provided already
-    if not component.icon then
-        local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
-            filename,
-            extension,
-            { default = true }
-        )
-
-        icon = { str = icon_str }
-
-        if opts.colored_icon == nil or opts.colored_icon then
-            icon.hl = { fg = icon_color }
-        end
-    end
-
     if filename == '' then
-        filename = 'unnamed'
+        filename = '[No Name]'
     end
 
     if bo.readonly then
         readonly_str = opts.file_readonly_icon or '🔒'
     else
         readonly_str = ''
+    end
+
+    -- Add a space at the beginning of the provider if there is an icon
+    if (icon and icon ~= '') or (component.icon and component.icon ~= '') then
+        readonly_str = ' ' .. readonly_str
     end
 
     if bo.modified then
@@ -121,7 +123,7 @@ function M.file_info(component, opts)
         modified_str = ''
     end
 
-    return string.format(' %s%s%s', readonly_str, filename, modified_str), icon
+    return string.format('%s%s%s', readonly_str, filename, modified_str), icon
 end
 
 function M.file_size()
@@ -142,8 +144,38 @@ function M.file_size()
     return string.format(index == 1 and '%g%s' or '%.2f%s', fsize, suffix[index])
 end
 
-function M.file_type()
-    return bo.filetype:upper()
+function M.file_type(component, opts)
+    local filename = api.nvim_buf_get_name(0)
+    local extension = fn.fnamemodify(filename, ':e')
+    local filetype = bo.filetype
+    local icon
+
+    -- Avoid loading nvim-web-devicons if an icon is provided already
+    if opts.filetype_icon then
+        if not component.icon then
+            local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
+                filename,
+                extension,
+                { default = true }
+            )
+
+            icon = { str = icon_str }
+
+            if opts.colored_icon ~= false then
+                icon.hl = { fg = icon_color }
+            end
+        end
+
+        filetype = ' ' .. filetype
+    end
+
+    if opts.case == 'titlecase' then
+        filetype = filetype:gsub('%a', string.upper, 1)
+    elseif opts.case ~= 'lowercase' then
+        filetype = filetype:upper()
+    end
+
+    return filetype, icon
 end
 
 function M.file_encoding()

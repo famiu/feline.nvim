@@ -164,6 +164,18 @@ end
 
 If you omit the provider value, it will be set to an empty string. A component with no provider or an empty provider may be useful for things like [applying a highlight to section gaps](#highlight-section-gaps) or just having an icon or separator as a component.
 
+#### Component name
+
+A component can optionally be given a name. While the component is not required to have a name and the name is mostly useless, it can be used to check if the component has been [truncated](#truncation). To give a component a name, just set its `name` value to a `string`, shown below:
+
+```
+local my_component = {
+    name = 'a_unique_name'
+}
+```
+
+Two components inside the `active` or `inactive` table cannot share the same name, so make sure to give all components unique names.
+
 #### Truncation
 
 Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. It can be useful if you want to make better use of screen space. It also allows you to better manage which providers are truncated, how they are truncated and in which order they are truncated.
@@ -227,6 +239,10 @@ local high_priority_component = {
 ```
 
 Priority can also be set to a negative number, which can be used to make a component be truncated earlier than the ones with default priority.
+
+##### Check if component is truncated or hidden
+
+If you give a component a `name`, you can check if that component has been truncated or hidden by Feline's smart truncation system through the utility functions, `require('feline').is_component_truncated` and `require('feline').is_component_hidden`. Both of these functions take two arguments, `winid` which is the window id of the window for which the component's truncation is being checked, the second is the `name` of the component. `is_component_truncated` returns `true` if a component has been truncated or hidden, and `is_component_hidden` returns `true` only if a component has been hidden.
 
 #### Conditionally enable components
 
@@ -464,6 +480,37 @@ Now that you know about the components table and how Feline components work, you
 
 - `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `components` - The [components table](#components).
+- `conditional_components` - An array-like table containing conditionally enabled components tables, each element of the table must be a components table with an additional key, `condition`, which would be a function without arguments that returns a boolean value. If the function returns `true` for a certain window, then that components table will be used for the statusline of that window instead of the default components table. If multiple conditional components match a certain window, the first one in the table will be used. An example usage of this option is shown below:
+
+```lua
+conditional_components = {
+    {
+        -- Only use this components table for the 2nd window
+        condition = function()
+            return vim.api.nvim_win_get_number(0) == 2
+        end,
+        active = {
+            -- Components used for active window
+        },
+        inactive = {
+            -- Components used for inactive windows
+        },
+    },
+    {
+        -- Only use this components table for buffers of filetype 'lua'
+        condition = function()
+            return vim.api.nvim_buf_get_option(0, 'filetype') == 'lua'
+        end,
+        active = {
+            -- Components used for active window
+        },
+        inactive = {
+            -- Components used for inactive windows
+        },
+    }
+}
+```
+
 - `custom_providers` - A table containing user-defined [provider functions](#component-providers). For example:
 
 ```lua
@@ -656,6 +703,17 @@ The `file_info` provider has some special provider options that can be passed th
   - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
 
   <br>Default: `'base-only'`
+
+### File Type
+
+The file type provider has the following options:
+
+- `filetype_icon` (boolean): Whether the file type icon is shown alongside the file type.
+  Default: `false`
+- `colored_icon` (boolean): Determines whether file icon should use color inherited from `nvim-web-devicons`.<br>
+  Default: `true`
+- `case` (string): The case of the file type string. Possible values are: `'uppercase'`, `'titlecase'` and `'lowercase'`.<br>
+  Default: `'uppercase'`
 
 ### Git
 
