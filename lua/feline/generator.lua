@@ -9,7 +9,7 @@ local M = {
     -- Used to check if a certain component is truncated
     component_truncated = {},
     -- Used to check if a certain component is hidden
-    component_hidden = {}
+    component_hidden = {},
 }
 
 -- Return true if any pattern in tbl matches provided value
@@ -336,8 +336,7 @@ local function parse_component_handle_errors(
     if not ok then
         api.nvim_err_writeln(
             string.format(
-                "Feline: error while processing component number %d on section %d of type '%s' " ..
-                "for window %d: %s",
+                "Feline: error while processing component number %d on section %d of type '%s' for window %d: %s",
                 component_number,
                 component_section,
                 statusline_type,
@@ -405,7 +404,7 @@ function M.generate_statusline(is_active)
                     api.nvim_err_writeln(
                         string.format(
                             "Feline: error while parsing components for window %d: " ..
-                            "Multiple components with name '%s'",
+                                "Multiple components with name '%s'",
                             winid,
                             component.name
                         )
