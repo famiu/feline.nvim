@@ -164,6 +164,18 @@ end
 
 If you omit the provider value, it will be set to an empty string. A component with no provider or an empty provider may be useful for things like [applying a highlight to section gaps](#highlight-section-gaps) or just having an icon or separator as a component.
 
+#### Component name
+
+A component can optionally be given a name. While the component is not required to have a name and the name is mostly useless, it can be used to check if the component has been [truncated](#truncation). To give a component a name, just set its `name` value to a `string`, shown below:
+
+```
+local my_component = {
+    name = 'a_unique_name'
+}
+```
+
+Two components inside the `active` or `inactive` table cannot share the same name, so make sure to give all components unique names.
+
 #### Truncation
 
 Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. It can be useful if you want to make better use of screen space. It also allows you to better manage which providers are truncated, how they are truncated and in which order they are truncated.
@@ -227,6 +239,10 @@ local high_priority_component = {
 ```
 
 Priority can also be set to a negative number, which can be used to make a component be truncated earlier than the ones with default priority.
+
+##### Check if component is truncated or hidden
+
+If you give a component a `name`, you can check if that component has been truncated or hidden by Feline's smart truncation system through the utility functions, `require('feline').is_component_truncated` and `require('feline').is_component_hidden`. Both of these functions take two arguments, `winid` which is the window id of the window for which the component's truncation is being checked, the second is the `name` of the component. `is_component_truncated` returns `true` if a component has been truncated or hidden, and `is_component_hidden` returns `true` only if a component has been hidden.
 
 #### Conditionally enable components
 
