@@ -170,7 +170,7 @@ function M.file_type(component, opts)
     end
 
     if opts.case == 'titlecase' then
-        filetype = filetype:gsub('%a', string.upper, 1)
+        filetype = filetype:gsub("^%l", string.upper)
     elseif opts.case ~= 'lowercase' then
         filetype = filetype:upper()
     end
