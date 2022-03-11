@@ -180,6 +180,9 @@ function M.setup(config)
     M.force_inactive = config.force_inactive
     M.disable = config.disable
 
+    -- Unload providers in case they were loaded before to prevent custom providers from old
+    -- configuration being cached
+    package.loaded['feline.providers'] = nil
     M.providers = require('feline.providers')
 
     -- Register custom providers
