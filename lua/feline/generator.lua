@@ -364,13 +364,33 @@ end
 
 -- Generate statusline by parsing all components and return a string
 function M.generate_statusline(is_active)
+    local components
     local winid = api.nvim_get_current_win()
 
     M.component_truncated[winid] = {}
     M.component_hidden[winid] = {}
 
-    if not feline.components or is_disabled() then
+    if is_disabled() then
         return ''
+    end
+
+    -- If a condition for one of the conditional components is satisfied, use those components
+    if feline.conditional_components then
+        for _, v in ipairs(feline.conditional_components) do
+            if v.condition() then
+                components = v
+                break
+            end
+        end
+    end
+
+    -- If none of the conditional components match, use the default components
+    if not components then
+        if feline.components then
+            components = feline.components
+        else
+            return ''
+        end
     end
 
     local statusline_type
@@ -381,7 +401,7 @@ function M.generate_statusline(is_active)
         statusline_type = 'inactive'
     end
 
-    local sections = feline.components[statusline_type]
+    local sections = components[statusline_type]
 
     if not sections then
         return ''
