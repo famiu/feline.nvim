@@ -4,9 +4,12 @@ local cmd = vim.api.nvim_command
 local M = {}
 
 -- Utility function to create augroups
-function M.create_augroup(autocmds, name)
+function M.create_augroup(autocmds, name, no_clear)
     cmd('augroup ' .. name)
-    cmd('autocmd!')
+
+    if no_clear == nil or no_clear == false then
+        cmd('autocmd!')
+    end
 
     for _, autocmd in ipairs(autocmds) do
         cmd('autocmd ' .. table.concat(autocmd, ' '))

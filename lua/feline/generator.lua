@@ -2,6 +2,7 @@ local bo = vim.bo
 local api = vim.api
 
 local feline = require('feline')
+local utils = require('feline.utils')
 
 local M = {
     -- Cached highlights
@@ -11,6 +12,15 @@ local M = {
     -- Used to check if a certain component is hidden
     component_hidden = {},
 }
+
+-- Cached provider strings for providers that are updated through a trigger
+local provider_cache = {}
+
+-- Cached provider strings for short providers that are updated through a trigger
+local short_provider_cache = {}
+
+-- Flags to check if the autocmd for a provider update trigger has been created
+local provider_autocmd = {}
 
 -- Return true if any pattern in tbl matches provided value
 local function find_pattern_match(tbl, val)
@@ -231,7 +241,7 @@ local function parse_icon(icon, parent_hl, is_component_empty)
 end
 
 -- Parse component provider to return the provider string and default icon
-local function parse_provider(provider, component)
+local function parse_provider(provider, component, is_short, winid, section_nr, component_nr)
     local str = ''
     local icon
 
@@ -242,11 +252,17 @@ local function parse_provider(provider, component)
         else
             str = provider
         end
-        -- If provider is a function, just evaluate it normally
-    elseif type(provider) == 'function' then
+
+        return str, icon
+    end
+
+    -- If provider is a function, just evaluate it normally
+    if type(provider) == 'function' then
         str, icon = provider(component)
         -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == 'table' then
+        local provider_fn, provider_opts
+
         if not provider.name then
             api.nvim_err_writeln("Provider table doesn't have the provider name")
         elseif type(provider.name) ~= 'string' then
@@ -256,7 +272,86 @@ local function parse_provider(provider, component)
         elseif not feline.providers[provider.name] then
             api.nvim_err_writeln(string.format("Provider with name '%s' doesn't exist", provider.name))
         else
-            str, icon = feline.providers[provider.name](component, provider.opts or {})
+            provider_fn = feline.providers[provider.name]
+            provider_opts = provider.opts or {}
+        end
+
+        local update = evaluate_if_function(provider.update)
+
+        if update == nil then
+            str, icon = provider_fn(component, provider_opts)
+        else
+            local provider_cache_tbl
+
+            if is_short then
+                provider_cache_tbl = short_provider_cache
+            else
+                provider_cache_tbl = provider_cache
+            end
+
+            -- Initialize provider cache tables
+            if not provider_cache[winid] then
+                provider_cache[winid] = {}
+            end
+
+            if not provider_cache[winid][section_nr] then
+                provider_cache[winid][section_nr] = {}
+            end
+
+            if not short_provider_cache[winid] then
+                short_provider_cache[winid] = {}
+            end
+
+            if not short_provider_cache[winid][section_nr] then
+                short_provider_cache[winid][section_nr] = {}
+            end
+
+            -- If `update` is true or provider string is not cached, call the provider function
+            -- and cache it
+            -- Use == true for comparison to prevent the condition being true if `update` is a table
+            if update == true or not provider_cache_tbl[winid][section_nr][component_nr] then
+                local cache_str, cache_icon = provider_fn(component, provider_opts)
+
+                provider_cache_tbl[winid][section_nr][component_nr] = {
+                    str = cache_str,
+                    icon = cache_icon
+                }
+            end
+
+            -- If `update` is a table, it means that the provider update is triggered through
+            -- autocmds
+            if type(update) == 'table' then
+                -- Initialize autocmd table structure
+                if not provider_autocmd[winid] then
+                    provider_autocmd[winid] = {}
+                end
+
+                if not provider_autocmd[winid][section_nr] then
+                    provider_autocmd[winid][section_nr] = {}
+                end
+
+                -- If an autocmd hasn't been created for the provider update trigger, create it
+                if not provider_autocmd[winid][section_nr][component_nr] then
+                    provider_autocmd[winid][section_nr][component_nr] = true
+
+                    utils.create_augroup({
+                        {
+                            table.concat(update, ','),
+                            '*',
+                            string.format(
+                                'lua require("feline.generator").trigger_provider_update(%d, %d, %d)',
+                                winid,
+                                section_nr,
+                                component_nr
+                            )
+                        }
+                    }, 'feline', true)
+                end
+
+            end
+
+            str = provider_cache_tbl[winid][section_nr][component_nr].str
+            icon = provider_cache_tbl[winid][section_nr][component_nr].icon
         end
     end
 
@@ -269,7 +364,7 @@ local function parse_provider(provider, component)
     return str, icon
 end
 
-local function parse_component(component, use_short_provider)
+local function parse_component(component, use_short_provider, winid, section_nr, component_nr)
     local enabled
 
     if component.enabled ~= nil then
@@ -305,7 +400,7 @@ local function parse_component(component, use_short_provider)
     end
 
     if provider then
-        str, icon = parse_provider(provider, component)
+        str, icon = parse_provider(provider, component, use_short_provider, winid, section_nr, component_nr)
     else
         str = ''
     end
@@ -324,21 +419,21 @@ end
 -- Wrapper around parse_component that handles any errors that happen while parsing the components
 -- and points to the location of the component in case of any errors
 local function parse_component_handle_errors(
-    winid,
     component,
     use_short_provider,
-    statusline_type,
-    component_section,
-    component_number
+    winid,
+    section_nr,
+    component_nr,
+    statusline_type
 )
-    local ok, result = pcall(parse_component, component, use_short_provider)
+    local ok, result = pcall(parse_component, component, use_short_provider, winid, section_nr, component_nr)
 
     if not ok then
         api.nvim_err_writeln(
             string.format(
                 "Feline: error while processing component number %d on section %d of type '%s' for window %d: %s",
-                component_number,
-                component_section,
+                section_nr,
+                component_nr,
                 statusline_type,
                 winid,
                 result
@@ -360,6 +455,11 @@ local function get_component_width(component_str)
     end
 
     return api.nvim_eval_statusline(component_str, eval_statusline_opts).width
+end
+
+function M.trigger_provider_update(winid, section_nr, component_nr)
+    provider_cache[winid][section_nr][component_nr] = nil
+    short_provider_cache[winid][section_nr][component_nr] = nil
 end
 
 -- Generate statusline by parsing all components and return a string
@@ -435,7 +535,7 @@ function M.generate_statusline(is_active)
                 M.component_hidden[winid][component.name] = false
             end
 
-            local component_str = parse_component_handle_errors(winid, component, false, statusline_type, i, j)
+            local component_str = parse_component_handle_errors(component, false, winid, i, j, statusline_type)
             local component_width = get_component_width(component_str)
 
             component_strs[i][j] = component_str
@@ -468,12 +568,12 @@ function M.generate_statusline(is_active)
 
             if component.short_provider then
                 local component_str = parse_component_handle_errors(
-                    winid,
                     component,
                     true,
-                    statusline_type,
+                    winid,
                     section,
-                    number
+                    number,
+                    statusline_type
                 )
 
                 local component_width = get_component_width(component_str)
@@ -534,6 +634,16 @@ function M.generate_statusline(is_active)
 
     -- Finally, concatenate all sections to get the statusline string, and return it
     return table.concat(section_strs, '%=')
+end
+
+-- Clear statusline generator state in order to do a clean reinitialization of it
+function M.clear_state()
+    M.highlights = {}
+    M.component_hidden = {}
+    M.component_truncated = {}
+    provider_cache = {}
+    short_provider_cache = {}
+    provider_autocmd = {}
 end
 
 return M
