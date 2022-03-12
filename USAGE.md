@@ -164,6 +164,32 @@ end
 
 If you omit the provider value, it will be set to an empty string. A component with no provider or an empty provider may be useful for things like [applying a highlight to section gaps](#highlight-section-gaps) or just having an icon or separator as a component.
 
+##### Update provider value using triggers
+
+Sometimes the provider value has to do some heavy operations, which makes it undesirable to run the provider function every time the statusline is generated. Feline allows you to conditionally re-run the provider function by triggering an update to the provider string through either an autocmd or a function. Until the provider function is run again, the value from the previous execution of the provider function is used as the provider string.
+
+Updating provider value through triggers is achieved through the `update` key in the `provider` table. `update` can be either a boolean value, a table or a function that returns a boolean value or a table. If it's a boolean value, then the provider will be updated if value is `true`. For example:
+
+```lua
+provider = {
+    name = 'my_provider',
+    -- Only update provider if there are less than 4 windows in the current tabpage
+    update = function()
+        return #vim.api.nvim_tabpage_list_wins(0) < 4
+    end
+}
+```
+
+If it's a table, it must contain a list of autocmds that will trigger an update for the provider. For example:
+
+```lua
+provider = {
+    name = 'my_provider',
+    -- Only update provider if a window is closed or if a buffer is deleted
+    update = { 'WinClosed', 'BufDelete' }
+}
+```
+
 #### Component name
 
 A component can optionally be given a name. While the component is not required to have a name and the name is mostly useless, it can be used to check if the component has been [truncated](#truncation). To give a component a name, just set its `name` value to a `string`, shown below:

@@ -180,6 +180,9 @@ function M.setup(config)
     M.force_inactive = config.force_inactive
     M.disable = config.disable
 
+    -- Unload providers in case they were loaded before to prevent custom providers from old
+    -- configuration being cached
+    package.loaded['feline.providers'] = nil
     M.providers = require('feline.providers')
 
     -- Register custom providers
@@ -213,6 +216,9 @@ function M.setup(config)
 
     -- Ensures custom quickfix statusline isn't loaded
     g.qf_disable_statusline = true
+
+    -- Clear statusline generator state
+    gen.clear_state()
 
     -- Set the value of the statusline option to Feline's statusline generation function
     opt.statusline = "%{%v:lua.require'feline'.statusline()%}"

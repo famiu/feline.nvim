@@ -11,7 +11,6 @@ local mode_alias = {
     ['niI'] = 'NORMAL',
     ['niR'] = 'NORMAL',
     ['niV'] = 'NORMAL',
-    ['nt'] = 'NORMAL',
     ['v'] = 'VISUAL',
     ['V'] = 'LINES',
     [''] = 'BLOCK',
