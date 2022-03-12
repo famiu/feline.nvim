@@ -314,7 +314,7 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
 
                 provider_cache_tbl[winid][section_nr][component_nr] = {
                     str = cache_str,
-                    icon = cache_icon
+                    icon = cache_icon,
                 }
             end
 
@@ -343,11 +343,10 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
                                 winid,
                                 section_nr,
                                 component_nr
-                            )
-                        }
+                            ),
+                        },
                     }, 'feline', true)
                 end
-
             end
 
             str = provider_cache_tbl[winid][section_nr][component_nr].str
