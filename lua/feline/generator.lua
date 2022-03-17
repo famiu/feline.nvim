@@ -345,7 +345,7 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
                                 component_nr
                             ),
                         },
-                    }, 'feline', true)
+                    }, 'felineProviders', true)
                 end
             end
 
@@ -643,6 +643,11 @@ function M.clear_state()
     provider_cache = {}
     short_provider_cache = {}
     provider_autocmd = {}
+    -- Clear provider update autocmds
+    if vim.fn.exists('#felineProviders') ~= 0 then
+        api.nvim_command('autocmd! felineProviders')
+        api.nvim_command('augroup! felineProviders')
+    end
 end
 
 return M
