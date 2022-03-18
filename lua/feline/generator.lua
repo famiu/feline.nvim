@@ -1,5 +1,6 @@
 local bo = vim.bo
 local api = vim.api
+local opt = vim.opt
 
 local feline = require('feline')
 local utils = require('feline.utils')
@@ -345,7 +346,7 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
                                 component_nr
                             ),
                         },
-                    }, 'feline', true)
+                    }, 'felineProviders', true)
                 end
             end
 
@@ -545,10 +546,18 @@ function M.generate_statusline(is_active)
         end
     end
 
-    local window_width = api.nvim_win_get_width(0)
+    local maxwidth
 
-    -- If statusline width is greater than the window width, begin the truncation process
-    if statusline_width > window_width then
+    -- If statusline is global, use entire Neovim window width for maxwidth
+    -- Otherwise just use width of current window
+    if opt.laststatus:get() == 3 then
+        maxwidth = opt.columns:get()
+    else
+        maxwidth = api.nvim_win_get_width(0)
+    end
+
+    -- If statusline width is greater than maxwidth, begin the truncation process
+    if statusline_width > maxwidth then
         -- First, sort the component indices in ascending order of the priority of the components
         -- that the indices refer to
         table.sort(component_indices, function(first, second)
@@ -594,7 +603,7 @@ function M.generate_statusline(is_active)
                 end
             end
 
-            if statusline_width <= window_width then
+            if statusline_width <= maxwidth then
                 break
             end
         end
@@ -602,7 +611,7 @@ function M.generate_statusline(is_active)
 
     -- If statusline still doesn't fit within window, remove components with truncate_hide set to
     -- true until it does
-    if statusline_width > window_width then
+    if statusline_width > maxwidth then
         for _, indices in ipairs(component_indices) do
             local section, number = indices[1], indices[2]
             local component = sections[section][number]
@@ -618,7 +627,7 @@ function M.generate_statusline(is_active)
                 end
             end
 
-            if statusline_width <= window_width then
+            if statusline_width <= maxwidth then
                 break
             end
         end
@@ -643,6 +652,11 @@ function M.clear_state()
     provider_cache = {}
     short_provider_cache = {}
     provider_autocmd = {}
+    -- Clear provider update autocmds
+    if vim.fn.exists('#felineProviders') ~= 0 then
+        api.nvim_command('autocmd! felineProviders')
+        api.nvim_command('augroup! felineProviders')
+    end
 end
 
 return M
