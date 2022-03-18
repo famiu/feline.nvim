@@ -204,9 +204,9 @@ Two components inside the `active` or `inactive` table cannot share the same nam
 
 #### Truncation
 
-Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the window. It can be useful if you want to make better use of screen space. It also allows you to better manage which providers are truncated, how they are truncated and in which order they are truncated.
+Feline has an automatic smart truncation system where components can be automatically truncated if the statusline doesn't fit within the available space. It can be useful if you want to make better use of screen space. It also allows you to better manage which providers are truncated, how they are truncated and in which order they are truncated.
 
-**NOTE:** Truncation currently only works with the master branch of Neovim. If you're using a stable release, truncation will not work and all configurations related to it will be silently ignored.
+**NOTE:** Truncation only works on Neovim 0.6 and above. If you're using an earlier release, truncation will not work and all configurations related to it will be silently ignored.
 
 There are a few component values associated with truncation which are described below.
 
