@@ -82,7 +82,9 @@ function M.file_info(component, opts)
         end
     end
 
-    if type == 'short-path' then
+    if filename == '' then
+        filename = '[No Name]'
+    elseif type == 'short-path' then
         filename = fn.pathshorten(filename)
     elseif type == 'base-only' then
         filename = fn.fnamemodify(filename, ':t')
@@ -96,10 +98,6 @@ function M.file_info(component, opts)
         filename = get_unique_filename(filename, true)
     elseif type ~= 'full-path' then
         filename = fn.fnamemodify(filename, ':t')
-    end
-
-    if filename == '' then
-        filename = '[No Name]'
     end
 
     if bo.readonly then
