@@ -202,8 +202,10 @@ The name of this plugin is a silly pun based on the convention of the names of s
 
 Feline uses [Semantic Versioning](https://semver.org/) for its version names. This is meant to ensure that releases after 1.0 do not break backwards compatibility without a MAJOR version bump, thus allowing users to have better control over when they want to install a change that might potentially break their workflow.
 
-## Self-plug
+## Support
 
-If you liked this plugin, also check out:
+If you liked this plugin, consider [supporting me.](https://www.buymeacoffee.com/famiuhaque)
+
+Also check out some of my other work:
 
 - [bufdelete.nvim](https://github.com/famiu/bufdelete.nvim) - Delete Neovim buffers without losing your window layout.
