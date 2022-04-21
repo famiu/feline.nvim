@@ -63,7 +63,7 @@ end
 
 function M.file_info(component, opts)
     local filename = api.nvim_buf_get_name(0)
-    local extension = bo.filetype
+    local extension = fn.fnamemodify(filename, ':e')
     local type = opts.type or 'base-only'
     local readonly_str, modified_str, icon
 
@@ -144,7 +144,7 @@ end
 
 function M.file_type(component, opts)
     local filename = api.nvim_buf_get_name(0)
-    local extension = bo.filetype
+    local extension = fn.fnamemodify(filename, ':e')
     local filetype = bo.filetype
     local icon
 
