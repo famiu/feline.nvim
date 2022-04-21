@@ -62,16 +62,13 @@ local function get_unique_filename(filename, shorten)
 end
 
 function M.file_info(component, opts)
-    local filename = api.nvim_buf_get_name(0)
-    local extension = bo.filetype
-    local type = opts.type or 'base-only'
     local readonly_str, modified_str, icon
 
     -- Avoid loading nvim-web-devicons if an icon is provided already
     if not component.icon then
         local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
-            filename,
-            extension,
+            fn.bufname(),
+            nil, -- extension is already computed by nvim-web-devicons
             { default = true }
         )
 
@@ -82,6 +79,8 @@ function M.file_info(component, opts)
         end
     end
 
+    local filename = api.nvim_buf_get_name(0)
+    local type = opts.type or 'base-only'
     if filename == '' then
         filename = '[No Name]'
     elseif type == 'short-path' then
@@ -143,8 +142,6 @@ function M.file_size()
 end
 
 function M.file_type(component, opts)
-    local filename = api.nvim_buf_get_name(0)
-    local extension = bo.filetype
     local filetype = bo.filetype
     local icon
 
@@ -152,8 +149,8 @@ function M.file_type(component, opts)
     if opts.filetype_icon then
         if not component.icon then
             local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
-                filename,
-                extension,
+                fn.bufname(),
+                nil, -- extension is already computed by nvim-web-devicons
                 { default = true }
             )
 
