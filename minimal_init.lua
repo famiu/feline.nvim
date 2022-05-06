@@ -25,13 +25,6 @@ local function load_plugins()
     use('wbthomason/packer.nvim')
     use({
         'famiu/feline.nvim',
-
-        -- If you wish to use the develop branch, uncomment the next line
-        -- branch = 'develop',
-
-        -- If you wish to use a specific version of Feline, uncomment the next line
-        -- tag = 'v0.1', -- replace 'v0.1' with your version number
-
         requires = {
             {
                 'lewis6991/gitsigns.nvim',

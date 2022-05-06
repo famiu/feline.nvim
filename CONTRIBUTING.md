@@ -54,8 +54,6 @@ grammatical mistakes, improving existing documentation or adding new documentati
 
 Before you make a Pull Request, always make sure to:
 
-- Make your changes in the develop branch. Unless your Pull Request contains a hotfix, you
-  should never modify the master branch directly.
 - Properly test your changes.
 - Avoid "breaking changes" (changes that break backwards compatibility) without a good reason.
 - Add relevant details in the description of your Pull Request, such as what issues it's linked to,
