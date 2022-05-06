@@ -653,7 +653,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 | [`vi_mode`](#vi-mode)                 | Current vim mode                               |
 | [`position`](#position)               | Get line and column number of cursor           |
 | `line_percentage`                     | Current line percentage                        |
-| `scroll_bar`                          | Scroll bar that shows file progress            |
+| [`scroll_bar`](#scroll-bar)           | Scroll bar that shows file progress            |
 | [`file_info`](#file-info)             | Get file icon, name and modified status        |
 | `file_size`                           | Get file size                                  |
 | `file_type`                           | Get file type                                  |
@@ -705,6 +705,10 @@ The Vi-mode provider can take some provider options through the provider `opts`:
 ### Position
 
 The `position` provider can take a `padding` provider option, which may be either `true` or `false` and will determine whether the position numbers are padded with spaces or not.
+
+### Scroll bar
+
+The `scroll_bar` provider can take a `reverse` provider option, which may be either `true` or `false` and will determine if the scroll bar is reversed, which may be useful if you want the scroll bar to have natural scrolling.
 
 ### File Info
 

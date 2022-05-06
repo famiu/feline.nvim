@@ -30,11 +30,15 @@ function M.line_percentage()
     end
 end
 
-function M.scroll_bar()
+function M.scroll_bar(_, opts)
     local curr_line = api.nvim_win_get_cursor(0)[1]
     local lines = api.nvim_buf_line_count(0)
 
-    return string.rep(scroll_bar_blocks[math.floor(curr_line / lines * 7) + 1], 2)
+    if opts.reverse then
+        return string.rep(scroll_bar_blocks[8 - math.floor(curr_line / lines * 7)], 2)
+    else
+        return string.rep(scroll_bar_blocks[math.floor(curr_line / lines * 7) + 1], 2)
+    end
 end
 
 return M
