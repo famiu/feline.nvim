@@ -5,7 +5,7 @@ on:
     paths:
       - USAGE.md
     branches:
-      - develop
+      - master
 
 jobs:
   docs:
