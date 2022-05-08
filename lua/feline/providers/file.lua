@@ -4,6 +4,11 @@ local api = vim.api
 
 local M = {}
 
+-- Get foreground color of highlight group (nvim-webdevicons guarantees these are set)
+local function get_hlgroup_fg(group)
+    return string.format('#%06x', vim.api.nvim_get_hl_by_name(group, true)['foreground'])
+end
+
 -- Get the names of all current listed buffers
 local function get_current_filenames()
     local listed_buffers = vim.tbl_filter(function(bufnr)
@@ -66,7 +71,7 @@ function M.file_info(component, opts)
 
     -- Avoid loading nvim-web-devicons if an icon is provided already
     if not component.icon then
-        local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
+        local icon_str, hlgroup = require('nvim-web-devicons').get_icon(
             fn.expand('%:t'),
             nil, -- extension is already computed by nvim-web-devicons
             { default = true }
@@ -75,7 +80,7 @@ function M.file_info(component, opts)
         icon = { str = icon_str }
 
         if opts.colored_icon == nil or opts.colored_icon then
-            icon.hl = { fg = icon_color }
+            icon.hl = { fg = get_hlgroup_fg(hlgroup) }
         end
     end
 
@@ -148,7 +153,7 @@ function M.file_type(component, opts)
     -- Avoid loading nvim-web-devicons if an icon is provided already
     if opts.filetype_icon then
         if not component.icon then
-            local icon_str, icon_color = require('nvim-web-devicons').get_icon_color(
+            local icon_str, hlgroup = require('nvim-web-devicons').get_icon(
                 fn.expand('%:t'),
                 nil, -- extension is already computed by nvim-web-devicons
                 { default = true }
@@ -157,7 +162,7 @@ function M.file_type(component, opts)
             icon = { str = icon_str }
 
             if opts.colored_icon ~= false then
-                icon.hl = { fg = icon_color }
+                icon.hl = { fg = get_hlgroup_fg(hlgroup) }
             end
         end
 
