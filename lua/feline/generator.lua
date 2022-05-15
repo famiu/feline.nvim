@@ -432,8 +432,8 @@ local function parse_component_handle_errors(
         api.nvim_err_writeln(
             string.format(
                 "Feline: error while processing component number %d on section %d of type '%s' for window %d: %s",
-                section_nr,
                 component_nr,
+                section_nr,
                 statusline_type,
                 winid,
                 result
