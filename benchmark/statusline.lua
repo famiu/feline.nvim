@@ -16,7 +16,7 @@ if not pcall(require, 'plenary.benchmark') then
     vim.opt.packpath:append(tmpdir .. '/nvim/site')
 
     if vim.fn.isdirectory(install_path) == 0 then
-        vim.fn.system({ 'git', 'clone', 'https://github.com/nvim-lua/plenary.nvim', install_path })
+        vim.fn.system { 'git', 'clone', 'https://github.com/nvim-lua/plenary.nvim', install_path }
     end
 end
 

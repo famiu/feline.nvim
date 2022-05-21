@@ -3,19 +3,12 @@ local M = {}
 local lsp = vim.lsp
 local diagnostic = vim.diagnostic
 
-local severity_names = { 'Error', 'Warning', 'Information', 'Hint' }
-
 function M.is_lsp_attached()
     return next(lsp.buf_get_clients(0)) ~= nil
 end
 
 function M.get_diagnostics_count(severity)
-    if vim.fn.has('nvim-0.6') == 1 then
-        return vim.tbl_count(diagnostic.get(0, severity and { severity = severity }))
-    else
-        -- TODO: drop this when 0.5 is no longer used
-        return lsp.diagnostic.get_count(0, severity and severity_names[severity])
-    end
+    return vim.tbl_count(diagnostic.get(0, severity and { severity = severity }))
 end
 
 function M.diagnostics_exist(severity)
@@ -40,23 +33,19 @@ local function diagnostics(severity)
 end
 
 function M.diagnostic_errors()
-    -- TODO: replace with diagnostic.severity.ERROR when 0.5 is no longer used
-    return diagnostics(1), '  '
+    return diagnostics(diagnostic.severity.ERROR), '  '
 end
 
 function M.diagnostic_warnings()
-    -- TODO: replace with diagnostic.severity.WARN when 0.5 is no longer used
-    return diagnostics(2), '  '
+    return diagnostics(diagnostic.severity.WARN), '  '
 end
 
 function M.diagnostic_info()
-    -- TODO: replace with diagnostic.severity.INFO when 0.5 is no longer used
-    return diagnostics(3), '  '
+    return diagnostics(diagnostic.severity.INFO), '  '
 end
 
 function M.diagnostic_hints()
-    -- TODO: replace with diagnostic.severity.HINT when 0.5 is no longer used
-    return diagnostics(4), '  '
+    return diagnostics(diagnostic.severity.HINT), '  '
 end
 
 return M

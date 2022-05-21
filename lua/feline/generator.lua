@@ -1,56 +1,8 @@
 local bo = vim.bo
 local api = vim.api
-local opt = vim.opt
 
 local feline = require('feline')
 local utils = require('feline.utils')
-
-local M = {
-    -- Cached highlights
-    highlights = {},
-    -- Used to check if a certain component is truncated
-    component_truncated = {},
-    -- Used to check if a certain component is hidden
-    component_hidden = {},
-}
-
--- Cached provider strings for providers that are updated through a trigger
-local provider_cache = {}
-
--- Cached provider strings for short providers that are updated through a trigger
-local short_provider_cache = {}
-
--- Flags to check if the autocmd for a provider update trigger has been created
-local provider_autocmd = {}
-
--- Return true if any pattern in tbl matches provided value
-local function find_pattern_match(tbl, val)
-    return tbl and next(vim.tbl_filter(function(pattern)
-        return val:match(pattern)
-    end, tbl))
-end
-
--- Check if current buffer is forced to have inactive statusline
-local function is_forced_inactive()
-    local buftype = bo.buftype
-    local filetype = bo.filetype
-    local bufname = api.nvim_buf_get_name(0)
-
-    return find_pattern_match(feline.force_inactive.filetypes, filetype)
-        or find_pattern_match(feline.force_inactive.buftypes, buftype)
-        or find_pattern_match(feline.force_inactive.bufnames, bufname)
-end
-
--- Check if buffer is configured to have statusline disabled
-local function is_disabled()
-    local buftype = bo.buftype
-    local filetype = bo.filetype
-    local bufname = api.nvim_buf_get_name(0)
-
-    return find_pattern_match(feline.disable.filetypes, filetype)
-        or find_pattern_match(feline.disable.buftypes, buftype)
-        or find_pattern_match(feline.disable.bufnames, bufname)
-end
 
 -- Evaluate a component key if it is a function, else return the value
 -- If the key is a function, every argument after the first one is passed to it
@@ -62,33 +14,12 @@ local function evaluate_if_function(key, ...)
     end
 end
 
--- Add highlight and store its name in the highlights table
-local function add_hl(name, fg, bg, style)
-    api.nvim_command(string.format('highlight %s gui=%s guifg=%s guibg=%s', name, style, fg, bg))
-
-    M.highlights[name] = true
-end
-
--- Parse highlight table, inherit default/parent values if values are not given
-local function parse_hl(hl, parent_hl)
-    parent_hl = parent_hl or {}
-
-    local fg = hl.fg or parent_hl.fg or feline.colors.fg
-    local bg = hl.bg or parent_hl.bg or feline.colors.bg
-    local style = hl.style or parent_hl.style or 'NONE'
-
-    if feline.colors[fg] then
-        fg = feline.colors[fg]
-    end
-    if feline.colors[bg] then
-        bg = feline.colors[bg]
-    end
-
-    return {
-        fg = fg,
-        bg = bg,
-        style = style,
-    }
+-- Return true if any pattern in tbl matches provided value
+local function find_pattern_match(tbl, val)
+    return tbl
+        and next(vim.tbl_filter(function(pattern)
+            return val:match(pattern)
+        end, tbl))
 end
 
 -- If highlight is a string, use it as highlight name and
@@ -111,20 +42,97 @@ local function get_hl_properties(hlname)
     }
 end
 
+local Generator = {}
+Generator.__index = Generator
+Generator.__newindex = function(_, _, _) end
+Generator.__metatable = false
+
+function Generator.new(name, config)
+    return setmetatable({
+        -- Cached highlights
+        highlights = {},
+        -- Used to check if a certain component is truncated
+        component_truncated = {},
+        -- Used to check if a certain component is hidden
+        component_hidden = {},
+        -- Cached provider strings for providers that are updated through a trigger
+        provider_cache = {},
+        -- Cached provider strings for short providers that are updated through a trigger
+        short_provider_cache = {},
+        -- Flags to check if the autocmd for a provider update trigger has been created
+        provider_autocmd = {},
+        -- Generator name
+        name = name,
+        -- Configuration options
+        config = config,
+    }, Generator)
+end
+
+-- Add highlight and store its name in the generator highlights table
+local function add_hl(gen, name, fg, bg, style)
+    api.nvim_command(string.format('highlight %s gui=%s guifg=%s guibg=%s', name, style, fg, bg))
+
+    gen.highlights[name] = true
+end
+
+-- Check if current buffer is forced to have inactive statusline
+local function is_forced_inactive(gen)
+    local buftype = bo.buftype
+    local filetype = bo.filetype
+    local bufname = api.nvim_buf_get_name(0)
+
+    return find_pattern_match(gen.config.force_inactive.filetypes, filetype)
+        or find_pattern_match(gen.config.force_inactive.buftypes, buftype)
+        or find_pattern_match(gen.config.force_inactive.bufnames, bufname)
+end
+
+-- Check if buffer is configured to have statusline disabled
+local function is_disabled(gen)
+    local buftype = bo.buftype
+    local filetype = bo.filetype
+    local bufname = api.nvim_buf_get_name(0)
+
+    return find_pattern_match(gen.config.disable.filetypes, filetype)
+        or find_pattern_match(gen.config.disable.buftypes, buftype)
+        or find_pattern_match(gen.config.disable.bufnames, bufname)
+end
+
+-- Parse highlight table, inherit default/parent values if values are not given
+local function parse_hl(gen, hl, parent_hl)
+    parent_hl = parent_hl or {}
+
+    local fg = hl.fg or parent_hl.fg or feline.colors.fg
+    local bg = hl.bg or parent_hl.bg or feline.colors.bg
+    local style = hl.style or parent_hl.style or 'NONE'
+
+    if feline.colors[fg] then
+        fg = feline.colors[fg]
+    end
+    if feline.colors[bg] then
+        bg = feline.colors[bg]
+    end
+
+    return {
+        fg = fg,
+        bg = bg,
+        style = style,
+    }
+end
+
 -- Generate unique name for highlight if name is not given
 -- Create the highlight with the name if it doesn't exist
 -- If given a string, just interpret it as an external highlight group and return it
-local function get_hlname(hl, parent_hl)
+local function get_hlname(gen, hl, parent_hl)
     if type(hl) == 'string' then
         return hl
     end
 
     -- If highlight name exists and is cached, just return it
-    if hl.name and M.highlights[hl.name] then
+    if hl.name and gen.highlights[hl.name] then
         return hl.name
     end
 
-    hl = parse_hl(hl, parent_hl)
+    hl = parse_hl(gen, hl, parent_hl)
 
     local fg_str, bg_str
 
@@ -142,10 +150,16 @@ local function get_hlname(hl, parent_hl)
     end
 
     -- Generate unique hl name from color strings if a name isn't provided
-    local hlname = hl.name or string.format('StatusComponent_%s_%s_%s', fg_str, bg_str, string.gsub(hl.style, ',', '_'))
+    local hlname = hl.name
+        or string.format(
+            'StatusComponent_%s_%s_%s',
+            fg_str,
+            bg_str,
+            string.gsub(hl.style, ',', '_')
+        )
 
-    if not M.highlights[hlname] then
-        add_hl(hlname, hl.fg, hl.bg, hl.style)
+    if not gen.highlights[hlname] then
+        add_hl(gen, hlname, hl.fg, hl.bg, hl.style)
     end
 
     return hlname
@@ -154,7 +168,7 @@ end
 -- Parse component seperator to return parsed string
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
-local function parse_sep(sep, parent_bg, is_component_empty)
+local function parse_sep(gen, sep, parent_bg, is_component_empty)
     if sep == nil then
         return ''
     end
@@ -184,11 +198,11 @@ local function parse_sep(sep, parent_bg, is_component_empty)
         str = feline.separators[str]
     end
 
-    return string.format('%%#%s#%s', get_hlname(hl), str)
+    return string.format('%%#%s#%s', get_hlname(gen, hl), str)
 end
 
 -- Either parse a single separator or a list of separators returning the parsed string
-local function parse_sep_list(sep_list, parent_bg, is_component_empty)
+local function parse_sep_list(gen, sep_list, parent_bg, is_component_empty)
     if sep_list == nil then
         return ''
     end
@@ -196,23 +210,27 @@ local function parse_sep_list(sep_list, parent_bg, is_component_empty)
     if
         type(sep_list) == 'table'
         and sep_list[1]
-        and (type(sep_list[1]) == 'function' or type(sep_list[1]) == 'table' or type(sep_list[1]) == 'string')
+        and (
+            type(sep_list[1]) == 'function'
+            or type(sep_list[1]) == 'table'
+            or type(sep_list[1]) == 'string'
+        )
     then
         local sep_strs = {}
 
         for _, v in ipairs(sep_list) do
-            sep_strs[#sep_strs + 1] = parse_sep(v, parent_bg, is_component_empty)
+            sep_strs[#sep_strs + 1] = parse_sep(gen, v, parent_bg, is_component_empty)
         end
 
         return table.concat(sep_strs)
     else
-        return parse_sep(sep_list, parent_bg, is_component_empty)
+        return parse_sep(gen, sep_list, parent_bg, is_component_empty)
     end
 end
 
 -- Parse component icon and return parsed string
 -- By default, icon inherits component highlights
-local function parse_icon(icon, parent_hl, is_component_empty)
+local function parse_icon(gen, icon, parent_hl, is_component_empty)
     if icon == nil then
         return ''
     end
@@ -238,11 +256,11 @@ local function parse_icon(icon, parent_hl, is_component_empty)
         hl = evaluate_if_function(icon.hl) or parent_hl
     end
 
-    return string.format('%%#%s#%s', get_hlname(hl, parent_hl), str)
+    return string.format('%%#%s#%s', get_hlname(gen, hl, parent_hl), str)
 end
 
 -- Parse component provider to return the provider string and default icon
-local function parse_provider(provider, component, is_short, winid, section_nr, component_nr)
+local function parse_provider(gen, provider, component, is_short, winid, section_nr, component_nr)
     local str = ''
     local icon
 
@@ -257,6 +275,9 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
         return str, icon
     end
 
+    if type(provider) == 'table' and provider.update then
+        print(vim.inspect(gen.provider_cache))
+    end
     -- If provider is a function, just evaluate it normally
     if type(provider) == 'function' then
         str, icon = provider(component)
@@ -268,10 +289,15 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
             api.nvim_err_writeln("Provider table doesn't have the provider name")
         elseif type(provider.name) ~= 'string' then
             api.nvim_err_writeln(
-                string.format("Expected 'string' for provider name, got '%s' instead", type(provider.name))
+                string.format(
+                    "Expected 'string' for provider name, got '%s' instead",
+                    type(provider.name)
+                )
             )
         elseif not feline.providers[provider.name] then
-            api.nvim_err_writeln(string.format("Provider with name '%s' doesn't exist", provider.name))
+            api.nvim_err_writeln(
+                string.format("Provider with name '%s' doesn't exist", provider.name)
+            )
         else
             provider_fn = feline.providers[provider.name]
             provider_opts = provider.opts or {}
@@ -285,26 +311,26 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
             local provider_cache_tbl
 
             if is_short then
-                provider_cache_tbl = short_provider_cache
+                provider_cache_tbl = gen.short_provider_cache
             else
-                provider_cache_tbl = provider_cache
+                provider_cache_tbl = gen.provider_cache
             end
 
             -- Initialize provider cache tables
-            if not provider_cache[winid] then
-                provider_cache[winid] = {}
+            if not gen.provider_cache[winid] then
+                gen.provider_cache[winid] = {}
             end
 
-            if not provider_cache[winid][section_nr] then
-                provider_cache[winid][section_nr] = {}
+            if not gen.provider_cache[winid][section_nr] then
+                gen.provider_cache[winid][section_nr] = {}
             end
 
-            if not short_provider_cache[winid] then
-                short_provider_cache[winid] = {}
+            if not gen.short_provider_cache[winid] then
+                gen.short_provider_cache[winid] = {}
             end
 
-            if not short_provider_cache[winid][section_nr] then
-                short_provider_cache[winid][section_nr] = {}
+            if not gen.short_provider_cache[winid][section_nr] then
+                gen.short_provider_cache[winid][section_nr] = {}
             end
 
             -- If `update` is true or provider string is not cached, call the provider function
@@ -323,30 +349,28 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
             -- autocmds
             if type(update) == 'table' then
                 -- Initialize autocmd table structure
-                if not provider_autocmd[winid] then
-                    provider_autocmd[winid] = {}
+                if not gen.provider_autocmd[winid] then
+                    gen.provider_autocmd[winid] = {}
                 end
 
-                if not provider_autocmd[winid][section_nr] then
-                    provider_autocmd[winid][section_nr] = {}
+                if not gen.provider_autocmd[winid][section_nr] then
+                    gen.provider_autocmd[winid][section_nr] = {}
                 end
 
                 -- If an autocmd hasn't been created for the provider update trigger, create it
-                if not provider_autocmd[winid][section_nr][component_nr] then
-                    provider_autocmd[winid][section_nr][component_nr] = true
+                if not gen.provider_autocmd[winid][section_nr][component_nr] then
+                    gen.provider_autocmd[winid][section_nr][component_nr] = true
 
                     utils.create_augroup({
                         {
-                            table.concat(update, ','),
-                            '*',
-                            string.format(
-                                'lua require("feline.generator").trigger_provider_update(%d, %d, %d)',
-                                winid,
-                                section_nr,
-                                component_nr
-                            ),
+                            event = update,
+                            opts = {
+                                callback = function()
+                                    gen:trigger_provider_update(winid, section_nr, component_nr)
+                                end,
+                            },
                         },
-                    }, 'felineProviders', true)
+                    }, 'felineProviders' .. gen.name, true)
                 end
             end
 
@@ -356,7 +380,9 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
     end
 
     if type(str) ~= 'string' then
-        api.nvim_err_writeln(string.format("Provider must evaluate to string, got type '%s' instead", type(provider)))
+        api.nvim_err_writeln(
+            string.format("Provider must evaluate to string, got type '%s' instead", type(provider))
+        )
 
         str = ''
     end
@@ -364,7 +390,7 @@ local function parse_provider(provider, component, is_short, winid, section_nr, 
     return str, icon
 end
 
-local function parse_component(component, use_short_provider, winid, section_nr, component_nr)
+local function parse_component(gen, component, use_short_provider, winid, section_nr, component_nr)
     local enabled
 
     if component.enabled ~= nil then
@@ -380,15 +406,15 @@ local function parse_component(component, use_short_provider, winid, section_nr,
     local hl = evaluate_if_function(component.hl) or {}
     local hlname
 
-    -- If highlight is a string, then accept it as an external highlight group and
-    -- extract its properties for use as a parent highlight for separators and icon
     if type(hl) == 'string' then
+        -- If highlight is a string, then accept it as an external highlight group and
+        -- extract its properties for use as a parent highlight for separators and icon
         hlname = hl
         hl = get_hl_properties(hl)
+    else
         -- If highlight is a table, parse the highlight so it can be passed to
         -- parse_sep_list and parse_icon
-    else
-        hl = parse_hl(hl)
+        hl = parse_hl(gen, hl)
     end
 
     local provider, str, icon
@@ -400,41 +426,67 @@ local function parse_component(component, use_short_provider, winid, section_nr,
     end
 
     if provider then
-        str, icon = parse_provider(provider, component, use_short_provider, winid, section_nr, component_nr)
+        str, icon = parse_provider(
+            gen,
+            provider,
+            component,
+            use_short_provider,
+            winid,
+            section_nr,
+            component_nr
+        )
     else
         str = ''
     end
 
     local is_component_empty = str == ''
 
-    local left_sep_str = parse_sep_list(component.left_sep, hl.bg, is_component_empty)
+    local left_sep_str = parse_sep_list(gen, component.left_sep, hl.bg, is_component_empty)
 
-    local right_sep_str = parse_sep_list(component.right_sep, hl.bg, is_component_empty)
+    local right_sep_str = parse_sep_list(gen, component.right_sep, hl.bg, is_component_empty)
 
-    icon = parse_icon(component.icon or icon, hl, is_component_empty)
+    icon = parse_icon(gen, component.icon or icon, hl, is_component_empty)
 
-    return string.format('%s%s%%#%s#%s%s', left_sep_str, icon, hlname or get_hlname(hl), str, right_sep_str)
+    return string.format(
+        '%s%s%%#%s#%s%s',
+        left_sep_str,
+        icon,
+        hlname or get_hlname(gen, hl),
+        str,
+        right_sep_str
+    )
 end
 
 -- Wrapper around parse_component that handles any errors that happen while parsing the components
 -- and points to the location of the component in case of any errors
 local function parse_component_handle_errors(
+    gen,
     component,
     use_short_provider,
     winid,
     section_nr,
     component_nr,
-    statusline_type
+    focus_type
 )
-    local ok, result = pcall(parse_component, component, use_short_provider, winid, section_nr, component_nr)
+    local ok, result = pcall(
+        parse_component,
+        gen,
+        component,
+        use_short_provider,
+        winid,
+        section_nr,
+        component_nr
+    )
 
     if not ok then
         api.nvim_err_writeln(
             string.format(
-                "Feline: error while processing component number %d on section %d of type '%s' for window %d: %s",
+                'Feline: error while processing %s component number %d on section %d of type '
+                    .. "'%s' for window %d: %s",
+                gen.name,
                 component_nr,
                 section_nr,
-                statusline_type,
+                focus_type,
                 winid,
                 result
             )
@@ -446,37 +498,34 @@ local function parse_component_handle_errors(
     return result
 end
 
--- Prevent reinitializing the options table everytime `nvim_eval_statusline` is called
-local eval_statusline_opts = { maxwidth = 0 }
-
 local function get_component_width(component_str)
     if not api.nvim_eval_statusline then
         return 0
     end
 
-    return api.nvim_eval_statusline(component_str, eval_statusline_opts).width
+    return api.nvim_eval_statusline(component_str, { maxwidth = 0 }).width
 end
 
-function M.trigger_provider_update(winid, section_nr, component_nr)
-    provider_cache[winid][section_nr][component_nr] = nil
-    short_provider_cache[winid][section_nr][component_nr] = nil
+function Generator:trigger_provider_update(winid, section_nr, component_nr)
+    self.provider_cache[winid][section_nr][component_nr] = nil
+    self.short_provider_cache[winid][section_nr][component_nr] = nil
 end
 
--- Generate statusline by parsing all components and return a string
-function M.generate_statusline(is_active)
+-- Generate statusline string from components table
+function Generator:generate(is_active, maxwidth)
     local components
     local winid = api.nvim_get_current_win()
 
-    M.component_truncated[winid] = {}
-    M.component_hidden[winid] = {}
+    self.component_truncated[winid] = {}
+    self.component_hidden[winid] = {}
 
-    if is_disabled() then
+    if is_disabled(self) then
         return ''
     end
 
     -- If a condition for one of the conditional components is satisfied, use those components
-    if feline.conditional_components then
-        for _, v in ipairs(feline.conditional_components) do
+    if self.config.conditional_components then
+        for _, v in ipairs(self.config.conditional_components) do
             if v.condition() then
                 components = v
                 break
@@ -486,8 +535,8 @@ function M.generate_statusline(is_active)
 
     -- If none of the conditional components match, use the default components
     if not components then
-        if feline.components then
-            components = feline.components
+        if self.config.components then
+            components = self.config.components
         else
             return ''
         end
@@ -495,7 +544,7 @@ function M.generate_statusline(is_active)
 
     local statusline_type
 
-    if is_active and not is_forced_inactive() then
+    if is_active and not is_forced_inactive(self) then
         statusline_type = 'active'
     else
         statusline_type = 'inactive'
@@ -520,7 +569,7 @@ function M.generate_statusline(is_active)
 
         for j, component in ipairs(section) do
             if component.name then
-                if M.component_truncated[winid][component.name] ~= nil then
+                if self.component_truncated[winid][component.name] ~= nil then
                     api.nvim_err_writeln(
                         string.format(
                             'Feline: error while parsing components for window %d: '
@@ -531,11 +580,19 @@ function M.generate_statusline(is_active)
                     )
                     return ''
                 end
-                M.component_truncated[winid][component.name] = false
-                M.component_hidden[winid][component.name] = false
+                self.component_truncated[winid][component.name] = false
+                self.component_hidden[winid][component.name] = false
             end
 
-            local component_str = parse_component_handle_errors(component, false, winid, i, j, statusline_type)
+            local component_str = parse_component_handle_errors(
+                self,
+                component,
+                false,
+                winid,
+                i,
+                j,
+                statusline_type
+            )
             local component_width = get_component_width(component_str)
 
             component_strs[i][j] = component_str
@@ -544,16 +601,6 @@ function M.generate_statusline(is_active)
 
             component_indices[#component_indices + 1] = { i, j }
         end
-    end
-
-    local maxwidth
-
-    -- If statusline is global, use entire Neovim window width for maxwidth
-    -- Otherwise just use width of current window
-    if opt.laststatus:get() == 3 then
-        maxwidth = opt.columns:get()
-    else
-        maxwidth = api.nvim_win_get_width(0)
     end
 
     -- If statusline width is greater than maxwidth, begin the truncation process
@@ -576,6 +623,7 @@ function M.generate_statusline(is_active)
 
             if component.short_provider then
                 local component_str = parse_component_handle_errors(
+                    self,
                     component,
                     true,
                     winid,
@@ -598,7 +646,7 @@ function M.generate_statusline(is_active)
                     component_widths[section][number] = component_width
 
                     if component.name then
-                        M.component_truncated[winid][component.name] = true
+                        self.component_truncated[winid][component.name] = true
                     end
                 end
             end
@@ -622,8 +670,8 @@ function M.generate_statusline(is_active)
                 component_widths[section][number] = 0
 
                 if component.name then
-                    M.component_truncated[winid][component.name] = true
-                    M.component_hidden[winid][component.name] = true
+                    self.component_truncated[winid][component.name] = true
+                    self.component_hidden[winid][component.name] = true
                 end
             end
 
@@ -644,19 +692,25 @@ function M.generate_statusline(is_active)
     return table.concat(section_strs, '%=')
 end
 
--- Clear statusline generator state in order to do a clean reinitialization of it
-function M.clear_state()
-    M.highlights = {}
-    M.component_hidden = {}
-    M.component_truncated = {}
-    provider_cache = {}
-    short_provider_cache = {}
-    provider_autocmd = {}
-    -- Clear provider update autocmds
-    if vim.fn.exists('#felineProviders') ~= 0 then
-        api.nvim_command('autocmd! felineProviders')
-        api.nvim_command('augroup! felineProviders')
+-- Clear all generator highlights
+function Generator:reset_highlights()
+    for hl, _ in pairs(self.highlights) do
+        vim.cmd('highlight clear ' .. hl)
     end
+
+    self.highlights = {}
 end
 
-return M
+-- Clear generator state
+function Generator:clear_state()
+    self:reset_highlights()
+    self.component_hidden = {}
+    self.component_truncated = {}
+    self.provider_cache = {}
+    self.short_provider_cache = {}
+    self.provider_autocmd = {}
+    -- Clear provider update autocmds
+    utils.create_augroup({}, 'felineProviders' .. self.name, false)
+end
+
+return Generator

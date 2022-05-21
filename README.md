@@ -1,12 +1,12 @@
 # feline.nvim
 
-A minimal, stylish and customizable statusline for Neovim written in Lua
+A minimal, stylish and customizable statusline / winbar for Neovim written in Lua
 
-Requires Neovim >= 0.5
+Requires Neovim >= 0.7 (or >= 0.5 with the `0.5-compat` branch)
 
 ## About
 
-Feline is a Lua statusline that prioritizes speed, customizability and minimalism. It's blazing fast and never gets in your way. Feline only provides you with the necessary tools that you need to customize the statusline to your liking and avoids feature-bloat. It's also extremely customizable and allows you to configure it in any way you wish to. Feline also has reasonable defaults for those who don't want to configure things and just want a good out of the box experience.
+Feline is a Lua statusline plugin that prioritizes speed, customizability and minimalism. It's fast and never gets in your way. Feline only provides you with the necessary tools that you need to customize the statusline to your liking and avoids feature-bloat. It's also extremely customizable and allows you to configure it in any way you wish to. Feline also has reasonable defaults for those who don't want to configure things and just want a good out of the box experience.
 
 ## Features
 
@@ -23,13 +23,15 @@ Feline is a Lua statusline that prioritizes speed, customizability and minimalis
   and many more
 
 - Minimalistic, only provides the bare minimum and allows the user to build their own components very easily.
+- Winbar support.
 
 ## Requirements
 
 - Necessary
-  - Neovim v0.5 or greater
+  - Neovim v0.7 or greater (v0.5 or greater if using the `0.5-compat` branch)
   - You must have 24-bit RGB color enabled in Neovim (do `:help 'termguicolors'` in Neovim for more info)
 - Optional
+  - Neovim v0.8 or greater - For winbar support
   - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons/) - For icon support
   - [A patched font](https://github.com/ryanoasis/nerd-fonts/) - For icon support
   - [gitsigns.nvim](https://github.com/lewis6991/gitsigns.nvim/) - For [git providers](#git)
@@ -100,6 +102,24 @@ use 'feline-nvim/feline.nvim'
 Plug 'feline-nvim/feline.nvim'
 ```
 
+### Using a compatibility branch
+
+Feline has compatibility branches which are versions that have compatibility with an older Neovim version. The compatibility branches are old and usually don't contain the latest changes to Feline, though the changes may occasionally be backported. However, these branches are useful if you don't have the currently required minimum version of Neovim to use Feline. The compatibility branches are named like `{neovim-version}-compat` where `{neovim-version}` is the version of Neovim it maintains compatibility with. For example, the `0.5-compat` branch is compatible with Neovim 0.5. Note that there may not be a compatibility branch for all versions and there may be gaps in the compatibility versions. Here's how you can install a compatibility branch instead of the master branch:
+
+- [packer.nvim](https://github.com/wbthomason/packer.nvim/):
+
+```lua
+use { 'feline-nvim/feline.nvim', branch = '0.5-compat' }
+```
+
+- [vim-plug](https://github.com/junegunn/vim-plug/):
+
+```vim
+Plug 'feline-nvim/feline.nvim', { 'branch': '0.5-compat' }
+```
+
+Compatibility branches for versions that are 4 or more (minor) versions older than the latest Neovim version may be removed at any time, so use them at your own risk.
+
 ## Getting started
 
 ### Using the default configuration
@@ -110,12 +130,10 @@ Once you've installed Feline, it's extremely easy to get started with it. If you
 require('feline').setup()
 ```
 
-And that's it! It's as easy as that. In case you don't like icons and want to use the default statusline configuration but without icons, just do:
+And that's it! It's as easy as that. If you want to setup the `'winbar'` alongside the statusline, just add this line next to the previous line:
 
 ```lua
-require('feline').setup({
-    preset = 'noicon'
-})
+require('feline').winbar.setup()
 ```
 
 ### Configuring Feline to fit your needs

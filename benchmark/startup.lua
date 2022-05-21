@@ -15,10 +15,10 @@ end
 if not pcall(require, 'profiler') then
     local install_path = tmpdir .. '/nvim/site/pack/feline/start/profiler.nvim'
 
-    vim.opt.packpath:append(tmpdir .. '/nvim/site')
+    vim.o.packpath:append(tmpdir .. '/nvim/site')
 
     if vim.fn.isdirectory(install_path) == 0 then
-        vim.fn.system({ 'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path })
+        vim.fn.system { 'git', 'clone', 'https://github.com/norcalli/profiler.nvim', install_path }
     end
 end
 
