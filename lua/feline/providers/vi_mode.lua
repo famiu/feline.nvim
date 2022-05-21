@@ -51,7 +51,8 @@ function M.get_mode_color()
 end
 
 function M.get_mode_highlight_name()
-    return 'StatusComponentVim' .. string.gsub(string.lower(M.get_vim_mode()), '%a', string.upper, 1)
+    return 'StatusComponentVim'
+        .. string.gsub(string.lower(M.get_vim_mode()), '%a', string.upper, 1)
 end
 
 function M.vi_mode(component, opts)

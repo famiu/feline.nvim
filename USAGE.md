@@ -268,7 +268,7 @@ Priority can also be set to a negative number, which can be used to make a compo
 
 ##### Check if component is truncated or hidden
 
-If you give a component a `name`, you can check if that component has been truncated or hidden by Feline's smart truncation system through the utility functions, `require('feline').is_component_truncated` and `require('feline').is_component_hidden`. Both of these functions take two arguments, `winid` which is the window id of the window for which the component's truncation is being checked, the second is the `name` of the component. `is_component_truncated` returns `true` if a component has been truncated or hidden, and `is_component_hidden` returns `true` only if a component has been hidden.
+If you give a component a `name`, you can check if that component has been truncated or hidden by Feline's smart truncation system through the utility functions, `require('feline').is_component_truncated` and `require('feline').is_component_hidden`. Both of these functions take two arguments, `winid` which is the window id of the window for which the component's truncation is being checked, the second is the `name` of the component. `is_component_truncated` returns `true` if a component has been truncated or hidden, and `is_component_hidden` returns `true` only if a component has been hidden. For [winbar](#winbar) components, use `require('feline').winbar.is_component_truncated` and `require('feline').winbar.is_component_hidden` instead.
 
 #### Conditionally enable components
 
@@ -504,7 +504,6 @@ components.active[3][1] = {
 
 Now that you know about the components table and how Feline components work, you can learn about Feline's `setup()` function. The `setup()` function initializes Feline with your provided configuration. The configuration can be passed to the function through a table. The available configuration options are listed below:
 
-- `preset` - Set it to use a preconfigured statusline. Currently it can be equal to either `default` for the default statusline or `noicon` for the default statusline without icons. You don't have to put any of the other values if you use a preset, but if you do, your settings will override the preset's settings. To see more info such as how to modify a preset to build a statusline, see: [Modifying an existing preset](#3.-modifying-an-existing-preset)
 - `components` - The [components table](#components).
 - `conditional_components` - An array-like table containing conditionally enabled components tables, each element of the table must be a components table with an additional key, `condition`, which would be a function without arguments that returns a boolean value. If the function returns `true` for a certain window, then that components table will be used for the statusline of that window instead of the default components table. If multiple conditional components match a certain window, the first one in the table will be used. An example usage of this option is shown below:
 
@@ -595,6 +594,10 @@ Here is a list of all possible vi_mode names used with the default color associa
 - `highlight_reset_triggers` - Feline automatically resets its cached highlights on certain autocommands to prevent the statusline colors from getting messed up. The value of `highlight_reset_triggers` can be set to a table containing a list of autocommands that'll trigger a highlight reset.<br><br>
   Default: `{'SessionLoadPost', 'ColorScheme'}`
 
+## Winbar
+
+Feline has support for winbar, a Neovim 0.8 feature that allows you to have a bar at the top of each window. You can setup the winbar components using the `require('feline').winbar.setup()` function. It works pretty much the same way as the [setup function](#setup-function) for the statusline. However, it only accepts the `components`, `conditional_components`, `force_inactive` and `disable` values, the other values are shared between the statusline and the winbar. Additionally, the default value of `force_inactive` for the winbar is `{}`, which means the winbar is never forced to use the inactive components table by default.
+
 ## Utility functions
 
 Feline provides a few utility functions that allow you to customize or modify Feline on the fly. These are discussed below.
@@ -607,42 +610,7 @@ If, for some reason, you want to clear all highlights that Feline sets (useful i
 require('feline').reset_highlights()
 ```
 
-And then Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
-
-### Adding and using presets
-
-If you want to add your own presets, you can do this through the `require('feline').add_preset` function, like this:
-
-```lua
--- Components table for the preset
-local my_preset = {
-    -- Insert components here
-}
-
-require('feline').add_preset('my_preset_name', my_preset)
-```
-
-You can also use a preset using `require('feline').use_preset`, like this:
-
-```lua
-require('feline').use_preset('my_preset_name')
-```
-
-## Example configuration
-
-You can check out the code in the [default preset](lua/feline/presets/default.lua) to see how the components in it are set up so you can get a good practical idea of how to use the tools that Feline gives you to create all kinds of different statusline components.
-
-## Modifying an existing preset
-
-If you like the defaults for the most part but there's some things you want to change, then you'd be glad to know that it's easy to just modify an existing preset to get the statusline configuration you want. Just do:
-
-```lua
--- Substitute preset_name with the name of the preset you want to modify.
--- eg: "default" or "noicon"
-local components = require('feline.presets')[preset_name]
-```
-
-After that, you can just modify the components and call the [setup function](#setup-function) with the preset as you normally would.
+Feline will automatically regenerate those highlights when it needs them, so you don't have to worry about setting the highlights yourself.
 
 ## Default providers
 
@@ -673,7 +641,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 
 The vi-mode provider by itself only shows an icon. To actually indicate the current Vim mode, you have to use `require('feline.providers.vi_mode').get_mode_color()` for the component's `hl.fg`.
 
-Note that this is different if you set the `icon` value of the component to `''`, in that case it'll use the name of the mode instead of an icon, which is what the `noicon` preset uses.
+Note that this is different if you set the `icon` value of the component to `''`, in that case it'll use the name of the mode instead of an icon.
 
 Here is the simplest method to make a component with proper Vi-mode indication:
 
