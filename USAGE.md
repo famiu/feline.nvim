@@ -194,7 +194,7 @@ provider = {
 
 A component can optionally be given a name. While the component is not required to have a name and the name is mostly useless, it can be used to check if the component has been [truncated](#truncation). To give a component a name, just set its `name` value to a `string`, shown below:
 
-```
+```lua
 local my_component = {
     name = 'a_unique_name'
 }
@@ -752,7 +752,7 @@ require('feline').use_theme(my_theme)
 
 If you're developing a plugin or colorscheme and wish to support Feline for that plugin / colorscheme or if you're just a user who wants to be able to quickly switch your statusline colors, you'd be glad to know that it's possible to add custom color themes for Feline. You just have to call `require('feline').add_theme` with the theme name and the colors table. Like this:
 
-```
+```lua
 -- Theme table
 local my_theme = {
     red = '#FF0000',
@@ -839,7 +839,7 @@ When the statusline for a window is being generated, Neovim temporarily sets the
 
 This is important to note when you set a component value to a function. Inside a component value that's set to a function, functions like `vim.api.nvim_get_current_win()` and `vim.api.nvim_get_current_buf()` will return the statusline window and buffer instead of the actual current window and buffer number. In order to access the actual current window or buffer, you have to use `vim.g.actual_curbuf` or `vim.g.actual_curwin` (respectively) inside the function instead. For example:
 
-```
+```lua
 -- Provider function that shows current window number
 provider = function()
     return vim.g.actual_curwin
@@ -855,7 +855,7 @@ Note that the values of both `vim.g.actual_curwin` and `vim.g.actual_curbuf` are
 
 ### Highlight section gaps
 
-By default, gaps between two sections inherit the highlight of the last element of the section. If you wish to customize the highlight of the gap between two sections, you can just add a component with only an `hl` value to the end of the first section. 
+By default, gaps between two sections inherit the highlight of the last element of the section. If you wish to customize the highlight of the gap between two sections, you can just add a component with only an `hl` value to the end of the first section.
 
 For example, if you had two sections in the active statusline and wanted the gap between the first and second section to use a certain background color, you could do this:
 
