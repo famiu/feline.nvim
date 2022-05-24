@@ -42,13 +42,28 @@ local function get_hl_properties(hlname)
     }
 end
 
+-- Generator class
 local Generator = {}
-Generator.__index = Generator
+-- List of generators
+Generator.list = {}
+
+Generator.__index = function(tbl, key)
+    if Generator[key] then
+        return Generator[key]
+    elseif type(key) == 'number' and tbl == Generator then
+        -- Allow accessing generators using the generator index
+        return Generator.list[key]
+    end
+end
 Generator.__newindex = function(_, _, _) end
 Generator.__metatable = false
 
 function Generator.new(name, config)
-    return setmetatable({
+    local index = #Generator.list + 1
+
+    local gen = setmetatable({
+        -- Generator index
+        index = index,
         -- Cached highlights
         highlights = {},
         -- Used to check if a certain component is truncated
@@ -66,6 +81,9 @@ function Generator.new(name, config)
         -- Most recently used components table, used to check if components table changed
         last_used_components = {},
     }, Generator)
+
+    Generator.list[index] = gen
+    return gen
 end
 
 -- Add highlight and store its name in the generator highlights table
@@ -98,7 +116,7 @@ local function is_disabled(gen)
 end
 
 -- Parse highlight table, inherit default/parent values if values are not given
-local function parse_hl(gen, hl, parent_hl)
+local function parse_hl(hl, parent_hl)
     parent_hl = parent_hl or {}
 
     local fg = hl.fg or parent_hl.fg or feline.colors.fg
@@ -132,7 +150,7 @@ local function get_hlname(gen, hl, parent_hl)
         return hl.name
     end
 
-    hl = parse_hl(gen, hl, parent_hl)
+    hl = parse_hl(hl, parent_hl)
 
     local fg_str, bg_str
 
@@ -414,7 +432,7 @@ local function parse_component(gen, component, use_short_provider, winid, sectio
     else
         -- If highlight is a table, parse the highlight so it can be passed to
         -- parse_sep_list and parse_icon
-        hl = parse_hl(gen, hl)
+        hl = parse_hl(hl)
     end
 
     local provider, str, icon
