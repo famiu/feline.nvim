@@ -56,9 +56,7 @@ function Generator.new(name, config)
         -- Used to check if a certain component is hidden
         component_hidden = {},
         -- Cached provider strings for providers that are updated through a trigger
-        provider_cache = {},
-        -- Cached provider strings for short providers that are updated through a trigger
-        short_provider_cache = {},
+        provider_cache = { short = {}, long = {} },
         -- Flags to check if the autocmd for a provider update trigger has been created
         provider_autocmd = {},
         -- Generator name
@@ -311,26 +309,26 @@ local function parse_provider(gen, provider, component, is_short, winid, section
             local provider_cache_tbl
 
             if is_short then
-                provider_cache_tbl = gen.short_provider_cache
+                provider_cache_tbl = gen.provider_cache.short
             else
-                provider_cache_tbl = gen.provider_cache
+                provider_cache_tbl = gen.provider_cache.long
             end
 
             -- Initialize provider cache tables
-            if not gen.provider_cache[winid] then
-                gen.provider_cache[winid] = {}
+            if not gen.provider_cache.long[winid] then
+                gen.provider_cache.long[winid] = {}
             end
 
-            if not gen.provider_cache[winid][section_nr] then
-                gen.provider_cache[winid][section_nr] = {}
+            if not gen.provider_cache.long[winid][section_nr] then
+                gen.provider_cache.long[winid][section_nr] = {}
             end
 
-            if not gen.short_provider_cache[winid] then
-                gen.short_provider_cache[winid] = {}
+            if not gen.provider_cache.short[winid] then
+                gen.provider_cache.short[winid] = {}
             end
 
-            if not gen.short_provider_cache[winid][section_nr] then
-                gen.short_provider_cache[winid][section_nr] = {}
+            if not gen.provider_cache.short[winid][section_nr] then
+                gen.provider_cache.short[winid][section_nr] = {}
             end
 
             -- If `update` is true or provider string is not cached, call the provider function
@@ -507,8 +505,8 @@ local function get_component_width(component_str)
 end
 
 function Generator:trigger_provider_update(winid, section_nr, component_nr)
-    self.provider_cache[winid][section_nr][component_nr] = nil
-    self.short_provider_cache[winid][section_nr][component_nr] = nil
+    self.provider_cache.long[winid][section_nr][component_nr] = nil
+    self.provider_cache.short[winid][section_nr][component_nr] = nil
 end
 
 -- Generate statusline string from components table
@@ -706,8 +704,7 @@ function Generator:clear_state()
     self:reset_highlights()
     self.component_hidden = {}
     self.component_truncated = {}
-    self.provider_cache = {}
-    self.short_provider_cache = {}
+    self.provider_cache = { short = {}, long = {} }
     self.provider_autocmd = {}
     -- Clear provider update autocmds
     utils.create_augroup({}, 'felineProviders' .. self.name, false)
