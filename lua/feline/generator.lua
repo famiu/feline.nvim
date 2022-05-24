@@ -63,6 +63,8 @@ function Generator.new(name, config)
         name = name,
         -- Configuration options
         config = config,
+        -- Most recently used components table, used to check if components table changed
+        last_used_components = {},
     }, Generator)
 end
 
@@ -531,6 +533,14 @@ function Generator:generate(is_active, maxwidth)
         end
     end
 
+    -- If components table changed, clear generator state without resetting highlights
+    if not self.last_used_components[winid] then
+        self.last_used_components[winid] = components
+    elseif self.last_used_components[winid] ~= components then
+        self:clear_state(false)
+        self.last_used_components[winid] = components
+    end
+
     -- If none of the conditional components match, use the default components
     if not components then
         if self.config.components then
@@ -700,8 +710,15 @@ function Generator:reset_highlights()
 end
 
 -- Clear generator state
-function Generator:clear_state()
-    self:reset_highlights()
+function Generator:clear_state(reset_highlights)
+    if reset_highlights == nil then
+        reset_highlights = true
+    end
+
+    if reset_highlights then
+        self:reset_highlights()
+    end
+
     self.component_hidden = {}
     self.component_truncated = {}
     self.provider_cache = { short = {}, long = {} }
