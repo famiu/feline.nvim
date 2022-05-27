@@ -120,6 +120,8 @@ function M.file_info(component, opts)
         modified_str = ''
     end
 
+    -- escape any special statusline characters in the filename
+    filename = filename:gsub('%%', '%%%%')
     return string.format('%s%s%s', readonly_str, filename, modified_str), icon
 end
 
