@@ -672,7 +672,26 @@ The Vi-mode provider can take some provider options through the provider `opts`:
 
 ### Position
 
-The `position` provider can take a `padding` provider option, which may be either `true` or `false` and will determine whether the position numbers are padded with spaces or not.
+The `position` provider can take a `padding` provider option. It can be of one of the following forms:
+
+```lua
+-- Pad line and column numbers, use default amount for padding.
+padding = true
+
+-- Use custom padding amount
+padding = {
+    line = 2,
+    col = 2,
+}
+```
+
+The default padding amount is 3 for line number and 2 for column number.
+
+If you wish, you can also use a custom format for the position provider using the `format` provider option. All occurences of `{line}` and `{col}` in the `format` string will be replaced with the line number and column number, respectively. For example:
+
+```lua
+format = 'Ln {line}, Col {col}'
+```
 
 ### Scroll bar
 
