@@ -486,15 +486,8 @@ local function parse_component_handle_errors(
     component_nr,
     focus_type
 )
-    local ok, result = pcall(
-        parse_component,
-        gen,
-        component,
-        use_short_provider,
-        winid,
-        section_nr,
-        component_nr
-    )
+    local ok, result =
+        pcall(parse_component, gen, component, use_short_provider, winid, section_nr, component_nr)
 
     if not ok then
         api.nvim_err_writeln(
@@ -610,15 +603,9 @@ function Generator:generate(is_active, maxwidth)
                 self.component_hidden[winid][component.name] = false
             end
 
-            local component_str = parse_component_handle_errors(
-                self,
-                component,
-                false,
-                winid,
-                i,
-                j,
-                statusline_type
-            )
+            local component_str =
+                parse_component_handle_errors(self, component, false, winid, i, j, statusline_type)
+
             local component_width = get_component_width(component_str)
 
             component_strs[i][j] = component_str
