@@ -12,7 +12,7 @@ Feline is a Lua statusline plugin that prioritizes speed, customizability and mi
 
 - Ease-of-use.
 - Complete customizability over every component.
-- [Built-in providers](#default-providers) such as:
+- [Built-in providers](USAGE.md#default-providers) such as:
 
   - Vi-mode
   - File info
