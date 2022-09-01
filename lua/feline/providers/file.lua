@@ -99,6 +99,11 @@ function M.file_info(component, opts)
         filename = fn.fnamemodify(filename, ':t')
     end
 
+    -- Replace slashes if value is provided in options
+    if opts.slashes then
+        filename = filename:gsub("/",opts.slashes)
+    end
+
     if bo.readonly then
         readonly_str = opts.file_readonly_icon or '🔒'
     else
