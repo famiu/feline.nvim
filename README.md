@@ -89,7 +89,6 @@ Feline is a Lua statusline plugin that prioritizes speed, customizability and mi
 **[Config by toufyx](https://gist.github.com/Toufyx/d6b48a0a12ceff02268be49db0a97ddf)**
 ![image](https://user-images.githubusercontent.com/10991276/187600545-034cf707-08c9-456e-af3e-6d4baf1580a9.png)
 
-
 You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
 ## Installation
