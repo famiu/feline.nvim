@@ -75,6 +75,8 @@ local function get_path_separator()
     end
 end
 
+local default_seperator = get_path_separator()
+
 function M.file_info(component, opts)
     local readonly_str, modified_str, icon
 
@@ -138,7 +140,6 @@ function M.file_info(component, opts)
     filename = filename:gsub('%%', '%%%%')
 
     if opts.path_sep then
-        local default_seperator = get_path_separator()
         filename = filename:gsub(default_seperator, opts.path_sep)
     end
 
