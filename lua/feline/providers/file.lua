@@ -63,16 +63,16 @@ end
 
 -- Get path separator depending on OS
 local function get_path_separator()
-  if jit then
-    local os = string.lower(jit.os)
-    if os == "linux" or os == "osx" or os == "bsd" then
-      return "/"
+    if jit then
+        local os = string.lower(jit.os)
+        if os == 'linux' or os == 'osx' or os == 'bsd' then
+            return '/'
+        else
+            return '\\'
+        end
     else
-      return "\\"
+        return package.config:sub(1, 1)
     end
-  else
-    return package.config:sub(1, 1)
-  end
 end
 
 function M.file_info(component, opts)
@@ -138,8 +138,8 @@ function M.file_info(component, opts)
     filename = filename:gsub('%%', '%%%%')
 
     if opts.path_sep then
-      local default_seperator = get_path_separator()
-      filename = filename:gsub(default_seperator, opts.path_sep)
+        local default_seperator = get_path_separator()
+        filename = filename:gsub(default_seperator, opts.path_sep)
     end
 
     return string.format('%s%s%s', readonly_str, filename, modified_str), icon
