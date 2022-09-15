@@ -707,6 +707,8 @@ The `file_info` provider has some special provider options that can be passed th
   Default:`'●'`
 - `file_readonly_icon` (string): The icon that is shown when a file is read-only.<br>
   Default:`'🔒'`
+- `path_sep` (string): The separator character in the file path. <br>
+  Default: `/` or `\` depending on OS 
 - `type` (string): Determines which parts of the filename are shown. Its value can be one of:
 
   - `'full-path'`: Full path of the file (eg: `'/home/user/.config/nvim/init.lua'`)

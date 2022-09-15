@@ -61,6 +61,22 @@ local function get_unique_filename(filename, shorten)
     return string.reverse(string.sub(filename, 1, index))
 end
 
+-- Get path separator depending on OS
+local function get_path_separator()
+    if jit then
+        local os = string.lower(jit.os)
+        if os == 'linux' or os == 'osx' or os == 'bsd' then
+            return [[/]]
+        else
+            return [[\]]
+        end
+    else
+        return package.config:sub(1, 1)
+    end
+end
+
+local default_seperator = get_path_separator()
+
 function M.file_info(component, opts)
     local readonly_str, modified_str, icon
 
@@ -122,6 +138,11 @@ function M.file_info(component, opts)
 
     -- escape any special statusline characters in the filename
     filename = filename:gsub('%%', '%%%%')
+
+    if opts.path_sep then
+        filename = filename:gsub(default_seperator, opts.path_sep)
+    end
+
     return string.format('%s%s%s', readonly_str, filename, modified_str), icon
 end
 
