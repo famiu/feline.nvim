@@ -66,9 +66,9 @@ local function get_path_separator()
     if jit then
         local os = string.lower(jit.os)
         if os == 'linux' or os == 'osx' or os == 'bsd' then
-            return '/'
+            return [[/]]
         else
-            return '\\'
+            return [[\]]
         end
     else
         return package.config:sub(1, 1)
