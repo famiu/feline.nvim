@@ -81,7 +81,7 @@ elements to the sections. For example:
         -- Component info here
     })
     
-    -- Insert a component that will be on the middle of the statusline
+    -- Insert a component that will be in the middle of the statusline
     -- when the window is active:
     table.insert(components.active[2], {
         -- Component info here
@@ -134,7 +134,7 @@ You can use component values to customize each component to your liking.
 Providing the values isn’t necessary and you can omit all of the component
 values, in which case the defaults would be used instead. The component values
 can either be set to a fixed value or a function that generates the value
-everytime the statusline is being generated.
+every time the statusline is being generated.
 
 Though you should keep in mind that if a component value is set to a function,
 the function can take no arguments. The |feline-`provider`| value is an
@@ -943,7 +943,7 @@ of the following forms:
 The default padding amount is 3 for line number and 2 for column number.
 
 If you wish, you can also use a custom format for the position provider using
-the `format` provider option. All occurences of `{line}` and `{col}` in the
+the `format` provider option. All occurrences of `{line}` and `{col}` in the
 `format` string will be replaced with the line number and column number,
 respectively. For example:
 

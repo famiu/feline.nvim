@@ -183,7 +183,7 @@ local function get_hlname(gen, hl, parent_hl)
     return hlname
 end
 
--- Parse component seperator to return parsed string
+-- Parse component separator to return parsed string
 -- By default, foreground color of separator is background color of parent
 -- and background color is set to default background color
 local function parse_sep(gen, sep, parent_bg, is_component_empty)

@@ -136,7 +136,7 @@ Once you've installed Feline, it's extremely easy to get started with it. If you
 require('feline').setup()
 ```
 
-And that's it! It's as easy as that. If you want to setup the `'winbar'` alongside the statusline, just add this line next to the previous line:
+And that's it! It's as easy as that. If you want to set up the `'winbar'` alongside the statusline, just add this line next to the previous line:
 
 ```lua
 require('feline').winbar.setup()

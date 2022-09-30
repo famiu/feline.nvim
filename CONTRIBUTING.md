@@ -12,7 +12,7 @@ it or make an Issue if you want to ask for further clarification on it.
 
 ## Ways to contribute
 
-There's a few ways to contribute to Feline, and every contribution is equally welcome. So don't
+There are a few ways to contribute to Feline, and every contribution is equally welcome. So don't
 hesitate or think that your contribution is too small, every contribution counts! Here are some of
 the following ways you can contribute to Feline:
 
