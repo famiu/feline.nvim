@@ -133,8 +133,8 @@ COMPONENT VALUES ~
 You can use component values to customize each component to your liking.
 Providing the values isn’t necessary and you can omit all of the component
 values, in which case the defaults would be used instead. The component values
-can either be set to a fixed value or a function that generates the value
-every time the statusline is being generated.
+can either be set to a fixed value or a function that generates the value every
+time the statusline is being generated.
 
 Though you should keep in mind that if a component value is set to a function,
 the function can take no arguments. The |feline-`provider`| value is an
@@ -981,7 +981,7 @@ through the provider `opts`:
     - `'relative-short'`: Combination of `'relative'` and `'short-path'`.
     - `'unique'`: Unique substring of the full path.<br>
         For example: If you have three buffers with the paths `'/home/user/file.lua'`, `'/home/user/dir1/file.lua'` and `'/home/user/dir2/file.lua'`, Feline will show the names `'user/file.lua'`, `'dir1/file.lua'` and `'dir2/file.lua'` for them, respectively.<br>
-        If there’s no files that share the same name, it behaves the same as `'base-only'`.
+        If there aren’t any files that share the same name, it behaves the same as `'base-only'`.
     - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
     <br>Default: `'base-only'`
 
