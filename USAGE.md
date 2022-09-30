@@ -47,7 +47,7 @@ table.insert(components.active[1], {
     -- Component info here
 })
 
--- Insert a component that will be on the middle of the statusline
+-- Insert a component that will be in the middle of the statusline
 -- when the window is active:
 table.insert(components.active[2], {
     -- Component info here
@@ -92,7 +92,7 @@ components.active[3][2] = {
 
 ### Component values
 
-You can use component values to customize each component to your liking. Providing the values isn't necessary and you can omit all of the component values, in which case the defaults would be used instead. The component values can either be set to a fixed value or a function that generates the value everytime the statusline is being generated.
+You can use component values to customize each component to your liking. Providing the values isn't necessary and you can omit all of the component values, in which case the defaults would be used instead. The component values can either be set to a fixed value or a function that generates the value every time the statusline is being generated.
 
 Though you should keep in mind that if a component value is set to a function, the function can take no arguments. The [`provider`](#component-providers) value is an exception to this rule (more on that below). The return type of the function must also be the same as the type of value required by the component. For example, since [`enabled`](#conditionally-enable-components) requires a boolean value, if you set it to a function, the function must also return a boolean value.
 
@@ -687,7 +687,7 @@ padding = {
 
 The default padding amount is 3 for line number and 2 for column number.
 
-If you wish, you can also use a custom format for the position provider using the `format` provider option. All occurences of `{line}` and `{col}` in the `format` string will be replaced with the line number and column number, respectively. For example:
+If you wish, you can also use a custom format for the position provider using the `format` provider option. All occurrences of `{line}` and `{col}` in the `format` string will be replaced with the line number and column number, respectively. For example:
 
 ```lua
 format = 'Ln {line}, Col {col}'
@@ -718,7 +718,7 @@ The `file_info` provider has some special provider options that can be passed th
   - `'relative-short'`: Combination of `'relative'` and `'short-path'`.
   - `'unique'`: Unique substring of the full path.<br>
     For example: If you have three buffers with the paths `'/home/user/file.lua'`, `'/home/user/dir1/file.lua'` and `'/home/user/dir2/file.lua'`, Feline will show the names `'user/file.lua'`, `'dir1/file.lua'` and `'dir2/file.lua'` for them, respectively.<br>
-    If there's no files that share the same name, it behaves the same as `'base-only'`.
+    If there aren't any files that share the same name, it behaves the same as `'base-only'`.
   - `'unique-short'`: Combination of `'unique'` and `'short-path'`.
 
   <br>Default: `'base-only'`
