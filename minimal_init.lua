@@ -50,6 +50,7 @@ end
 local install_path = tmpdir .. '/nvim/site/pack/packer/start/packer.nvim'
 
 vim.o.packpath = tmpdir .. '/nvim/site'
+vim.g.loaded_remote_plugins = 1
 
 if vim.fn.isdirectory(install_path) == 0 then
     vim.fn.system { 'git', 'clone', 'https://github.com/wbthomason/packer.nvim', install_path }
