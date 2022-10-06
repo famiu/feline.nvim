@@ -1,17 +1,14 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a bug report
 title: "[Bug]"
-labels: bug
+labels: 'kind: fix'
 assignees: ''
 
 ---
 
 **Neovim version**
 The output of `nvim --version`.
-
-**Feline version**
-What version of Feline are you using? If you're using the `develop` branch instead of a release then please clarify that as well.
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -28,7 +25,7 @@ A clear and concise description of what you expected to happen.
 
 **Does this error occur in the minimal init file?**
 Use the following commands to download the minimal init file provided by Feline:
-`curl -fLO https://raw.githubusercontent.com/famiu/feline.nvim/master/minimal_init.lua`
+`curl -fLO https://raw.githubusercontent.com/feline-nvim/feline.nvim/master/minimal_init.lua`
 
 Modify the file to your needs (if necessary), then load Neovim using:
 `nvim --noplugin -u minimal_init.lua`
