@@ -296,7 +296,6 @@ local function parse_provider(gen, provider, component, is_short, winid, section
     -- If provider is a function, just evaluate it normally
     if type(provider) == 'function' then
         str, icon = provider(component)
-
     -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == 'table' then
         local provider_fn, provider_opts
