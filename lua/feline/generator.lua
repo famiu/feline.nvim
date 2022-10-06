@@ -293,13 +293,10 @@ local function parse_provider(gen, provider, component, is_short, winid, section
         return str, icon
     end
 
-    if type(provider) == 'table' and provider.update then
-        print(vim.inspect(gen.provider_cache))
-    end
     -- If provider is a function, just evaluate it normally
     if type(provider) == 'function' then
         str, icon = provider(component)
-        -- If provider is a table, get the provider name and opts and evaluate the provider
+    -- If provider is a table, get the provider name and opts and evaluate the provider
     elseif type(provider) == 'table' then
         local provider_fn, provider_opts
 
