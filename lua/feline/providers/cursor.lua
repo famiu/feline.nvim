@@ -73,4 +73,13 @@ function M.scroll_bar(_, opts)
     end
 end
 
+function M.search_count()
+    if vim.v.hlsearch == 0 then
+        return ''
+    end
+
+    local result = vim.fn.searchcount({ maxcount = 999, timeout = 250 })
+    return string.format('[%d/%d]', result.current, math.min(result.total, result.maxcount))
+end
+
 return M
