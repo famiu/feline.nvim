@@ -82,4 +82,13 @@ function M.search_count()
     return string.format('[%d/%d]', result.current, math.min(result.total, result.maxcount))
 end
 
+function M.macro()
+    local recording_register = vim.fn.reg_recording()
+    if recording_register == '' then
+        return ''
+    else
+        return 'Recording @' .. recording_register
+    end
+end
+
 return M

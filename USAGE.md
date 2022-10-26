@@ -623,6 +623,7 @@ Feline by default has some built-in providers to make your life easy. They are:
 | `line_percentage`                     | Current line percentage                        |
 | [`scroll_bar`](#scroll-bar)           | Scroll bar that shows file progress            |
 | [`search_count`](#search-count)       | Search count for current search                |
+| `macro`                               | Shows macro being recorded                     |
 | [`file_info`](#file-info)             | Get file icon, name and modified status        |
 | `file_size`                           | Get file size                                  |
 | `file_type`                           | Get file type                                  |
