@@ -17,6 +17,7 @@ local get_provider_category = {
     position = 'cursor',
     line_percentage = 'cursor',
     scroll_bar = 'cursor',
+    search_count = 'cursor',
 
     file_info = 'file',
     file_size = 'file',
