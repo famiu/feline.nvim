@@ -700,7 +700,7 @@ The `scroll_bar` provider can take a `reverse` provider option, which may be eit
 
 ### Search Count
 
-This option requires `'hlsearch'` (see `:h 'hlsearch'` in Neovim) in order for it to work.
+This provider requires `'hlsearch'` (see `:h 'hlsearch'` in Neovim) in order for it to work.
 
 ### File Info
 
