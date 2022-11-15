@@ -79,6 +79,10 @@ function M.search_count()
     end
 
     local result = vim.fn.searchcount { maxcount = 999, timeout = 250 }
+    if result.incomplete == 1 or result == {} then
+        return ''
+    end
+
     return string.format('[%d/%d]', result.current, math.min(result.total, result.maxcount))
 end
 
