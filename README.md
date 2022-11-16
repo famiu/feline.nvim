@@ -185,6 +185,3 @@ Feline is licensed under GNU GPLv3. For more info, see: [LICENSE.md](LICENSE.md)
 ### Naming
 
 The name of this plugin is a silly pun based on the convention of the names of statusline plugins ending with 'line', while also being named after cats. And in a way this statusline is supposed to be as quick as a cat's instincts, so I guess the name fits.
-
-## Support
-<a href="https://www.buymeacoffee.com/famiuhaque" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-blue.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
