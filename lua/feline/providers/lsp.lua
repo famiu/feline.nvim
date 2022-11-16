@@ -32,20 +32,30 @@ local function diagnostics(severity)
     return count ~= 0 and tostring(count) or ''
 end
 
+local function get_sign(signname)
+    local sign = vim.fn.sign_getdefined(signname)
+
+    if next(sign) ~= nil then
+        return ' ' .. sign[1].text .. ' '
+    end
+
+    return ''
+end
+
 function M.diagnostic_errors()
-    return diagnostics(diagnostic.severity.ERROR), '  '
+    return diagnostics(diagnostic.severity.ERROR), get_sign('DiagnosticSignError')
 end
 
 function M.diagnostic_warnings()
-    return diagnostics(diagnostic.severity.WARN), '  '
+    return diagnostics(diagnostic.severity.WARN), get_sign('DiagnosticSignWarn')
 end
 
 function M.diagnostic_info()
-    return diagnostics(diagnostic.severity.INFO), '  '
+    return diagnostics(diagnostic.severity.INFO), get_sign('DiagnosticSignInfo')
 end
 
 function M.diagnostic_hints()
-    return diagnostics(diagnostic.severity.HINT), '  '
+    return diagnostics(diagnostic.severity.HINT), get_sign('DiagnosticSignHint')
 end
 
 return M
