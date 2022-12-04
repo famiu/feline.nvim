@@ -4,8 +4,6 @@ local M = {}
 
 local scroll_bar_blocks = { '▁', '▂', '▃', '▄', '▅', '▆', '▇', '█' }
 
-local next = next
-
 function M.position(_, opts)
     local line, col = unpack(api.nvim_win_get_cursor(0))
 
