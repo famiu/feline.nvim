@@ -162,7 +162,7 @@ If you have an issue that you can't find the fix to in the documentation or want
 
 Now, you might be thinking, why do we need another statusline plugin? We've already got a bunch of brilliant statusline plugins like galaxyline, airline, lualine, expressline etc. and all of them are excellent. So then, why Feline?
 
-I'd like the preface this by saying that what I'm about to say can be (and probably is) very biased and opinionated. Take what's being said here with a grain of salt. All of this is purely my opinion and not a fact by any means, so it's fine to disagree. Moreover, any statement I make here may be incorrect or outdated. In which case, please feel free to make an [Issue or Pull Request](CONTRIBUTING.md) correcting it.
+I'd like to preface this by saying that what I'm about to say can be (and probably is) very biased and opinionated. Take what's being said here with a grain of salt. All of this is purely my opinion and not a fact by any means, so it's fine to disagree. Moreover, any statement I make here may be incorrect or outdated. In which case, please feel free to make an [Issue or Pull Request](CONTRIBUTING.md) correcting it.
 
 I think that despite those plugins being neat, each have their own shortcomings. I find those shortcomings as too much to ignore. For example, most of the statusline plugins are not very customizable and the plugins only provide a limited amount of tools and options for customization. Feline, on the other hand, is built for customizability from the ground up. You are not limited in any way by what the plugin provides. You can control every individual component and its location, appearance, everything about it.
 
