@@ -93,7 +93,7 @@ Feline is a Lua statusline plugin that prioritizes speed, customizability and mi
 ![image](https://raw.githubusercontent.com/Hitesh-Aggarwal/feline_one_monokai.nvim/2ff798d4d0435d2145593587dc93a70e72a6d279/screenshot.png)
 
 **[Config by Dharmx](https://gist.github.com/dharmx/47139967b0c4303572e3742af725300c)**
-![feline](https://user-images.githubusercontent.com/80379926/205459030-1ef38f4f-b364-43ea-876e-db98549c38cd.png)
+![image](https://user-images.githubusercontent.com/80379926/205459030-1ef38f4f-b364-43ea-876e-db98549c38cd.png)
 
 You can add your own configuration to this list. If you're interested, simply make a [Pull Request](CONTRIBUTING.md) and I'll add it.
 
