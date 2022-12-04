@@ -80,7 +80,7 @@ function M.search_count()
 
     local result = vim.fn.searchcount { maxcount = 999, timeout = 250 }
 
-    if result.incomplete == 1 or result == {} then
+    if result.incomplete == 1 or next(result) == nil then
         return ''
     end
 
