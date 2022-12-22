@@ -128,6 +128,8 @@ local function setup_global_config(config)
 end
 
 local function setup_common(config, is_winbar)
+    local module
+
     if is_winbar then
         M.winbar_module = {}
         module = M.winbar_module
