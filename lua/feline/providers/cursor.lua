@@ -58,7 +58,7 @@ function M.line_percentage()
     elseif curr_line == lines then
         return 'Bot'
     else
-        return string.format('%2d%%%%', math.ceil(curr_line / lines * 99))
+        return string.format('%d%%%%', math.ceil(curr_line / lines * 99))
     end
 end
 
