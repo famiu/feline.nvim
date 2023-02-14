@@ -204,7 +204,24 @@ function M.winbar.setup(config)
         winbar_gen:clear_state()
     end
 
-    vim.o.winbar = "%{%v:lua.require'feline'.generate_winbar()%}"
+    if config.use_autocmd then
+        utils.create_augroup({
+            {
+                event = config.autocmd_triggers,
+                opts = {
+                    callback = function()
+                        local content = require('feline').generate_winbar()
+                        local status_ok, _ = pcall(api.nvim_set_option_value, "winbar", content, { scope = "local" })
+                        if not status_ok then
+                            return
+                        end
+                    end,
+                }
+            }
+        }, 'feline')
+    else
+        vim.o.winbar = "%{%v:lua.require'feline'.generate_winbar()%}"
+    end
 end
 
 function M.generate_statusline()

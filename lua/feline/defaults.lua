@@ -115,5 +115,19 @@ return {
         conditional_components = {
             type = 'table',
         },
+        use_autocmd = {
+            type = 'boolean',
+            default_value = false,
+        },
+        autocmd_triggers = {
+            type = 'table',
+            default_value = {
+                'CursorMoved',
+                'BufWinEnter',
+                'BufFilePost',
+                'InsertEnter',
+                'BufWritePost',
+            },
+        },
     },
 }
